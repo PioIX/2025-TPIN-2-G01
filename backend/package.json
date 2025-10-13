@@ -1,0 +1,27 @@
+{
+  "name": "ejemplo-node",
+  "version": "1.0.0",
+  "description": "explicacion fetch",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "pio": "nodemon --env-file=.pio.env index.js",
+    "home": "nodemon --env-file=.home.env index.js"
+  },
+  "author": "Martin Rivas",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "1.10.1",
+    "mysql2": "^3.9.7",
+    "nodemon": "^3.1.0",
+    "reactjs-popup": "^2.0.6",
+    "socket.io": "4.8.1"
+  },
+  "keywords": [
+    "ES"
+  ]
+}
