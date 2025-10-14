@@ -44,24 +44,24 @@ app.get("/", function (req, res) {
 
 app.get("/usuarios", async function (req, res) {
   try {
-    console.log(req.body);
+    console.log({usuario: req.query});
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
     let usuario = await realizarQuery(
-      `SELECT * FROM Alumnos WHERE correo_electronico = ${req.query.user.Email} AND contraseña = ${req.query.user.Contraseña} `
+      `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.Contraseña}' `
     );
     if (usuario.length != 0) {
       const token = crearToken(usuario[0]);
       res.send({ mensaje: "acceso otorgado", token });
     } else {
       let profesor = await realizarQuery(
-        `SELECT * FROM Alumnos WHERE correo_electronico = ${req.query.user.Email} AND contraseña = ${req.query.user.Contraseña} `
+        `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.Contraseña}' `
       );
       if (profesor.length != 0) {
         const token = crearToken(profesor[0]);
         res.send({ mensaje: "acceso otorgado", token });
       } else {
         let administrador = await realizarQuery(
-          `SELECT * FROM Alumnos WHERE correo_electronico = ${req.query.user.Email} AND contraseña = ${req.query.user.Contraseña} `
+          `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.Contraseña}' `
         );
         if (administrador.length != 0) {
           const token = crearToken(administrador[0]);
@@ -78,6 +78,6 @@ app.get("/usuarios", async function (req, res) {
   }
 });
 
-server.listen(port, function () {
+app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
 });

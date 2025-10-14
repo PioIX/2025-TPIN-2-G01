@@ -3,23 +3,24 @@ import { useRouter } from "expo-router";
 import type { formData } from "types";
 import { useState } from "react";
 import Input from "components/input";
-
+import type { User } from "types";
+import useFetch from "hooks/useFetch";
 export default function HomeScreen() {
   const router = useRouter();
-
+  const { data, error, loading, fetchData } = useFetch<User>();
   const [user, setUser] = useState<formData>({
     Email: "",
     Contraseña: "",
   });
 
-  const [error, setError] = useState<string | null>(null);
+  const [MsgError, setMsgError] = useState<string | null>(null);
 
   // una funcion que recibe el campo que se quiere actualizar, copia lo que ta tenia y actualiza
   const handleChange = (field: keyof formData, value: string) => {
     setUser((prev) => ({ ...prev, [field]: value }));
-    if (field === "Email") setError(null); // limpiamos error al tipear
+    if (field === "Email") setMsgError(null); // limpiamos error al tipear
   };
-
+  
   // usamos una regex para chequear que ponga un mail
   const validarEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,15 +39,23 @@ export default function HomeScreen() {
     }
 
     console.log("Datos del usuario:", user);
+    handleLogin(user)
     // router.push("/about?id=1");
   };
 
+  const handleLogin = async(user:formData) => {
+    await fetchData({
+      url: `http://localhost:4000/usuarios?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
+      method: "GET",
+    }
+    ).then(data=>console.log(data))
+  }
   return (
     <View className="flex-1 justify-center items-center p-6 bg-gray-100">
       <Text className="text-red-600 text-lg mb-2">Email</Text>
       <Input
         className={`w-full p-3 rounded-xl border ${
-          error && !validarEmail(user.Email) ? "border-red-500" : "border-gray-800"
+          MsgError && !validarEmail(user.Email) ? "border-red-500" : "border-gray-800"
         } bg-white text-black mb-3 shadow-sm`}
         placeholder="Ingrese su email"
         value={user.Email}
@@ -55,7 +64,7 @@ export default function HomeScreen() {
 
       <Text className="text-red-600 text-lg mb-2">Contraseña</Text>
 
-      <TextInput
+      <Input
         className="w-full p-3 rounded-xl border border-gray-800 bg-white text-black mb-6"
         placeholder="Ingrese su contraseña"
         secureTextEntry

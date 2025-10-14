@@ -24,3 +24,7 @@ export interface UseFetchResult<T> {
   loading: boolean;
   fetchData: (options: FetchOptions) => Promise<T | void>;
 }
+
+export interface User{
+  correo_electronico: string
+} 
