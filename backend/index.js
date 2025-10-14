@@ -42,30 +42,43 @@ app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "../../../frontend/app/chat");
 });
 
-app.get("/usuarios", async function (req, res) {
+app.get("/login", async function (req, res) {
   try {
-    console.log({usuario: req.query});
+    console.log({ usuario: req.query });
+    console.log(req.query.contraseña);
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
     let usuario = await realizarQuery(
-      `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.Contraseña}' `
+      `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
     );
     if (usuario.length != 0) {
       const token = crearToken(usuario[0]);
-      res.send({ mensaje: "acceso otorgado", token });
+      res.send({
+        mensaje: "acceso otorgado",
+        key: token,
+        rango: "alumno"
+      });
     } else {
       let profesor = await realizarQuery(
-        `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.Contraseña}' `
+        `SELECT * FROM Profesores WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
       );
       if (profesor.length != 0) {
         const token = crearToken(profesor[0]);
-        res.send({ mensaje: "acceso otorgado", token });
+        res.send({
+          mensaje: "acceso otorgado",
+          key: token,
+          rango: "profesor"
+        });
       } else {
         let administrador = await realizarQuery(
-          `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.Contraseña}' `
+          `SELECT * FROM Administradores WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
         );
         if (administrador.length != 0) {
           const token = crearToken(administrador[0]);
-          res.send({ mensaje: "acceso otorgado", token });
+          res.send({
+            mensaje: "acceso otorgado",
+            key: token,
+            rango: "admin"
+          });
         } else {
           console.log("no hubo ninguna coincidencia durante el login");
           res.send({ mensaje: "inicio de sesion incorrecto " });

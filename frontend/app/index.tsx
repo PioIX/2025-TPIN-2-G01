@@ -44,8 +44,9 @@ export default function HomeScreen() {
   };
 
   const handleLogin = async(user:formData) => {
+    console.log(user)
     await fetchData({
-      url: `http://localhost:4000/usuarios?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
+      url: `http://localhost:4000/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
       method: "GET",
     }
     ).then(data=>console.log(data))
