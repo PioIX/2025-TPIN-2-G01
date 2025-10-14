@@ -1,26 +1,82 @@
-import { View, Text, Pressable, TextInput } from "react-native";
+import { View, Text, Pressable, TextInput, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import type { formData } from "types";
 import { useState } from "react";
 import Input from "components/input";
+
 export default function HomeScreen() {
   const router = useRouter();
-  const [user,setUser] = useState<formData | null>(null)
-  const cambiarNombre = (input:string) => {
-    setUser()
-  }
+
+  const [user, setUser] = useState<formData>({
+    Email: "",
+    Contraseña: "",
+  });
+
+  const [error, setError] = useState<string | null>(null);
+
+  // una funcion que recibe el campo que se quiere actualizar, copia lo que ta tenia y actualiza
+  const handleChange = (field: keyof formData, value: string) => {
+    setUser((prev) => ({ ...prev, [field]: value }));
+    if (field === "Email") setError(null); // limpiamos error al tipear
+  };
+
+  // usamos una regex para chequear que ponga un mail
+  const validarEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const handlePress = () => {
+    if (!validarEmail(user.Email)) {
+      alert("Error, Ingresa un email válido");
+      return;
+    }
+
+    if (user.Contraseña.trim() === "") {
+      alert("Error, Ingresa una contraseña válida");
+      return;
+    }
+
+    console.log("Datos del usuario:", user);
+    // router.push("/about?id=1");
+  };
+
   return (
-    <View className="flex-1 justify-center items-center bg-gray-100">
-      <Text className="text-red-600 text-lg mb-4">email</Text>
-        <Input className="border border-black p-2 text-black" placeholder="mail"></Input>
-      <Text className="text-red-600 text-lg mb-4">Contraseña</Text>
-        <TextInput className="border border-black p-2 text-black" value={user?.Email}></TextInput>
-     <Pressable
-        className="px-4 py-2 bg-blue-500 rounded"
-        onPress={() => router.push("/about?id=1")}
-        >
-        <Text className="text-red-950">Ir a About</Text>
-      </Pressable> 
+    <View className="flex-1 justify-center items-center p-6 bg-gray-100">
+      <Text className="text-red-600 text-lg mb-2">Email</Text>
+      <Input
+        className={`w-full p-3 rounded-xl border ${
+          error && !validarEmail(user.Email) ? "border-red-500" : "border-gray-800"
+        } bg-white text-black mb-3 shadow-sm`}
+        placeholder="Ingrese su email"
+        value={user.Email}
+        onChangeText={(text) => handleChange("Email", text)}
+      />
+
+      <Text className="text-red-600 text-lg mb-2">Contraseña</Text>
+
+      <TextInput
+        className="w-full p-3 rounded-xl border border-gray-800 bg-white text-black mb-6"
+        placeholder="Ingrese su contraseña"
+        secureTextEntry
+        value={user.Contraseña}
+        onChangeText={(text) => handleChange("Contraseña", text)}
+      />
+
+      <Pressable
+        className="bg-blue-600 py-4 px-12 rounded-xl shadow-md"
+        onPress={handlePress}
+      >
+        {({ pressed }) => (
+          <Text
+            className={`text-white text-center font-semibold text-base ${
+              pressed ? "opacity-70" : "opacity-100"
+            }`}
+          >
+            Ir a About
+          </Text>
+        )}
+      </Pressable>
     </View>
   );
 }
