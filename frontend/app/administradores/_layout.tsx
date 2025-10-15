@@ -23,5 +23,7 @@ export default function Layout() {
         />
       </Tabs>
     // </AuthProvider>
+
+    // Si queremos meter más screens/páginas hay que cambiar los Tab.Screen
   );
 }
