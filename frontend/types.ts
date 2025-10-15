@@ -25,6 +25,18 @@ export interface UseFetchResult<T> {
   fetchData: (options: FetchOptions) => Promise<T | void>;
 }
 
-export interface User{
-  correo_electronico: string
-} 
+export interface fetchResponse {
+  mensaje: string,
+  key: string,
+  rango: string
+}
+
+export interface AuthContextType {
+  token: string | null;
+  rango: string | null;
+  login: (token: string, rango: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+export type NavBarProps = {
+  props: string[]; 
+};

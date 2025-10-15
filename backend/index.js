@@ -72,13 +72,22 @@ app.get("/login", async function (req, res) {
         let administrador = await realizarQuery(
           `SELECT * FROM Administradores WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
         );
+        console.log(administrador)
         if (administrador.length != 0) {
           const token = crearToken(administrador[0]);
-          res.send({
-            mensaje: "acceso otorgado",
-            key: token,
-            rango: "admin"
-          });
+          if(administrador[0].rango=="P"){
+            res.send({
+              mensaje: "acceso otorgado",
+              key: token,
+              rango: "preceptor"
+            });
+          } else {
+              res.send({
+              mensaje: "acceso otorgado",
+              key: token,
+              rango: "owner"
+            });
+          }
         } else {
           console.log("no hubo ninguna coincidencia durante el login");
           res.send({ mensaje: "inicio de sesion incorrecto " });
@@ -90,6 +99,24 @@ app.get("/login", async function (req, res) {
     res.send({ mensaje: error });
   }
 });
+
+app.post("/usuarioLog",verificarJWT,async function(req,res) {
+  const searchParam = req.header("Persona")
+  
+  if(searchParam == "admin" || searchParam == "preceptor"){
+    const user = await realizarQuery (`SELECT * FROM Administradores WHERE correo_electronico = "${req.user}"`)
+    console.log(user[0])
+    res.send({message:user[0]})
+  }
+  else if(searchParam == "profesor"){
+    const user = await realizarQuery (`SELECT * FROM Profesores WHERE correo_electronico = ${searchParam}`)
+    res.send({message:user[0]})
+  }
+  else if(searchParam == "alumno"){
+    const user = await realizarQuery (`SELECT * FROM Alumnos WHERE correo_electronico = ${searchParam}`)
+    res.send({message:user[0]})
+  }
+})
 
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
