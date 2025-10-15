@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Pressable, Text } from 'react-native';
 import { useEffect } from 'react';
 import useFetch from 'hooks/useFetch';
+import QRCode from 'react-native-qrcode-svg';
 export default function AlumnosHome() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
@@ -28,9 +29,12 @@ export default function AlumnosHome() {
   };
 
   return (
-    <Pressable onPress={handleLogout}>
-      <Text>Cerrar sesión</Text>
-    </Pressable>
+    <view>
+      <Pressable onPress={handleLogout}>
+        <Text>Cerrar sesión</Text>
+        <QRCode></QRCode>
+      </Pressable>
+    </view>
   );
 }
 

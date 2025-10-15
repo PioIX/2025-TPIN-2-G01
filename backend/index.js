@@ -109,11 +109,11 @@ app.post("/usuarioLog",verificarJWT,async function(req,res) {
     res.send({message:user[0]})
   }
   else if(searchParam == "profesor"){
-    const user = await realizarQuery (`SELECT * FROM Profesores WHERE correo_electronico = ${searchParam}`)
+    const user = await realizarQuery (`SELECT * FROM Profesores WHERE correo_electronico = "${req.user}"`)
     res.send({message:user[0]})
   }
   else if(searchParam == "alumno"){
-    const user = await realizarQuery (`SELECT * FROM Alumnos WHERE correo_electronico = ${searchParam}`)
+    const user = await realizarQuery (`SELECT * FROM Alumnos WHERE correo_electronico = "${req.user}"`)
     res.send({message:user[0]})
   }
 })
