@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Pressable, Text } from 'react-native';
 import { useEffect } from 'react';
 import useFetch from 'hooks/useFetch';
+
 export default function ProfesoresHome() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();

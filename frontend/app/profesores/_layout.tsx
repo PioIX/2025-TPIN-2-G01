@@ -1,11 +1,13 @@
 import { Tabs } from "expo-router";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
-// import FontAwesome from '@expo/vector-icons/FontAwesome';
-
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { AuthProvider } from "app/context/AuthContext";
 export default function Layout() {
   return (
-    <Tabs
+    <AuthProvider>
+
+       <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "tomato",  
@@ -23,6 +25,16 @@ export default function Layout() {
               size={24}
               color={focused ? 'tomato' : 'gray'}  
             />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="asistencia"
+        options={{
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <MaterialCommunityIcons name="playlist-edit" size={24}
+            color={ focused ? "tomato" : "gray"}/>
           ),
         }}
       />
@@ -49,5 +61,7 @@ export default function Layout() {
         }}
       />
     </Tabs>
+    </AuthProvider>
+   
   );
 }

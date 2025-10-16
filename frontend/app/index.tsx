@@ -3,13 +3,13 @@ import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
 import Input from "components/input";
 import { useAuth } from "./context/AuthContext";
-import type { formData, fetchResponse } from "types";
+import type { formData, LoginFetchResponse } from "types";
 import useFetch from "hooks/useFetch";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { token, rango, login } = useAuth(); 
-  const { data, error, loading, fetchData } = useFetch<fetchResponse>();
+  const { data, error, loading, fetchData } = useFetch<LoginFetchResponse>();
 
   const [user, setUser] = useState<formData>({
     Email: "",

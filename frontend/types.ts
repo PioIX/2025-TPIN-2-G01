@@ -25,7 +25,7 @@ export interface UseFetchResult<T> {
   fetchData: (options: FetchOptions) => Promise<T | void>;
 }
 
-export interface fetchResponse {
+export interface LoginFetchResponse {
   mensaje: string,
   key: string,
   rango: string
@@ -38,5 +38,28 @@ export interface AuthContextType {
   logout: () => Promise<void>;
 }
 export type NavBarProps = {
-  props: string[]; 
+  props: string[];
 };
+
+
+// export type ProfesorData = {
+//   apellido:string
+//   contraseña:string
+//   correo_electronico:string
+//   id_profesor: number
+//   nombre: string
+// }
+
+
+
+export type Rol = {
+  message: string
+}
+
+export type RolMessage = {
+  apellido:string
+  contraseña:string
+  correo_electronico:string
+  id_profesor: number
+  nombre: string
+}
