@@ -45,7 +45,7 @@ export interface QrCodeProps {
   value: string
   size: number
   color: string
-  backroundColor: string
+  backgroundColor: string
   logo?: {uri:string}
   logoSize?: number
   logoBackgroundColor?: string

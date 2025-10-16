@@ -7,21 +7,19 @@ import type {QrCodeProps} from 'types';
  * 
  * @returns  
  */
-const MyQRCodeGenerator = ({value,size,color,backgroundColor }:QrCodeProps) => {
+const MyQRCodeGenerator = ({value,size,color,backgroundColor,logo,logoSize,logoBackgroundColor}:QrCodeProps) => {
   let logoFromFile = require('./path/to/your/logo.png'); // Optional: for adding a logo
-    backgroundColor = 1
   return (
     <View>
-        
-        <QRCode
-        value="https://example.com" // The data to be encoded in the QR code
-        size={props.size} // Size of the QR code in pixels
-        color="black" // Foreground color of the QR code
-        backgroundColor="white" // Background color of the QR code
-        logo={{uri: "./assets/icon.png"}} // Optional: URL for a logo
-        logoSize={30} // Size of the logo
-        logoBackgroundColor='transparent' // Background color of the logo area
-        />
+      <QRCode
+        value={value} // The data to be encoded in the QR code
+        size={size} // Size of the QR code in pixels
+        color={color} // Foreground color of the QR code
+        backgroundColor={backgroundColor} // Background color of the QR code
+        logo={logo || {uri: "./assets/icon.png"}} // Optional: URL for a logo
+        logoSize={logoSize} // Size of the logo
+        logoBackgroundColor={logoBackgroundColor}// Background color of the logo area
+      />
     </View>
   );
 };
