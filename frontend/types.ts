@@ -50,13 +50,24 @@ export type NavBarProps = {
 //   nombre: string
 // }
 
+export interface Cursos {
+  id_curso: number
+  año: number
+  division: string
+  carrera:string
+}
 
+export interface CursosProfe extends Array<Cursos> { }
 
 export type Rol = {
-  message: string
+  message: object
+}
+export interface message {
+  
 }
 
 export type RolMessage = {
+  message: RolMessage
   apellido:string
   contraseña:string
   correo_electronico:string

@@ -118,6 +118,17 @@ app.post("/usuarioLog",verificarJWT,async function(req,res) {
   }
 })
 
+app.get('/cursos', async function (req,res) {
+  const cursos = await realizarQuery (
+  `SELECT DISTINCT Cursos.id_curso, Cursos.año, Cursos.division, Cursos.carrera FROM Profesores
+  inner join ProfesoresPorMateria on Profesores.id_profesor = ProfesoresPorMateria.id_profesor
+  inner join Materias on Materias.id_materias = ProfesoresPorMateria.id_materias
+  inner join MateriasPorCurso on Materias.id_materias = MateriasPorCurso.id_materia
+  inner join Cursos on Cursos.id_curso = MateriasPorCurso.id_curso
+  where Profesores.id_profesor = "${req.query.id_profesor}"`)
+  res.send(cursos)
+
+})
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
 });
