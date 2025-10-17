@@ -127,8 +127,14 @@ app.get('/cursos', async function (req,res) {
   inner join Cursos on Cursos.id_curso = MateriasPorCurso.id_curso
   where Profesores.id_profesor = "${req.query.id_profesor}"`)
   res.send(cursos)
-
 })
+
+app.get('/alumnos',async function (req,res) {
+  const alumnos = await realizarQuery (`
+    SELECT distinct Alumnos.apellido, Alumnos.Nombre from Alumnos
+    inner join Cursos on Alumnos.id_curso = Cursos.id_curso where Cursos.id_curso ="${req.query.id_curso}";`)
+  res.send({message:alumnos})
+  })
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
 });

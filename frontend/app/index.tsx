@@ -107,22 +107,27 @@ export default function HomeScreen() {
   }
 
   return (
-    <View className="flex-1 justify-center items-center p-6 bg-gray-100">
-      <Text className="text-red-600 text-lg mb-2">Email</Text>
+      <View className="flex-1 justify-center items-center bg-gray-100 px-6">
+    <View className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-lg">
+      <Text className="text-2xl font-bold text-center text-blue-700 mb-6">
+        Iniciar sesión
+      </Text>
+
+      <Text className="text-gray-700 text-base mb-2">Email</Text>
       <Input
         className={`w-full p-3 rounded-xl border ${
           MsgError && !validarEmail(user.Email)
             ? "border-red-500"
-            : "border-gray-800"
-        } bg-white text-black mb-3 shadow-sm`}
+            : "border-gray-400"
+        } bg-gray-50 text-black mb-4`}
         placeholder="Ingrese su email"
         value={user.Email}
         onChangeText={(text) => handleChange("Email", text)}
       />
 
-      <Text className="text-red-600 text-lg mb-2">Contraseña</Text>
+      <Text className="text-gray-700 text-base mb-2">Contraseña</Text>
       <Input
-        className="w-full p-3 rounded-xl border border-gray-800 bg-white text-black mb-6"
+        className="w-full p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6"
         placeholder="Ingrese su contraseña"
         secureTextEntry
         value={user.Contraseña}
@@ -130,20 +135,17 @@ export default function HomeScreen() {
       />
 
       <Pressable
-        className="bg-blue-600 py-4 px-12 rounded-xl shadow-md"
+        className={`bg-blue-600 py-3 rounded-xl shadow-md ${
+          loading ? "opacity-70" : "opacity-100"
+        }`}
         onPress={handlePress}
-        disabled={loading} 
+        disabled={loading}
       >
-        {({ pressed }) => (
-          <Text
-            className={`text-white text-center font-semibold text-base ${
-              pressed ? "opacity-70" : "opacity-100"
-            }`}
-          >
-            {loading ? "Cargando..." : "Iniciar sesión"}
-          </Text>
-        )}
+        <Text className="text-white text-center font-semibold text-base">
+          {loading ? "Cargando..." : "Iniciar sesión"}
+        </Text>
       </Pressable>
     </View>
+  </View>
   );
 }
