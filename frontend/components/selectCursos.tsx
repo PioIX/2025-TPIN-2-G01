@@ -4,7 +4,7 @@ import { CursosProfe } from 'types';
 
 interface SelectProps {
   props: CursosProfe;
-  value?: string | number;
+  value?: string | number| null ;
   onValueChange?: (value: string | number, index: number) => void;
 }
 
@@ -16,7 +16,7 @@ export const SelectCursos = ({ props, value, onValueChange }: SelectProps) => {
       
       value={value}
       onValueChange={(val, index) => {
-        if (onValueChange) onValueChange(val, index); 
+        if (onValueChange) onValueChange(val, index);
       }}
       placeholder={{
         label: 'Seleccione un curso', 
