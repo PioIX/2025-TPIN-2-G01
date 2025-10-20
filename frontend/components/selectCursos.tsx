@@ -17,7 +17,9 @@ export const SelectCursos = ({ props, value, onValueChange }: SelectProps) => {
       value={value}
       onValueChange={(val, index) => {
         if (onValueChange) onValueChange(val, index);
+        
       }}
+      
       placeholder={{
         label: 'Seleccione un curso', 
         value: null,
