@@ -9,6 +9,9 @@ export default function AlumnosHome() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
+  const GenerarQr = ()=>{
+    console.log()
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -35,7 +38,7 @@ export default function AlumnosHome() {
         <Text>Cerrar sesión</Text>
       </Pressable>
         <QRCode></QRCode>
-        <Button type></Button>
+        <Button label='Generar Qr' onPress={GenerarQr}></Button>
     </view>
   );
 }
