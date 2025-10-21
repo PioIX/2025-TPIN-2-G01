@@ -92,3 +92,5 @@ export interface Alumno {
 export interface Asistencia {
   message: string
 }
+
+

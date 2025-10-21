@@ -138,10 +138,40 @@ app.get('/alumnos',async function (req,res) {
 })
 
 app.post('/asistencia', async function (req,res) {
-  req.body.map((elemento)=>{
+  const año = new Date().getFullYear()
+  const mes = new Date().getMonth()
+  const date = new Date().getDate()
+  const hour = new Date().getHours()
+  const minute = new Date().getMinutes()
+  const seconds = new Date().getSeconds()
+
+  let rawdata = fs.readFileSync('./asistencia.json');
+  let horario = JSON.parse(rawdata);
+  horario = new Date(horario.horario_llegada)
+  console.log(horario);
+  const fecha = `${año}-${mes}-${date} ${hour}:${minute}:${seconds}`
+  let horas = new Date(fecha).getHours()
+  let minutos = new Date(fecha).getMinutes()
+  
+
+  req.body.map(async (elemento)=>{
     console.log(elemento)
     if (elemento.ausente) {
-      console.log({alumnos: `estoy ausente ${elemento.id}`})
+      console.log({alumnos: `estoy ausente ${elemento.nombre}`})
+      const falta = await realizarQuery(`SELECT * FROM Asistencias WHERE id_alumno = ${elemento.id} && horario_de_entrada = "${fecha}"`)
+      if(!falta){
+        if (horas > horario.getHours()) {
+          await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+            VALUES (${fecha}, ${elemento.id}, 1, FALSE)`)
+        } else {
+          if (minutos > horario.getMinutes()) {
+            await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+            VALUES (${fecha}, ${elemento.id}, 1, FALSE)`)
+          }
+        }
+        // await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+        //   VALUES (${fecha}, ${elemento.id}, , FALSE)`)
+      }
     }
   })
   res.send({message:"asistencia recibida con exito"})

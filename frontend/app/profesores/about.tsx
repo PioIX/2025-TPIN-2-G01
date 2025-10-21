@@ -6,8 +6,7 @@ export default function About(){
     return (
         <>
             <View>
-                <Pressable onPress={logout}>
-                </Pressable>
+
             </View>
         </>
     )

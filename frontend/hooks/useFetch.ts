@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FetchOptions, UseFetchResult } from "types";
 
+// revisar la t y cambiarla por una union
 export default function useFetch<T = unknown>(): UseFetchResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
