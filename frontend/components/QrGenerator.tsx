@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import type {QrCodeProps} from 'types';
 
 /**
- * @param value lo que dice el QR
+ * @param {string} value   lo que dice el QR
  * @param size tamaño
  * @param color color de la mitad de loa cuadrados
  * @param backgroundColor color de la otra mitad
@@ -15,7 +15,6 @@ import type {QrCodeProps} from 'types';
  * @returns qrCode
  */
 const MyQRCodeGenerator = ({value,size,color,backgroundColor,logo,logoSize,logoBackgroundColor}:QrCodeProps) => {
-  let logoFromFile = require('./path/to/your/logo.png'); // Optional: for adding a logo
   return (
     <View>
       <QRCode
@@ -23,8 +22,8 @@ const MyQRCodeGenerator = ({value,size,color,backgroundColor,logo,logoSize,logoB
         size={size} // Size of the QR code in pixels
         color={color} // Foreground color of the QR code
         backgroundColor={backgroundColor} // Background color of the QR code
-        logo={logo || {uri: "./assets/icon.png"}} // Optional: URL for a logo
-        logoSize={logoSize} // Size of the logo
+        logo={logo || {uri: "./assets/placeholder"}} // Optional: URL for a logo
+        logoSize={logoSize || 2} // Size of the logo
         logoBackgroundColor={logoBackgroundColor}// Background color of the logo area
       />
     </View>
