@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import { createServer } from "node:http";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
+import fs from "fs";
 var app = express();
 var port = process.env.PORT || 4000;
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -134,7 +135,17 @@ app.get('/alumnos',async function (req,res) {
     SELECT distinct Alumnos.apellido, Alumnos.Nombre from Alumnos
     inner join Cursos on Alumnos.id_curso = Cursos.id_curso where Cursos.id_curso ="${req.query.id_curso}";`)
   res.send({message:alumnos})
+})
+
+app.post('/asistencia', async function (req,res) {
+  req.body.map((elemento)=>{
+    console.log(elemento)
+    if (elemento.ausente) {
+      console.log({alumnos: `estoy ausente ${elemento.id}`})
+    }
   })
+  res.send({message:"asistencia recibida con exito"})
+})
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
 });

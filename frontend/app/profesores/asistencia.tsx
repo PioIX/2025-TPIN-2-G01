@@ -19,7 +19,6 @@ export default function ProfesoresAsistencia() {
   const { fetchData: fetchCursos } = useFetch<CursosProfe>();
   const { fetchData: fetchAlumnos } = useFetch<AlumnosResponse>();
 
-  // Obtener id del profesor
   useEffect(() => {
     if (!token) return;
 
@@ -45,10 +44,8 @@ export default function ProfesoresAsistencia() {
     getProfesor();
   }, [token]);
 
-  // Obtener cursos del profesor
   useEffect(() => {
     if (!token || idProfesor === 0) return;
-
     const getCursos = async () => {
       try {
         setLoadingCursos(true);
@@ -91,7 +88,6 @@ export default function ProfesoresAsistencia() {
           nombre: `${a.Nombre ?? ''} ${a.apellido ?? ''}`.trim(),
           presente: false,
           ausente: false,
-          tarde: false,
         }));
         setAlumnos(alumnosMapped);
       } else {

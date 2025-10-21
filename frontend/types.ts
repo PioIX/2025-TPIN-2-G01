@@ -88,3 +88,7 @@ export interface Alumno {
   apellido: string;
   nombre: string;
 }
+
+export interface Asistencia {
+  message: string
+}
