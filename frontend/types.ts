@@ -86,5 +86,5 @@ export type RolMessage = {
 
 export interface Alumno {
   apellido: string;
-  Nombre: string;
+  nombre: string;
 }
