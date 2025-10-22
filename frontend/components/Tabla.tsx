@@ -26,7 +26,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({ alumnos, onSubmit }) 
 
   async function postAsistencia(data: Person[]) {
     await fetchAsistencia({
-      url: 'http://localhost:4000/asistencia',
+      url: 'http://localhost:4000/lista',
       method: 'POST',
       body: data,
     });
