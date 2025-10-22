@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import useFetch from 'hooks/useFetch';
 import Qr from 'components/QrGenerator';
@@ -9,10 +9,14 @@ export default function AlumnosHome() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
-  const [email, setEmail] = useState<any>("")
-  const [qrValue, setQrValue] =useState<string>("hola   ")
+  const [email, setEmail] = useState<string>("")
+  const [qrValue, setQrValue] = useState<string>("")
 
-  const fetchUser = async () => {
+  /**
+   * trae la info del usuario logeado
+   * @returns {message:{datosEstudiantes}}
+   */
+  async function fetchUser(): Promise<void> {
     const userData = await fetchData({
       url: 'http://localhost:4000/usuarioLog',
       method: 'POST',
@@ -21,40 +25,40 @@ export default function AlumnosHome() {
         Persona: 'alumno',
       },
     });
-    console.log(token)
-    return userData
+    setEmail(userData.message.correo_electronico)
+    console.log(typeof (userData.message.correo_electronico))
+    console.log("email", email)
   };
-    const handleLogout = async () => {
+  const handleLogout = async () => {
     await logout();
     router.replace('/');
   };
 
-  async function getUser():Promise<void> {
-    const userData = await fetchUser();
-      setEmail(userData)
-      console.log(userData);
+
+  async function generarQr(): Promise<void> {
+    await fetchUser()
+    console.log("pipo", email)
+    setQrValue(email)
+    console.log("pepe", qrValue)
   }
 
-  function generarQr():void {
-    getUser();
-    setQrValue(email)
-    console.log(email) 
-  } 
-
   return (
-    <view>
+    <View>
       <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
+        
       </Pressable>
-      <Qr  
-        value={qrValue}
-        size={128 }
-        color="#0f0f0f'"
+      {email && <Qr
+        value={"qrValue"}
+        size={256}
+        color="#0f0f0f"
         backgroundColor="#f0f0f0"
-        >
+      >
       </Qr>
-      <Button label="generar qr" onPress={()=>{generarQr()}}></Button>
-    </view>
+      }
+
+      <Button label="generar qr" onPress={() => { generarQr() }}></Button>
+    </View>
   );
 }
 

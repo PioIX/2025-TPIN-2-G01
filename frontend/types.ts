@@ -50,3 +50,13 @@ export interface QrCodeProps {
   logoSize?: number
   logoBackgroundColor?: string
 }
+
+export interface User {
+  apellido?: string;
+  contraseña?: string;
+  correo_electronico?: string;
+  id_alumno?: number;
+  id_curso?: number;
+  img_alumno?: string;
+  nombre?: string;
+}
