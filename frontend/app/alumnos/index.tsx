@@ -12,7 +12,6 @@ export default function AlumnosHome() {
   const [email, setEmail] = useState<any>("")
   const [qrValue, setQrValue] =useState<string>("hola   ")
 
-
   const fetchUser = async () => {
     const userData = await fetchData({
       url: 'http://localhost:4000/usuarioLog',
@@ -22,6 +21,7 @@ export default function AlumnosHome() {
         Persona: 'alumno',
       },
     });
+    console.log(token)
     return userData
   };
     const handleLogout = async () => {
@@ -29,19 +29,17 @@ export default function AlumnosHome() {
     router.replace('/');
   };
 
-  useEffect(() => {
-    const getUser = async () => {
-      const userData = await fetchUser();
+  async function getUser():Promise<void> {
+    const userData = await fetchUser();
       setEmail(userData)
       console.log(userData);
-    };
-    getUser();
-  }, []);
-  function generarQr():void {
-    setQrValue(email)
-    console.log(email)
-  } 
+  }
 
+  function generarQr():void {
+    getUser();
+    setQrValue(email)
+    console.log(email) 
+  } 
 
   return (
     <view>
