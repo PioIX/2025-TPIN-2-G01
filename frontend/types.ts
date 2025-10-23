@@ -40,3 +40,23 @@ export interface AuthContextType {
 export type NavBarProps = {
   props: string[]; 
 };
+
+export interface QrCodeProps {
+  value: string
+  size: number
+  color: string
+  backgroundColor: string
+  logo?: {uri:string}
+  logoSize?: number
+  logoBackgroundColor?: string
+}
+
+export interface User {
+  apellido?: string;
+  contraseña?: string;
+  correo_electronico?: string;
+  id_alumno?: number;
+  id_curso?: number;
+  img_alumno?: string;
+  nombre?: string;
+}

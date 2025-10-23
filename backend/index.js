@@ -118,6 +118,14 @@ app.post("/usuarioLog",verificarJWT,async function(req,res) {
   }
 })
 
+app.post("/getUsuarios",verificarJWT, async (req,res)=>{
+  try{
+    res.send(await realizarQuery("select * from Alumnos"))
+  }catch{
+
+  }
+})
+
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
 });

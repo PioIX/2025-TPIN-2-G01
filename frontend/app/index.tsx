@@ -29,6 +29,7 @@ export default function HomeScreen() {
           break;
         case "alumno":
           router.replace("/alumnos");
+          console.log("este es el token",token)
           break;
         case "profesor":
           router.replace("/profesores");

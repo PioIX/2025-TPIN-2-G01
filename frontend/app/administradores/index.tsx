@@ -6,6 +6,7 @@ import NavBar from 'components/navBar';
 import useFetch from 'hooks/useFetch';
 export default function AdministradorHome() {
   const menuItems = ["Inicio", "Perfil", "Ajustes"]; 
+
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
