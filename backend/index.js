@@ -43,6 +43,11 @@ app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "../../../frontend/app/chat");
 });
 
+app.get("/getAllAlumnos", async function(req,res) {
+  const result = await realizarQuery(`SELECT * FROM Alumnos`)
+  res.send(result)
+})
+
 app.get("/login", async function (req, res) {
   try {
     console.log({ usuario: req.query });
@@ -178,16 +183,27 @@ try {
     let fechaCompleta = `${año}-${mes}-${date} ${hour}:${minutes}:${seconds}`
     console.log(fecha)
     console.log(fechaCompleta)
-    req.body.map(async (elemento)=>{
-      const falta_estudiante = await realizarQuery(`SELECT date(horario_de_entrada) FROM Asistencia WHERE date(horario_de_entrada)=${fecha}`)
-      if(!falta_estudiante && elemento.ausente == true){
-        await realizarQuery(`INSERT INTO Asistencia horario_de_entrada, id_alumno, falta, esta_justificada
-        VALUES (${fechaCompleta}, ${elemento.id}, 1, FALSE)`)
+    // req.body.map(async (elemento)=>{
+    //   const falta_estudiante = await realizarQuery(`SELECT date(horario_de_entrada) FROM Asistencia WHERE date(horario_de_entrada)=${fecha}`)
+    //   if(!falta_estudiante && elemento.ausente == true){
+    //     await realizarQuery(`INSERT INTO Asistencia horario_de_entrada, id_alumno, falta, esta_justificada
+    //     VALUES (${fechaCompleta}, ${elemento.id}, 1, FALSE)`)
+    //   }
+    //   if(falta_estudiante && elemento.ausente == true){
+    //     console.log("ya esta ausente el estudiante")
+    //   } 
+    // })
+    for (let x = 0; x < req.body.length; x++) {
+      if(req.body[x].ausente){
+        const [nombre,apellido] = req.body[x].nombre.split(" ")
+        console.log(nombre, apellido)
+        const falta_estudiante = await realizarQuery(`select Asistencias.falta from Asistencias inner join Alumnos on Asistencias.id_alumno = Alumnos.id_alumno where Alumnos.nombre="${nombre}" and Alumnos.apellido ="${apellido}" and date(Asistencias.horario_de_entrada) = ${fecha}`)
+        if(falta_estudiante.length==0){
+          const id_alumno = await realizarQuery(`Select id_alumno from Alumnos where nombre = "${nombre}" and apellido = "${apellido}" `)
+          console.log(id_alumno)
+        }
       }
-      if(falta_estudiante && elemento.ausente == true){
-        console.log("ya esta ausente el estudiante")
-      } 
-    })
+    }
     res.send({message: "asistencia computada"})
 } catch (error) {
   res.send({message: `tuviste un error ${error}`})
