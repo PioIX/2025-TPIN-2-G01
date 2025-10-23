@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+
 import { Pressable, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
-import useFetch from 'hooks/useFetch';
 import Qr from 'components/QrGenerator';
+import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
 export default function AlumnosHome() {
   const { data, error, loading, fetchData } = useFetch();

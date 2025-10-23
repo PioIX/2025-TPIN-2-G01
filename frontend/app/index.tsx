@@ -18,7 +18,6 @@ export default function HomeScreen() {
 
   const [MsgError, setMsgError] = useState<string | null>(null);
 
-  // 🔹 Detecta si ya hay sesión y redirige automáticamente
   useEffect(() => {
     if (token && rango) {
       switch (rango) {
@@ -78,12 +77,12 @@ export default function HomeScreen() {
     }
 
     if (data.key && data.rango) {
-      await login(data.key, data.rango); // 🔹 Guarda token + rango en contexto
+      await login(data.key, data.rango); 
     }
 
     switch (data.rango) {
       case "owner":
-        router.push("/administradores");
+        router.push("/(administradores)");
         break;
       case "preceptor":
         router.push("/preceptores");
@@ -100,7 +99,6 @@ export default function HomeScreen() {
     }
   };
 
-  // 🔹 Mientras detecta token, mostrar "Cargando..." para evitar parpadeo
   if (token && rango) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
@@ -109,7 +107,6 @@ export default function HomeScreen() {
     );
   }
 
-  // 🔹 Pantalla de login
   return (
     <View className="flex-1 justify-center items-center p-6 bg-gray-100">
       <Text className="text-red-600 text-lg mb-2">Email</Text>
