@@ -1,29 +1,33 @@
-// app/layout.tsx
 import { Tabs } from "expo-router";
-// import { AuthProvider } from "./context/AuthContext";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function Layout() {
   return (
-    // <AuthProvider>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: "tomato",
-          tabBarInactiveTintColor: "gray",
-          tabBarStyle: { height: 60, paddingBottom: 5 },
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: "tomato",  
+        tabBarInactiveTintColor: "gray",  
+        tabBarStyle: { height: 60, paddingBottom: 5 },
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <FontAwesome
+              name="home"
+              size={24}
+              color={focused ? 'tomato' : 'gray'}  
+            />
+          ),
         }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{ title: "P1" }}
-        />
-        <Tabs.Screen
-          name="about"
-          options={{ title: "P2" }}
-        />
-      </Tabs>
-    // </AuthProvider>
-
-    // Si queremos meter más screens/páginas hay que cambiar los Tab.Screen
+      />
+      <Tabs.Screen
+        name="about"
+        options={{ title: "P2" }}
+      />
+    </Tabs>
   );
 }

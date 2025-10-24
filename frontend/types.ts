@@ -25,7 +25,7 @@ export interface UseFetchResult<T> {
   fetchData: (options: FetchOptions) => Promise<T | void>;
 }
 
-export interface fetchResponse {
+export interface LoginFetchResponse {
   mensaje: string,
   key: string,
   rango: string
@@ -38,8 +38,62 @@ export interface AuthContextType {
   logout: () => Promise<void>;
 }
 export type NavBarProps = {
-  props: string[]; 
+
+  props: string[];
 };
+
+
+// export type ProfesorData = {
+//   apellido:string
+//   contraseña:string
+//   correo_electronico:string
+//   id_profesor: number
+//   nombre: string
+// }
+
+export interface Cursos {
+  id_curso: number
+  año: number
+  division: string
+  carrera:string
+}
+
+export interface CursosProfe extends Array<Cursos> { }
+
+export type Rol = {
+  message: object
+}
+
+// export interface Alumno {
+//   id_alumno: number;
+//   id_curso: number;
+//   nombre: string;
+//   apellido: string;
+// }
+
+export interface AlumnosResponse {
+  message: Alumno[];
+}
+
+export type RolMessage = {
+  message: {
+    id_profesor: number;
+    nombre: string;
+    apellido: string;
+    correo_electronico: string;
+    contraseña: string;
+  }
+}
+
+export interface Alumno {
+  apellido: string;
+  nombre: string;
+}
+
+export interface Asistencia {
+  message: string
+}
+
 
 export interface QrCodeProps {
   value: string

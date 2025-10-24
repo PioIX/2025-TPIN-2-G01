@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import { createServer } from "node:http";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
+import fs from "fs";
 var app = express();
 var port = process.env.PORT || 4000;
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -39,7 +40,12 @@ function verificarJWT(req, res, next) {
 }
 
 app.get("/", function (req, res) {
-  res.sendFile(process.cwd() + "../../../frontend/app/chat");
+  res.send("sever running port 4000");
+});
+
+app.get("/getAllAlumnos", async function (req, res) {
+  const result = await realizarQuery(`SELECT * FROM Alumnos`);
+  res.send(result);
 });
 
 app.get("/login", async function (req, res) {
@@ -55,7 +61,7 @@ app.get("/login", async function (req, res) {
       res.send({
         mensaje: "acceso otorgado",
         key: token,
-        rango: "alumno"
+        rango: "alumno",
       });
     } else {
       let profesor = await realizarQuery(
@@ -66,26 +72,26 @@ app.get("/login", async function (req, res) {
         res.send({
           mensaje: "acceso otorgado",
           key: token,
-          rango: "profesor"
+          rango: "profesor",
         });
       } else {
         let administrador = await realizarQuery(
           `SELECT * FROM Administradores WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
         );
-        console.log(administrador)
+        console.log(administrador);
         if (administrador.length != 0) {
           const token = crearToken(administrador[0]);
-          if(administrador[0].rango=="P"){
+          if (administrador[0].rango == "P") {
             res.send({
               mensaje: "acceso otorgado",
               key: token,
-              rango: "preceptor"
+              rango: "preceptor",
             });
           } else {
-              res.send({
+            res.send({
               mensaje: "acceso otorgado",
               key: token,
-              rango: "owner"
+              rango: "owner",
             });
           }
         } else {
@@ -100,23 +106,159 @@ app.get("/login", async function (req, res) {
   }
 });
 
-app.post("/usuarioLog",verificarJWT,async function(req,res) {
-  const searchParam = req.header("Persona")
-  
-  if(searchParam == "admin" || searchParam == "preceptor"){
-    const user = await realizarQuery (`SELECT * FROM Administradores WHERE correo_electronico = "${req.user}"`)
-    console.log(user[0])
-    res.send({message:user[0]})
+app.post("/usuarioLog", verificarJWT, async function (req, res) {
+  try {
+    const searchParam = req.header("Persona");
+
+    if (searchParam == "admin" || searchParam == "preceptor") {
+      const user = await realizarQuery(
+        `SELECT * FROM Administradores WHERE correo_electronico = "${req.user}"`
+      );
+      console.log(user[0]);
+      res.send({ message: user[0] });
+    } else if (searchParam == "profesor") {
+      const user = await realizarQuery(
+        `SELECT * FROM Profesores WHERE correo_electronico = "${req.user}"`
+      );
+      res.send({ message: user[0] });
+    } else if (searchParam == "alumno") {
+      const user = await realizarQuery(
+        `SELECT * FROM Alumnos WHERE correo_electronico = "${req.user}"`
+      );
+      res.send({ message: user[0] });
+    }
+  } catch (error) {
+    res.send({ message: `tuviste un error ${error}` });
   }
-  else if(searchParam == "profesor"){
-    const user = await realizarQuery (`SELECT * FROM Profesores WHERE correo_electronico = "${req.user}"`)
-    res.send({message:user[0]})
+});
+
+app.get("/cursos", async function (req, res) {
+  try {
+    const cursos = await realizarQuery(
+      `SELECT DISTINCT Cursos.id_curso, Cursos.año, Cursos.division, Cursos.carrera FROM Profesores
+   inner join ProfesoresPorMateria on Profesores.id_profesor = ProfesoresPorMateria.id_profesor
+   inner join Materias on Materias.id_materias = ProfesoresPorMateria.id_materias
+   inner join MateriasPorCurso on Materias.id_materias = MateriasPorCurso.id_materia
+   inner join Cursos on Cursos.id_curso = MateriasPorCurso.id_curso
+   where Profesores.id_profesor = "${req.query.id_profesor}"`
+    );
+    res.send(cursos);
+  } catch (error) {
+    res.send({ message: `tuviste un error ${error}` });
   }
-  else if(searchParam == "alumno"){
-    const user = await realizarQuery (`SELECT * FROM Alumnos WHERE correo_electronico = "${req.user}"`)
-    res.send({message:user[0]})
+});
+
+app.get("/alumnos", async function (req, res) {
+  try {
+    const alumnos = await realizarQuery(`
+      SELECT distinct Alumnos.apellido, Alumnos.Nombre from Alumnos
+      inner join Cursos on Alumnos.id_curso = Cursos.id_curso where Cursos.id_curso ="${req.query.id_curso}";`);
+    res.send({ message: alumnos });
+  } catch (error) {
+    res.send({ message: `tuviste un error ${error}` });
   }
-})
+});
+
+app.post("/lista", async function (req, res) {
+  try {
+    const fecha = new Date().toISOString().slice(0, 10);
+    const fechaCompleta = new Date()
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+    console.log(fecha);
+    console.log(fechaCompleta);
+
+    for (let x = 0; x < req.body.length; x++) {
+      const alumno = req.body[x];
+      if (alumno.ausente) {
+        const [nombre, apellido] = [alumno.nombre,alumno.apellido]
+        console.log(nombre, apellido);
+
+        const falta_estudiante = await realizarQuery(`
+          SELECT Asistencias.falta
+          FROM Asistencias
+          INNER JOIN Alumnos ON Asistencias.id_alumno = Alumnos.id_alumno
+          WHERE Alumnos.nombre = "${nombre}"
+            AND Alumnos.apellido = "${apellido}"
+            AND DATE(Asistencias.horario_de_entrada) = "${fecha}"
+        `);
+
+        if (falta_estudiante.length === 0) {
+          const id_alumno = await realizarQuery(`
+            SELECT id_alumno FROM Alumnos
+            WHERE nombre = "${nombre}" AND apellido = "${apellido}"
+          `);
+
+          await realizarQuery(`
+            INSERT INTO Asistencias (horario_de_entrada, id_alumno, falta, esta_justificada)
+            VALUES ("${fechaCompleta}", ${id_alumno[0].id_alumno}, 1, FALSE)
+          `);
+
+          console.log("Falta registrada para:", nombre, apellido);
+        } else {
+          console.log(
+            `El estudiante ${nombre} ${apellido} ya tiene una falta registrada hoy.`
+          );
+        }
+      }
+    }
+
+    res.send({ message: "Asistencia computada correctamente" });
+  } catch (error) {
+    console.log(error)
+    res
+      .status(500)
+      .send({ message: `Error al registrar asistencia: ${error}` });
+  }
+});
+
+// POST PARA ASISTENCIA PRECEPTORES
+app.post("/asistencia", async function (req, res) {
+  try {
+    const rawdata = fs.readFileSync("./asistencia.json");
+    const { horario_llegada } = JSON.parse(rawdata);
+    const horario = new Date(horario_llegada);
+    const ahora = new Date();
+    const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
+    const horas = ahora.getHours();
+    const minutos = ahora.getMinutes();
+    req.body.map(async (elemento) => {
+      console.log(elemento);
+      if (elemento.ausente) {
+        console.log({ alumnos: `estoy ausente ${elemento.nombre}` });
+        const falta = await realizarQuery(
+          `SELECT * FROM Asistencias WHERE id_alumno = ${elemento.id} && horario_de_entrada = "${fecha}"`
+        );
+        if (!falta) {
+          if (horas > horario.getHours()) {
+            await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+            VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
+          } else {
+            if (horas == horario.getHours() && minutos > horario.getMinutes()) {
+              const cantidad_minutos = minutos - horario.getMinutes();
+              if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
+                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+                VALUES (${fecha}, ${elemento.id}, 0.25, FALSE)`);
+              }
+              if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
+                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+                VALUES (${fecha}, ${elemento.id}, 0.50, FALSE)`);
+              }
+              if (cantidad_minutos >= 45) {
+                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+                VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
+              }
+            }
+          }
+        }
+      }
+    });
+    res.send({ message: "asistencia recibida con exito" });
+  } catch (error) {
+    res.send({ message: `tuviste un error ${error}` });
+  }
+});
 
 app.post("/getUsuarios",verificarJWT, async (req,res)=>{
   try{

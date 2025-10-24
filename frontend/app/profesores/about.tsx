@@ -1,11 +1,21 @@
-import { Text, View } from "react-native";
-
-export default function About(){
-    return (
-        <>
-            <View>
-                <Text>culo</Text>
-            </View>
-        </>
-    )
+import { Pressable, Text, View } from 'react-native';
+import { useAuth } from 'app/context/AuthContext';
+import { useRouter } from 'expo-router';
+export default function About() {
+  const {logout } = useAuth();
+  const router = useRouter();
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/');
+  };
+  return (
+    <>
+      <Pressable onPress={handleLogout}>
+        <Text>cerrar</Text>
+      </Pressable>
+      <View>
+        <Text>hola</Text>
+      </View>
+    </>
+  );
 }
