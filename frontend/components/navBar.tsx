@@ -2,7 +2,8 @@ import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import type { NavBarProps } from "types";
 
-export default function NavBar({ props }: NavBarProps) {
+export default function NavBar({ props}: NavBarProps) {
+  
   const router = useRouter();
 
   return (
