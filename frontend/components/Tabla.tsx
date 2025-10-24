@@ -6,10 +6,12 @@ import { Asistencia } from 'types';
 
 export interface Alumno {
   id: number;
-  nombre: string;
+  nombreCompleto: string; 
 }
 
 export interface Person extends Alumno {
+  nombre: string;      
+  apellido: string;   
   presente: boolean;
   ausente: boolean;
 }
@@ -25,20 +27,36 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({ alumnos, onSubmit }) 
   const { fetchData: fetchAsistencia } = useFetch<Asistencia>();
 
   async function postAsistencia(data: Person[]) {
+    const payload = data.map(({ id, nombre, apellido, presente, ausente }) => ({
+      id,
+      nombre,
+      apellido,
+      presente,
+      ausente,
+    }));
+
     await fetchAsistencia({
       url: 'http://localhost:4000/lista',
       method: 'POST',
-      body: data,
+      body: payload,
     });
   }
 
   useEffect(() => {
     setAttendance(
-      alumnos.map((alumno) => ({
-        ...alumno,
-        presente: false,
-        ausente: false,
-      }))
+      alumnos.map((alumno) => {
+        const partes = alumno.nombreCompleto.trim().split(' ');
+        const apellido = partes.pop() || ''; 
+        const nombre = partes.join(' '); 
+        return {
+          id: alumno.id,
+          nombreCompleto: alumno.nombreCompleto,
+          nombre,
+          apellido,
+          presente: false,
+          ausente: false,
+        };
+      })
     );
   }, [alumnos]);
 
@@ -60,7 +78,6 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({ alumnos, onSubmit }) 
     const incompletos = attendance.filter((p) => !p.presente && !p.ausente);
 
     if (incompletos.length > 0) {
-      console.log('faltan selecciones');
       alert(
         'Faltan selecciones. Por favor, marca al menos una opción (Presente o Ausente) por alumno antes de enviar.'
       );
@@ -86,7 +103,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({ alumnos, onSubmit }) 
 
       {attendance.map((person) => (
         <View key={person.id} className="flex-row items-center mb-3">
-          <Text className="w-32">{person.nombre}</Text>
+          <Text className="w-32">{person.nombreCompleto}</Text>
 
           <View className="w-24 items-center">
             <Checkbox

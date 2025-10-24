@@ -81,14 +81,22 @@ export default function ProfesoresAsistencia() {
         url: `http://localhost:4000/alumnos?id_curso=${selectedCurso}`,
         method: 'GET',
       });
-      console.log(alumnosData);
+
       if (alumnosData && 'message' in alumnosData && Array.isArray(alumnosData.message)) {
-        const alumnosMapped: AlumnoTabla[] = alumnosData.message.map((a: any, index: number) => ({
-          id: index + 1,
-          nombre: `${a.Nombre ?? ''} ${a.apellido ?? ''}`.trim(),
-          presente: false,
-          ausente: false,
-        }));
+        const alumnosMapped: AlumnoTabla[] = alumnosData.message.map((a: any, index: number) => {
+          const nombreCompleto = `${a.Nombre ?? ''} ${a.apellido ?? ''}`.trim();
+          const partes = nombreCompleto.split(' ');
+          const apellido = partes.pop() || '';
+          const nombre = partes.join(' ');
+          return {
+            id: index + 1,
+            nombreCompleto,
+            nombre,
+            apellido,
+            presente: false,
+            ausente: false,
+          };
+        });
         setAlumnos(alumnosMapped);
       } else {
         setAlumnos([]);

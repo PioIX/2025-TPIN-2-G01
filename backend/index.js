@@ -40,13 +40,13 @@ function verificarJWT(req, res, next) {
 }
 
 app.get("/", function (req, res) {
-  res.sendFile(process.cwd() + "../../../frontend/app/chat");
+  res.send("sever running port 4000");
 });
 
-app.get("/getAllAlumnos", async function(req,res) {
-  const result = await realizarQuery(`SELECT * FROM Alumnos`)
-  res.send(result)
-})
+app.get("/getAllAlumnos", async function (req, res) {
+  const result = await realizarQuery(`SELECT * FROM Alumnos`);
+  res.send(result);
+});
 
 app.get("/login", async function (req, res) {
   try {
@@ -61,7 +61,7 @@ app.get("/login", async function (req, res) {
       res.send({
         mensaje: "acceso otorgado",
         key: token,
-        rango: "alumno"
+        rango: "alumno",
       });
     } else {
       let profesor = await realizarQuery(
@@ -72,26 +72,26 @@ app.get("/login", async function (req, res) {
         res.send({
           mensaje: "acceso otorgado",
           key: token,
-          rango: "profesor"
+          rango: "profesor",
         });
       } else {
         let administrador = await realizarQuery(
           `SELECT * FROM Administradores WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
         );
-        console.log(administrador)
+        console.log(administrador);
         if (administrador.length != 0) {
           const token = crearToken(administrador[0]);
-          if(administrador[0].rango=="P"){
+          if (administrador[0].rango == "P") {
             res.send({
               mensaje: "acceso otorgado",
               key: token,
-              rango: "preceptor"
+              rango: "preceptor",
             });
           } else {
-              res.send({
+            res.send({
               mensaje: "acceso otorgado",
               key: token,
-              rango: "owner"
+              rango: "owner",
             });
           }
         } else {
@@ -106,163 +106,159 @@ app.get("/login", async function (req, res) {
   }
 });
 
-app.post("/usuarioLog",verificarJWT,async function(req,res) {
-try {
-    const searchParam = req.header("Persona")
-    
-    if(searchParam == "admin" || searchParam == "preceptor"){
-      const user = await realizarQuery (`SELECT * FROM Administradores WHERE correo_electronico = "${req.user}"`)
-      console.log(user[0])
-      res.send({message:user[0]})
-    }
-    else if(searchParam == "profesor"){
-      const user = await realizarQuery (`SELECT * FROM Profesores WHERE correo_electronico = "${req.user}"`)
-      res.send({message:user[0]})
-    }
-    else if(searchParam == "alumno"){
-      const user = await realizarQuery (`SELECT * FROM Alumnos WHERE correo_electronico = "${req.user}"`)
-      res.send({message:user[0]})
-    }
-} catch (error) {
-    res.send({message: `tuviste un error ${error}`})
-}
-})
+app.post("/usuarioLog", verificarJWT, async function (req, res) {
+  try {
+    const searchParam = req.header("Persona");
 
-app.get('/cursos', async function (req,res) {
- try {
-   const cursos = await realizarQuery (
-   `SELECT DISTINCT Cursos.id_curso, Cursos.año, Cursos.division, Cursos.carrera FROM Profesores
+    if (searchParam == "admin" || searchParam == "preceptor") {
+      const user = await realizarQuery(
+        `SELECT * FROM Administradores WHERE correo_electronico = "${req.user}"`
+      );
+      console.log(user[0]);
+      res.send({ message: user[0] });
+    } else if (searchParam == "profesor") {
+      const user = await realizarQuery(
+        `SELECT * FROM Profesores WHERE correo_electronico = "${req.user}"`
+      );
+      res.send({ message: user[0] });
+    } else if (searchParam == "alumno") {
+      const user = await realizarQuery(
+        `SELECT * FROM Alumnos WHERE correo_electronico = "${req.user}"`
+      );
+      res.send({ message: user[0] });
+    }
+  } catch (error) {
+    res.send({ message: `tuviste un error ${error}` });
+  }
+});
+
+app.get("/cursos", async function (req, res) {
+  try {
+    const cursos = await realizarQuery(
+      `SELECT DISTINCT Cursos.id_curso, Cursos.año, Cursos.division, Cursos.carrera FROM Profesores
    inner join ProfesoresPorMateria on Profesores.id_profesor = ProfesoresPorMateria.id_profesor
    inner join Materias on Materias.id_materias = ProfesoresPorMateria.id_materias
    inner join MateriasPorCurso on Materias.id_materias = MateriasPorCurso.id_materia
    inner join Cursos on Cursos.id_curso = MateriasPorCurso.id_curso
-   where Profesores.id_profesor = "${req.query.id_profesor}"`)
-   res.send(cursos)
- } catch (error) {
-    res.send({message: `tuviste un error ${error}`})
- }
-})
+   where Profesores.id_profesor = "${req.query.id_profesor}"`
+    );
+    res.send(cursos);
+  } catch (error) {
+    res.send({ message: `tuviste un error ${error}` });
+  }
+});
 
-app.get('/alumnos',async function (req,res) {
-try {
-    const alumnos = await realizarQuery (`
+app.get("/alumnos", async function (req, res) {
+  try {
+    const alumnos = await realizarQuery(`
       SELECT distinct Alumnos.apellido, Alumnos.Nombre from Alumnos
-      inner join Cursos on Alumnos.id_curso = Cursos.id_curso where Cursos.id_curso ="${req.query.id_curso}";`)
-    res.send({message:alumnos})
-} catch (error) {
-    res.send({message: `tuviste un error ${error}`})
-}
-})
+      inner join Cursos on Alumnos.id_curso = Cursos.id_curso where Cursos.id_curso ="${req.query.id_curso}";`);
+    res.send({ message: alumnos });
+  } catch (error) {
+    res.send({ message: `tuviste un error ${error}` });
+  }
+});
 
-app.post('/lista', async function (req,res) {
-try {
-    let año = new Date().getFullYear()
-    let mes = new Date().getMonth()+1
-    if (mes < 10) {
-      mes = "0" + mes
-    }
-    let date = new Date().getDate()
-    if (date < 10) {
-      date = "0" + date
-    }
-  
-    let hour = new Date().getHours()
-    if (hour < 10) {
-      hour = "0" + hour
-    }
-    let minutes = new Date().getMinutes()
-    if (minutes < 10) {
-      minutes = "0" + minutes
-    }
-    let seconds = new Date().getSeconds()
-    if (seconds < 10) {
-      seconds = "0" + seconds
-    }
-  
-    let fecha = `${año}-${mes}-${date}`
-    let fechaCompleta = `${año}-${mes}-${date} ${hour}:${minutes}:${seconds}`
-    console.log(fecha)
-    console.log(fechaCompleta)
-    // req.body.map(async (elemento)=>{
-    //   const falta_estudiante = await realizarQuery(`SELECT date(horario_de_entrada) FROM Asistencia WHERE date(horario_de_entrada)=${fecha}`)
-    //   if(!falta_estudiante && elemento.ausente == true){
-    //     await realizarQuery(`INSERT INTO Asistencia horario_de_entrada, id_alumno, falta, esta_justificada
-    //     VALUES (${fechaCompleta}, ${elemento.id}, 1, FALSE)`)
-    //   }
-    //   if(falta_estudiante && elemento.ausente == true){
-    //     console.log("ya esta ausente el estudiante")
-    //   } 
-    // })
+app.post("/lista", async function (req, res) {
+  try {
+    const fecha = new Date().toISOString().slice(0, 10);
+    const fechaCompleta = new Date()
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+    console.log(fecha);
+    console.log(fechaCompleta);
+
     for (let x = 0; x < req.body.length; x++) {
-      if(req.body[x].ausente){
-        const [nombre,apellido] = req.body[x].nombre.split(" ")
-        console.log(nombre, apellido)
-        const falta_estudiante = await realizarQuery(`select Asistencias.falta from Asistencias inner join Alumnos on Asistencias.id_alumno = Alumnos.id_alumno where Alumnos.nombre="${nombre}" and Alumnos.apellido ="${apellido}" and date(Asistencias.horario_de_entrada) = ${fecha}`)
-        if(falta_estudiante.length==0){
-          const id_alumno = await realizarQuery(`Select id_alumno from Alumnos where nombre = "${nombre}" and apellido = "${apellido}" `)
-          console.log(id_alumno)
+      const alumno = req.body[x];
+      if (alumno.ausente) {
+        const [nombre, apellido] = [alumno.nombre,alumno.apellido]
+        console.log(nombre, apellido);
+
+        const falta_estudiante = await realizarQuery(`
+          SELECT Asistencias.falta
+          FROM Asistencias
+          INNER JOIN Alumnos ON Asistencias.id_alumno = Alumnos.id_alumno
+          WHERE Alumnos.nombre = "${nombre}"
+            AND Alumnos.apellido = "${apellido}"
+            AND DATE(Asistencias.horario_de_entrada) = "${fecha}"
+        `);
+
+        if (falta_estudiante.length === 0) {
+          const id_alumno = await realizarQuery(`
+            SELECT id_alumno FROM Alumnos
+            WHERE nombre = "${nombre}" AND apellido = "${apellido}"
+          `);
+
+          await realizarQuery(`
+            INSERT INTO Asistencias (horario_de_entrada, id_alumno, falta, esta_justificada)
+            VALUES ("${fechaCompleta}", ${id_alumno[0].id_alumno}, 1, FALSE)
+          `);
+
+          console.log("Falta registrada para:", nombre, apellido);
+        } else {
+          console.log(
+            `El estudiante ${nombre} ${apellido} ya tiene una falta registrada hoy.`
+          );
         }
       }
     }
-    res.send({message: "asistencia computada"})
-} catch (error) {
-  res.send({message: `tuviste un error ${error}`})
-}
-})
 
-// POST PARA ASISTENCIA PRECEPTORES 
-app.post('/asistencia', async function (req,res) {
+    res.send({ message: "Asistencia computada correctamente" });
+  } catch (error) {
+    console.log(error)
+    res
+      .status(500)
+      .send({ message: `Error al registrar asistencia: ${error}` });
+  }
+});
+
+// POST PARA ASISTENCIA PRECEPTORES
+app.post("/asistencia", async function (req, res) {
   try {
-    const año = new Date().getFullYear()
-    const mes = new Date().getMonth()
-    const date = new Date().getDate()
-    const hour = new Date().getHours()
-    const minute = new Date().getMinutes()
-    const seconds = new Date().getSeconds()
-  
-    let rawdata = fs.readFileSync('./asistencia.json');
-    let horario = JSON.parse(rawdata);
-    horario = new Date(horario.horario_llegada)
-    console.log(horario);
-    const fecha = `${año}-${mes}-${date} ${hour}:${minute}:${seconds}`
-    let horas = new Date(fecha).getHours()
-    let minutos = new Date(fecha).getMinutes()
-    
-  
-    req.body.map(async (elemento)=>{
-      console.log(elemento)
+    const rawdata = fs.readFileSync("./asistencia.json");
+    const { horario_llegada } = JSON.parse(rawdata);
+    const horario = new Date(horario_llegada);
+    const ahora = new Date();
+    const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
+    const horas = ahora.getHours();
+    const minutos = ahora.getMinutes();
+    req.body.map(async (elemento) => {
+      console.log(elemento);
       if (elemento.ausente) {
-        console.log({alumnos: `estoy ausente ${elemento.nombre}`})
-        const falta = await realizarQuery(`SELECT * FROM Asistencias WHERE id_alumno = ${elemento.id} && horario_de_entrada = "${fecha}"`)
-        if(!falta){
+        console.log({ alumnos: `estoy ausente ${elemento.nombre}` });
+        const falta = await realizarQuery(
+          `SELECT * FROM Asistencias WHERE id_alumno = ${elemento.id} && horario_de_entrada = "${fecha}"`
+        );
+        if (!falta) {
           if (horas > horario.getHours()) {
             await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES (${fecha}, ${elemento.id}, 1, FALSE)`)
+            VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
           } else {
             if (horas == horario.getHours() && minutos > horario.getMinutes()) {
-              const cantidad_minutos = minutos-horario.getMinutes()
-              if(cantidad_minutos>=15 && cantidad_minutos<30){
+              const cantidad_minutos = minutos - horario.getMinutes();
+              if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
                 await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 0.25, FALSE)`)
+                VALUES (${fecha}, ${elemento.id}, 0.25, FALSE)`);
               }
-              if(cantidad_minutos>=30 && cantidad_minutos<45){
+              if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
                 await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 0.50, FALSE)`)
+                VALUES (${fecha}, ${elemento.id}, 0.50, FALSE)`);
               }
-              if(cantidad_minutos>=45){
+              if (cantidad_minutos >= 45) {
                 await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 1, FALSE)`)
+                VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
               }
             }
           }
         }
       }
-    })
-    res.send({message:"asistencia recibida con exito"})
+    });
+    res.send({ message: "asistencia recibida con exito" });
   } catch (error) {
-    res.send({message: `tuviste un error ${error}`})
+    res.send({ message: `tuviste un error ${error}` });
   }
-})
+});
 
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);

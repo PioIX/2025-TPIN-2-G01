@@ -1,30 +1,24 @@
-import { Tabs } from "expo-router";
+import { Tabs } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { AuthProvider } from "app/context/AuthContext";
+import { AuthProvider } from 'app/context/AuthContext';
+// revisar authProvider
 export default function Layout() {
   return (
-    <AuthProvider>
-
-       <Tabs
+    <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "tomato",  
-        tabBarInactiveTintColor: "gray",  
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
         tabBarStyle: { height: 60, paddingBottom: 5 },
-      }}
-    >
+      }}>
       <Tabs.Screen
         name="index"
         options={{
           title: '',
           tabBarIcon: ({ focused }) => (
-            <FontAwesome
-              name="home"
-              size={24}
-              color={focused ? 'tomato' : 'gray'}  
-            />
+            <FontAwesome name="home" size={24} color={focused ? 'tomato' : 'gray'} />
           ),
         }}
       />
@@ -33,8 +27,11 @@ export default function Layout() {
         options={{
           title: '',
           tabBarIcon: ({ focused }) => (
-            <MaterialCommunityIcons name="playlist-edit" size={24}
-            color={ focused ? "tomato" : "gray"}/>
+            <MaterialCommunityIcons
+              name="playlist-edit"
+              size={24}
+              color={focused ? 'tomato' : 'gray'}
+            />
           ),
         }}
       />
@@ -42,15 +39,14 @@ export default function Layout() {
       <Tabs.Screen
         name="about"
         options={{
-          title: "",
+          title: '',
           tabBarIcon: ({ focused }) => (
-            <Ionicons name="settings" size={24}
-            color={ focused ? "tomato" : "gray"}/>
+            <Ionicons name="settings" size={24} color={focused ? 'tomato' : 'gray'} />
           ),
         }}
       />
-      
-      <Tabs.Screen
+
+      {/* <Tabs.Screen
         name="sign-out"
         options={{
           title: "",
@@ -59,9 +55,7 @@ export default function Layout() {
             color={ focused ? "tomato" : "gray"} />
           ),
         }}
-      />
+      /> */}
     </Tabs>
-    </AuthProvider>
-   
   );
 }
