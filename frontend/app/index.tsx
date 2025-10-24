@@ -82,7 +82,7 @@ export default function HomeScreen() {
 
     switch (data.rango) {
       case "owner":
-        router.push("/(administradores)");
+        router.push("/administradores");
         break;
       case "preceptor":
         router.push("/preceptores");
