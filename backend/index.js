@@ -8,6 +8,7 @@ import { createServer } from "node:http";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
 import fs from "fs";
+import { error } from "node:console";
 var app = express();
 var port = process.env.PORT || 4000;
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -267,6 +268,19 @@ app.post("/getUsuarios",verificarJWT, async (req,res)=>{
 
   }
 })
+
+app.post("/agregarUsuarios", async function (req, res) {
+  try{
+    if (req.body.rango == "Alumno"){
+      await realizarQuery('INSERT into Alumnos nombre,apellido,curso')
+    }
+  }catch (error){
+    console.log("error al agregar usuario")
+  }
+})
+//if (select de tipo de usuario (alumno, profe, etc)) es = alumno
+//insert into Alumnos (parametros de alumno)
+//else if...
 
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
