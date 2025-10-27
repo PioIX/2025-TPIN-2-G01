@@ -22,7 +22,7 @@ interface AttendanceTableProps {
   onSubmit?: (attendance: Person[]) => void;
 }
 
-const AttendanceTable: React.FC<AttendanceTableProps> = ({ alumnos, onSubmit }) => {
+const AttendanceTable: React.FC<AttendanceTableProps> = ({alumnos, onSubmit }) => {
   const [attendance, setAttendance] = useState<Person[]>([]);
   const { fetchData: fetchAsistencia } = useFetch<Asistencia>();
 

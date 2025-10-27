@@ -8,7 +8,7 @@ import AttendanceTable, { Alumno as AlumnoTabla } from 'components/Tabla';
 
 export default function ProfesoresAsistencia() {
   const { token } = useAuth();
-
+  const [checked,setChecked] = useState<boolean>(false)
   const [idProfesor, setIdProfesor] = useState<number>(0);
   const [cursos, setCursos] = useState<CursosProfe>([]);
   const [selectedCurso, setSelectedCurso] = useState<string | number | null>(null);
@@ -98,6 +98,7 @@ export default function ProfesoresAsistencia() {
           };
         });
         setAlumnos(alumnosMapped);
+        setChecked(true)
       } else {
         setAlumnos([]);
       }
@@ -111,7 +112,7 @@ export default function ProfesoresAsistencia() {
     <View className="flex-1 items-center justify-center bg-gray-100 px-6">
       {loadingCursos ? (
         <Text>Cargando cursos...</Text>
-      ) : cursos.length > 0 && alumnos.length === 0 ? (
+      ) : cursos.length > 0 && alumnos.length === 0  ? (
         <View className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
           <Text className="mb-6 text-center text-2xl font-bold text-blue-700">
             Página de asistencia
@@ -132,9 +133,17 @@ export default function ProfesoresAsistencia() {
             <Text className="text-center text-base font-semibold text-white">Buscar Curso</Text>
           </Pressable>
         </View>
-      ) : alumnos.length > 0 ? (
+      ) : alumnos.length > 0 && checked ? (
         <ScrollView className="mt-6 w-full">
           <AttendanceTable alumnos={alumnos} />
+          <Pressable
+            className="rounded-xl bg-blue-600 py-3 shadow-md active:bg-blue-700"
+            onPress={()=>{
+              setChecked(!checked)
+              setAlumnos([])
+              }}>
+            <Text className="text-center text-base font-semibold text-white">Cancelar</Text>
+          </Pressable>
         </ScrollView>
       ) : (
         <Text>No hay cursos disponibles.</Text>
