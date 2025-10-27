@@ -38,8 +38,10 @@ export interface AuthContextType {
   logout: () => Promise<void>;
 }
 export type NavBarProps = {
-
   props: string[];
+  styleView?: {}
+  stylePresable?: {}
+  styleText?: {}
 };
 
 
