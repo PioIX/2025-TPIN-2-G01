@@ -3,6 +3,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 export default function Layout() {
   return (
     <Tabs
@@ -27,6 +28,15 @@ export default function Layout() {
           title: '',
           tabBarIcon: ({ focused }) => (
            <MaterialIcons name="qr-code-scanner" size={24} color={focused ? 'tomato' : 'gray'} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="datosAlumno"
+        options={{
+          title: '',
+          tabBarIcon: ({ focused }) => (
+           <AntDesign name="contacts" size={24} color={focused ? 'tomato' : 'gray'} />
           ),
         }}
       />
