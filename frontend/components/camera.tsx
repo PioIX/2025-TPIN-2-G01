@@ -24,9 +24,9 @@ export default function Scanner() {
   }
 
   return (
-    <View className="flex-1 justify-center">
-      <CameraView className="flex-1" facing={facing} />
-      <View className="absolute bottom-16 flex-row bg-transparent w-full px-16">
+    <View className="flex-1 bg-black">
+      <CameraView className="absolute top-0 left-0 right-0 bottom-0" facing={facing} />
+      <View className="absolute bottom-16 flex-row w-full px-16">
         <TouchableOpacity className="flex-1 items-center" onPress={toggleCameraFacing}>
           <Text className="text-2xl font-bold text-white">Flip Camera</Text>
         </TouchableOpacity>
