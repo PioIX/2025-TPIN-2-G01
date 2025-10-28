@@ -353,6 +353,27 @@ app.delete("/borrarUsuarios", async function (req, res) {
 
 })
 
+app.get("/traerAsistencias", async function (req, res) {
+  try{
+    const result = await realizarQuery('SELECT date(horario_de_entrada), falta from Asistencias where falta>0')
+    res.send({message: result})
+  }catch (error){
+    res.send(error)
+    console.log("Error al conseguir las faltas")
+  }
+})
+
+app.get("/getAlumnos", async function (req, res) {
+  try{
+    const result = await realizarQuery('SELECT * from Alumnos')
+    res.send({message: result})
+  }catch(error){
+    res.send(error)
+    console.log("Error al traer alumnos")
+  }
+  
+})
+
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
 });
