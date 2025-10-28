@@ -275,53 +275,55 @@ app.post("/agregarUsuarios", async function (req, res) {
       case "Alumno":
         await realizarQuery(`INSERT into Alumnos (id_curso, nombre, apellido, img_alumno, correo_electronico, contraseña)
         VALUES (${req.body.id_curso}, '${req.body.nombre}', '${req.body.apellido}', '${req.body.img_alumno}', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
-        res.send({message:"Alumno agregado"})
+        res.send({ message: "Alumno agregado" })
         break
       case "Profesor":
         await realizarQuery(`INSERT into Profesores (nombre, apellido, correo_electronico, contraseña)
         VALUES ('${req.body.nombre}', '${req.body.apellido}', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
-        res.send({message:"Profesor agregado"})
+        res.send({ message: "Profesor agregado" })
         break
       case "Preceptor":
-        await realizarQuery(`INSERT into Administradores (nombre, rango, correo_electronico, contraseña)
-        VALUES ('${req.body.nombre}', 'P', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
-        res.send({message:"Preceptor agregado"})
+        await realizarQuery(`INSERT into Administradores (nombre, apellido, rango, correo_electronico, contraseña)
+        VALUES ('${req.body.nombre}', '${req.body.apellido}', 'P', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
+        res.send({ message: "Preceptor agregado" })
         break
       case "Owner":
-        await realizarQuery(`INSERT into Administradores (nombre, rango, correo_electronico, contraseña)
-        VALUES ('${req.body.nombre}', 'O', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
-        res.send({message:"Owner agregado"})
+        await realizarQuery(`INSERT into Administradores (nombre, apellido, rango, correo_electronico, contraseña)
+        VALUES ('${req.body.nombre}', '${req.body.apellido}', 'O', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
+        res.send({ message: "Owner agregado" })
         break
       default:
-        res.send({message:"Rango no encontrado"})
+        res.send({ message: "Rango no encontrado" })
         break
     }
   } catch (error) {
+    res.send(error)
     console.log("error al agregar usuario")
   }
 })
 
-app.post("/actualizarUsuarios", async function (req, res){
-  try{
+app.post("/actualizarUsuarios", async function (req, res) {
+  try {
     switch (req.body.rango) {
       case "Alumno":
-        await realizarQuery(`UPDATE Alumnos SET(id_curso=${req.body.id_curso}, nombre=${req.body.nombre}, apellido=${req.body.apellido}, img_alumno=${req.body.img_alumno}, correo_electronico=${req.body.correo_electronico}, contraseña=${req.body.contraseña}) where (id_alumno = ${req.body.id})`)
-        res.send({message:"Alumno actualizado"})
+        await realizarQuery(`UPDATE Alumnos SET(id_curso='${req.body.id_curso}', nombre='${req.body.nombre}', apellido='${req.body.apellido}', img_alumno='${req.body.img_alumno}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_alumno = ${req.body.id})`)
+        res.send({ message: "Alumno actualizado" })
         break
       case "Profesor":
-        await realizarQuery(`UPDATE Profesores SET(nombre=${req.body.nombre}, apellido=${req.body.apellido}, correo_electronico=${req.body.correo_electronico}, contraseña=${req.body.contraseña}) where (id_profesor = ${req.body.id})`)
-        res.send({message:"Profesor actualizado"})
+        await realizarQuery(`UPDATE Profesores SET(nombre='${req.body.nombre}', apellido='${req.body.apellido}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_profesor = ${req.body.id})`)
+        res.send({ message: "Profesor actualizado" })
         break
-      case ("Preceptor"||"Owner"):
-        await realizarQuery(`UPDATE Administradores SET(nombre=${req.body.nombre}, rango=${req.body.rango}, correo_electronico=${req.body.correo_electronico}, contraseña=${req.body.contraseña}) where (id_adminstrador = ${req.body.id})`)
-        res.send({message:"Administrador actualizado"})
+      case ("Preceptor" || "Owner"):
+        await realizarQuery(`UPDATE Administradores SET(nombre='${req.body.nombre}', apellido='${req.body.apellido}' rango='${req.body.rango}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_adminstrador = ${req.body.id})`)
+        res.send({ message: "Administrador actualizado" })
         break
       default:
-        res.send({message:"Usuario no encontrado"})
+        res.send({ message: "Usuario no encontrado" })
         break
     }
-  }catch{
-
+  } catch (error) {
+    res.send(error)
+    console.log("error al actualizar usuario")
   }
 })
 
@@ -330,21 +332,22 @@ app.delete("/borrarUsuarios", async function (req, res) {
     switch (req.body.rango) {
       case "Alumno":
         await realizarQuery(`DELETE from Alumnos where (id_alumno = ${req.body.id})`)
-        res.send({message:"Alumno borrado"})
+        res.send({ message: "Alumno borrado" })
         break
       case "Profesor":
         await realizarQuery(`DELETE from Profesores where (id_profesor = ${req.body.id})`)
-        res.send({message:"Profesor borrado"})
+        res.send({ message: "Profesor borrado" })
         break
-      case ("Preceptor"||"Owner"):
+      case ("Preceptor" || "Owner"):
         await realizarQuery(`DELETE from Administradores where (id_adminsitrador = ${req.body.id})`)
-        res.send({message:"Administrador borrado"})
+        res.send({ message: "Administrador borrado" })
         break
       default:
-        res.send({message:"Usuario no encontrado"})
+        res.send({ message: "Usuario no encontrado" })
         break
     }
   } catch (error) {
+    res.send(error)
     console.log("error al borrar usuario")
   }
 
