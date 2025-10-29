@@ -11,25 +11,26 @@ export default function AlumnosHome() {
   const router = useRouter();
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
+  const 
   const [qrValue, setQrValue] = useState<string>("")
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await fetchData({
+        url: 'http://localhost:4000/usuarioLog',
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Persona: 'alumno',
+        },
+      });
+    };
+  }, [])
 
   /**
    * trae la info del usuario logeado
    * @returns {message:{datosEstudiantes}}
    */
-  async function fetchUser(): Promise<void> {
-    const userData = await fetchData({
-      url: 'http://localhost:4000/usuarioLog',
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Persona: 'alumno',
-      },
-    });
-    setEmail(userData.message.correo_electronico)
-    console.log(typeof (userData.message.correo_electronico))
-    console.log("email", email)
-  };
+
   const handleLogout = async () => {
     await logout();
     router.replace('/');
@@ -47,10 +48,10 @@ export default function AlumnosHome() {
     <View>
       <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
-        
+
       </Pressable>
       {email && <Qr
-        value={"qrValue"}
+        value={""}
         size={256}
         color="#0f0f0f"
         backgroundColor="#f0f0f0"
@@ -62,7 +63,4 @@ export default function AlumnosHome() {
     </View>
   );
 }
-
-
-
 // const { token, rango, logout } = useAuth();
