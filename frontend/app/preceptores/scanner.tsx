@@ -1,14 +1,26 @@
 import { useState } from "react";
 import { Text, View, TouchableOpacity, Alert } from "react-native";
 import Scanner from "components/camera";
-
+import { useSocket } from "hooks/useSocket";
+import { useEffect } from "react";
 export default function App() {
   const [scanning, setScanning] = useState(false);
   const [scannedData, setScannedData] = useState<string | null>(null);
+  const { socket, isConnected } = useSocket();
+  
+  function saludar(){
+    socket?.emit("pingAll", { msg: "Hola desde mi compu" });  
+  }
+
+  useEffect(() => {
+  if (!socket) return;
+    socket.on("pingAll", (data)=>Alert.alert(data))
+  }, [socket]);
 
   const handleScan = (data: string) => {
     setScannedData(data);
     setScanning(false); 
+    saludar()
     alert(`QR Escaneado ${data}`);
   };
 

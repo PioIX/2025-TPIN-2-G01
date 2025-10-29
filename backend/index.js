@@ -3,11 +3,11 @@ import bodyParser from "body-parser";
 import { realizarQuery } from "./modulos/mysql.js";
 import cors from "cors";
 import logger from "morgan";
-import { Server } from "socket.io";
-import { createServer } from "node:http";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
 import fs from "fs";
+import session from 'express-session';
+import { Server } from 'socket.io';  
 var app = express();
 var port = process.env.PORT || 4000;
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,6 +19,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
+const sessionMiddleware = session({
+  secret: "supersarasa",
+  resave: false,
+  saveUninitialized: false
+});
+app.use(sessionMiddleware)  ;
 function verificarJWT(req, res, next) {
   let token = req.header(process.env.TOKEN_HEADER_KEY);
   if (!token) {
@@ -38,6 +44,50 @@ function verificarJWT(req, res, next) {
     return res.status(401).send("Token inválido");
   }
 }
+
+const server = app.listen(port, () => {
+	console.log(`Servidor  corriendo en http://localhost:${port}/`);
+});;
+
+const io = new Server(server, {
+    cors: {
+        origin: "*", 
+        methods: ["GET", "POST", "PUT", "DELETE"],  	
+        credentials: true                           	
+    }
+});
+
+
+
+io.use((socket, next) => {
+	sessionMiddleware(socket.request, {}, next);
+});
+io.on("connection", (socket) => {
+	const req = socket.request;
+
+	socket.on('joinRoom', data => {
+		console.log("🚀 ~ io.on ~ req.session.room:", req.session.room)
+		if (req.session.room != undefined && req.session.room.length > 0)
+			socket.leave(req.session.room);
+		req.session.room = data.room;
+		socket.join(req.session.room);
+
+		io.to(req.session.room).emit('chat-messages', { user: req.session.user, room: req.session.room });
+	});
+
+	socket.on('pingAll', data => {
+		console.log("PING ALL: ", data);
+		io.emit('pingAll', { event: "Ping to all", message: data });
+	});
+
+	socket.on('sendMessage', data => {
+		io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data });
+	});
+
+	socket.on('disconnect', () => {
+		console.log("Disconnect");
+	})
+});
 
 app.get("/", function (req, res) {
   res.send("sever running port 4000");
@@ -268,6 +318,3 @@ app.post("/getUsuarios",verificarJWT, async (req,res)=>{
   }
 })
 
-app.listen(port, function () {
-  console.log(`Server running in http://localhost:${port}`);
-});
