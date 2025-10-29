@@ -14,7 +14,10 @@ export default function App() {
 
   useEffect(() => {
   if (!socket) return;
-    socket.on("pingAll", (data)=>Alert.alert(data))
+    socket.on("pingAll", (generico)=>{
+      // Alert.alert(generico.message)
+      Alert.alert(generico.message.msg)
+    })
   }, [socket]);
 
   const handleScan = (data: string) => {

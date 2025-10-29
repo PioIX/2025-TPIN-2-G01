@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 // localhost:4000
-//  https://forty-cycles-cough.loca.lt
+
 const useSocket = (
   options = { withCredentials: false },
-  serverUrl = "wss://forty-cycles-cough.loca.lt/"
+  serverUrl = "wss://chilly-ants-marry.loca.lt/"
 ) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
