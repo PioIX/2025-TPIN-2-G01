@@ -68,6 +68,7 @@ export default function HomeScreen() {
   const handleLogin = async (user: formData) => {
     const data = await fetchData({
       url: `https://fifty-moments-greet.loca.lt/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
+      url: `http://localhost:4000/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
       method: "GET",
     });
 
