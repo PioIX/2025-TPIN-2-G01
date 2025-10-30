@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { realizarQuery } from "./modulos/mysql.js";
 import cors from "cors";
-import logger from "morgan";
+import logger, { compile } from "morgan";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
 import fs from "fs";
@@ -83,6 +83,15 @@ io.on("connection", (socket) => {
 	socket.on('sendMessage', data => {
 		io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data });
 	});
+  socket.on('saludar', data=> {
+    console.log("hola celu")
+    console.log(data)
+    io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data.msg });
+  })
+  socket.on('unirme', data => { 
+    socket.join(data.value)
+    io.emit("mensajitoSala", {message: "hola"})
+  })
 
 	socket.on('disconnect', () => {
 		console.log("Disconnect");

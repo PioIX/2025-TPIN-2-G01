@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-
-import { Pressable, Text, View } from 'react-native';
+import { useSocket } from "hooks/useSocket";
+import { Pressable, Text, View, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
 import Qr from 'components/QrGenerator';
 import useFetch from 'hooks/useFetch';
@@ -12,14 +12,31 @@ export default function AlumnosHome() {
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
   const [qrValue, setQrValue] = useState<string>("")
-
+  const { socket, isConnected } = useSocket();
   /**
    * trae la info del usuario logeado
    * @returns {message:{datosEstudiantes}}
    */
+
+    useEffect(()=>{
+      metermeSala()
+    },[])
+    function metermeSala(){
+      socket?.emit("unirme", { value: email });  
+    }
+  
+    useEffect(() => {
+    if (!socket) return;
+      socket.on("mensajitoSala", (generico)=>{
+        // Alert.alert(generico.message)
+        Alert.alert(generico.message)
+      })
+      
+    }, [socket]);
+
   async function fetchUser(): Promise<void> {
     const userData = await fetchData({
-      url: 'http://localhost:4000/usuarioLog',
+      url: 'http://all-books-lead.loca.lt/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -44,7 +61,7 @@ export default function AlumnosHome() {
   }
 
   return (
-    <View>
+     <View className="flex-1 items-center justify-center bg-white">
       <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
         

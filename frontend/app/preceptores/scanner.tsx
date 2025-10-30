@@ -9,15 +9,17 @@ export default function App() {
   const { socket, isConnected } = useSocket();
   
   function saludar(){
-    socket?.emit("pingAll", { msg: "Hola desde mi compu" });  
+    console.log("entro")
+    socket?.emit("saludar", { msg: "Hola desde mi compu" });  
   }
 
   useEffect(() => {
   if (!socket) return;
-    socket.on("pingAll", (generico)=>{
+    socket.on("saludar", (generico)=>{
       // Alert.alert(generico.message)
       Alert.alert(generico.message.msg)
     })
+    
   }, [socket]);
 
   const handleScan = (data: string) => {
