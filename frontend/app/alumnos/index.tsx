@@ -6,25 +6,34 @@ import { useEffect, useState } from 'react';
 import Qr from 'components/QrGenerator';
 import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
+import { serializableMappingCache } from 'react-native-worklets';
+import { Alumno } from 'types';
 export default function AlumnosHome() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
-  const 
+  const [userData,setData] = useState<Alumno>()
   const [qrValue, setQrValue] = useState<string>("")
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUser = async ():Promise<void> => {
       const userData = await fetchData({
         url: 'http://localhost:4000/usuarioLog',
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
           Persona: 'alumno',
-        },
+        }
       });
+      console.log(userData)
+      setData(userData.message)
     };
+    fetchUser()
   }, [])
+  useEffect(()=>{
+    console.log(userData)
+    setQrValue(userData.email)
+  }, [userData])
 
   /**
    * trae la info del usuario logeado
@@ -36,14 +45,6 @@ export default function AlumnosHome() {
     router.replace('/');
   };
 
-
-  async function generarQr(): Promise<void> {
-    await fetchUser()
-    console.log("pipo", email)
-    setQrValue(email)
-    console.log("pepe", qrValue)
-  }
-
   return (
     <View>
       <Pressable onPress={handleLogout}>
@@ -51,7 +52,7 @@ export default function AlumnosHome() {
 
       </Pressable>
       {email && <Qr
-        value={""}
+        value={qrValue}
         size={256}
         color="#0f0f0f"
         backgroundColor="#f0f0f0"

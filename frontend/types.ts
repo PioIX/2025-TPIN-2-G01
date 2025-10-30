@@ -66,12 +66,13 @@ export type Rol = {
   message: object
 }
 
-// export interface Alumno {
-//   id_alumno: number;
-//   id_curso: number;
-//   nombre: string;
-//   apellido: string;
-// }
+export interface Alumno {
+  id_alumno: number;
+  id_curso: number;
+  nombre: string;
+  apellido: string;
+  email: string;
+}
 
 export interface AlumnosResponse {
   message: Alumno[];
