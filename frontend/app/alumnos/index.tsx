@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Qr from 'components/QrGenerator';
 import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function AlumnosHome() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function AlumnosHome() {
 
   async function fetchUser(): Promise<void> {
     const userData = await fetchData({
-      url: 'http://all-books-lead.loca.lt/usuarioLog',
+      url: 'http://huge-streets-brake.loca.lt/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -61,22 +62,25 @@ export default function AlumnosHome() {
   }
 
   return (
+    <SafeAreaProvider className=''>
+
      <View className="flex-1 items-center justify-center bg-white">
       <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
         
       </Pressable>
       {email && <Qr
-        value={"qrValue"}
+        value={email}
         size={256}
         color="#0f0f0f"
         backgroundColor="#f0f0f0"
-      >
+        >
       </Qr>
       }
 
       <Button label="generar qr" onPress={() => { generarQr() }}></Button>
-    </View>
+      </View>
+    </SafeAreaProvider>
   );
 }
 
