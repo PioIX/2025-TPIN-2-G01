@@ -1,265 +1,265 @@
 [
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 1,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 1,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 1,
         "division": "C",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 2,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 2,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 2,
         "division": "C",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 3,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 3,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 3,
         "division": "C",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 4,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 4,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 5,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 5,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 6,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "industrial",
+        "carrera": "IND",
         "año": 6,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 1,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 1,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 2,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 2,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 3,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 3,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 4,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 4,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 5,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "informatica",
+        "carrera": "INF",
         "año": 5,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 1,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 1,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 2,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 2,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 3,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 3,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 4,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 4,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 5,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "comunicacion",
+        "carrera": "COM",
         "año": 5,
         "division": "B",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "renovables",
+        "carrera": "REN",
         "año": 4,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "renovables",
+        "carrera": "REN",
         "año": 5,
         "division": "A",
         "horario_de_entrada": "07:00:00",
         "horario_tarde": "07:25:00"
     },
     {
-        "carrera": "renovables",
+        "carrera": "REN",
         "año": 6,
         "division": "A",
         "horario_de_entrada": "07:00:00",
