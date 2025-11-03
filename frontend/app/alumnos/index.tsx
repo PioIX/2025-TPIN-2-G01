@@ -6,25 +6,29 @@ import { useEffect, useState } from 'react';
 import Qr from 'components/QrGenerator';
 import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
+import { respuestaAlumno } from 'types';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function AlumnosHome() {
-  const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
   const [qrValue, setQrValue] = useState<string>("")
   const { socket, isConnected } = useSocket();
-  /**
+  const {fetchData: fetchAlumno} = useFetch<respuestaAlumno>()
+   /**
    * trae la info del usuario logeado
    * @returns {message:{datosEstudiantes}}
    */
-
-    useEffect(()=>{
-      metermeSala()
-    },[])
     function metermeSala(){
+      console.log(email)
       socket?.emit("unirme", { value: email });  
     }
+
+    useEffect(()=>{
+      if (email != "") {
+        metermeSala()
+      }
+    }, [email])
   
     useEffect(() => {
     if (!socket) return;
@@ -36,17 +40,20 @@ export default function AlumnosHome() {
     }, [socket]);
 
   async function fetchUser(): Promise<void> {
-    const userData = await fetchData({
-      url: 'http://huge-streets-brake.loca.lt/usuarioLog',
+    const userData = await fetchAlumno({
+      url: 'http://localhost:4000/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         Persona: 'alumno',
       },
     });
-    setEmail(userData.message.correo_electronico)
-    console.log(typeof (userData.message.correo_electronico))
-    console.log("email", email)
+    console.log(userData?.message)
+    if (userData?.message?.correo_electronico) {
+      setEmail(userData.message.correo_electronico)
+      console.log(typeof (userData.message.correo_electronico))
+      console.log("email", email)
+    }
   };
   const handleLogout = async () => {
     await logout();
@@ -55,10 +62,8 @@ export default function AlumnosHome() {
 
 
   async function generarQr(): Promise<void> {
-    await fetchUser()
-    console.log("pipo", email)
-    setQrValue(email)
-    console.log("pepe", qrValue)
+    await fetchUser().then()
+    
   }
 
   return (

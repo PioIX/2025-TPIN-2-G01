@@ -90,6 +90,7 @@ io.on("connection", (socket) => {
   })
   socket.on('unirme', data => { 
     socket.join(data.value)
+    console.log(data)
     io.emit("mensajitoSala", {message: "hola"})
   })
 

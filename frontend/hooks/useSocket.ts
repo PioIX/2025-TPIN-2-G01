@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 
 const useSocket = (
   options = { withCredentials: false },
-  serverUrl = "wss://huge-streets-brake.loca.lt/"
+  serverUrl = "ws://localhost:4000/"
 ) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
