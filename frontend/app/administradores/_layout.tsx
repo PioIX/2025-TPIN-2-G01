@@ -25,8 +25,12 @@ export default function Layout() {
         }}
       />
       <Tabs.Screen
-        name="about"
-        options={{ title: "P2" }}
+        name="funciones"
+        options={{ title: "funciones" }}
+      />
+      <Tabs.Screen
+        name="cerrar sesion"
+        options={{ title: "cerrar sesion" }}
       />
     </Tabs>
   );

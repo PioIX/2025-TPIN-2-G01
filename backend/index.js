@@ -55,7 +55,7 @@ app.get("/login", async function (req, res) {
     console.log(req.query.contraseña);
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
     let usuario = await realizarQuery(
-      `SELECT * FROM Alumnos WHERE correo_electronico = '${email}' AND contraseña = '${req.query.contraseña}' `
+      `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
     );
     if (usuario.length != 0) {
       const token = crearToken(usuario[0]);

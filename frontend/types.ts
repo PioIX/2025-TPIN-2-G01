@@ -39,6 +39,7 @@ export interface AuthContextType {
 }
 export type NavBarProps = {
   props: string[];
+  onPress: () => void;
   styleView?: {}
   stylePresable?: {}
   styleText?: {}
@@ -116,3 +117,8 @@ export interface User {
   img_alumno?: string;
   nombre?: string;
 }
+
+export interface ButtonProps {
+  label: string;
+  onPress?: () => void;
+};
