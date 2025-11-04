@@ -12,13 +12,14 @@ export default function AlumnosHome() {
   const router = useRouter();
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
-  const [qrValue, setQrValue] = useState<string>("")
   const { socket, isConnected } = useSocket();
   const {fetchData: fetchAlumno} = useFetch<respuestaAlumno>()
+
    /**
    * trae la info del usuario logeado
    * @returns {message:{datosEstudiantes}}
    */
+  
     function metermeSala(){
       console.log(email)
       socket?.emit("unirme", { value: email });  
@@ -62,8 +63,7 @@ export default function AlumnosHome() {
 
 
   async function generarQr(): Promise<void> {
-    await fetchUser().then()
-    
+    await fetchUser()
   }
 
   return (
@@ -91,4 +91,3 @@ export default function AlumnosHome() {
 
 
 
-// const { token, rango, logout } = useAuth();
