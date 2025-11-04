@@ -394,27 +394,27 @@ app.get("/getHorarioEntrada", (req, res) => {
   try {
     const data = JSON.parse(fs.readFileSync("./asistencia.json", "utf8"));
     console.log("🔹 Primer elemento del JSON:", data[0]);
-    let findCarrera
     const curso = data.find(
       (c) => {
+        console.log("creo q todo ",c)
+        console.log("carrera ",c.carrera)
         switch (c.carrera) {
           case "informatica":
-             findCarrera ="INF" === carrera
+             c.carrera = "INF"
             break
           case "comunicacion":
-            findCarrera = "COM" === carrera
+            c.carrera = "COM" 
             break
           case "renovables":
-            findCarrera = "REN" === carrera
+            c.carrera = "REN" 
             break
           case "industrial":
-            findCarrera = "IND" === carrera
+             c.carrera = "IND" 
             break
         }
-        findCarrera &&
-        c.año === Number(año) &&
-        c.division === division
-        console.log(findCarrera," hola")
+        return c.carrera === carrera &&
+          c.año === Number(año) &&
+          c.division === division
       }
     );
 
