@@ -393,12 +393,29 @@ app.get("/getHorarioEntrada", (req, res) => {
 
   try {
     const data = JSON.parse(fs.readFileSync("./asistencia.json", "utf8"));
-    console.log("🔹 Primer elemento del JSON:",data[0]);
+    console.log("🔹 Primer elemento del JSON:", data[0]);
+    let findCarrera
     const curso = data.find(
-      (c) =>
-        c.carrera === carrera &&
+      (c) => {
+        switch (c.carrera) {
+          case "informatica":
+             findCarrera ="INF" === carrera
+            break
+          case "comunicacion":
+            findCarrera = "COM" === carrera
+            break
+          case "renovables":
+            findCarrera = "REN" === carrera
+            break
+          case "industrial":
+            findCarrera = "IND" === carrera
+            break
+        }
+        findCarrera &&
         c.año === Number(año) &&
         c.division === division
+        console.log(findCarrera," hola")
+      }
     );
 
     console.log("🔹 Resultado de búsqueda:", curso);
