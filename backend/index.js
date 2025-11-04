@@ -355,7 +355,7 @@ app.delete("/borrarUsuarios", async function (req, res) {
 
 app.get("/traerAsistencias", async function (req, res) {
   try {
-    const result = await realizarQuery('SELECT date(horario_de_entrada), falta from Asistencias where falta>0')
+    const result = await realizarQuery('SELECT date(horario_de_entrada), falta FROM Asistencias WHERE falta>0')
     res.send({ message: result })
   } catch (error) {
     res.send(error)
@@ -388,16 +388,11 @@ app.get("/getCursoAlumno", async function (req, res) {
 
 app.get("/getHorarioEntrada", (req, res) => {
   const { carrera, año, division } = req.query;
-  console.log("🔹 Parámetros recibidos del front:");
-  console.log({ carrera, año, division });
 
   try {
     const data = JSON.parse(fs.readFileSync("./asistencia.json", "utf8"));
-    console.log("🔹 Primer elemento del JSON:", data[0]);
     const curso = data.find(
       (c) => {
-        console.log("creo q todo ",c)
-        console.log("carrera ",c.carrera)
         switch (c.carrera) {
           case "informatica":
              c.carrera = "INF"
@@ -418,7 +413,6 @@ app.get("/getHorarioEntrada", (req, res) => {
       }
     );
 
-    console.log("🔹 Resultado de búsqueda:", curso);
 
     if (!curso) {
       return res.status(404).json({ error: "Curso no encontrado" });

@@ -26,7 +26,16 @@ export default function Layout() {
       />
       <Tabs.Screen
         name="about"
-        options={{ title: "P2" }}
+        options={{
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <FontAwesome
+              name="home"
+              size={24}
+              color={focused ? 'tomato' : 'gray'}  
+            />
+          ),
+        }}
       />
     </Tabs>
   );

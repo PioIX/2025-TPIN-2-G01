@@ -1,13 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 
-import fs from 'fs';
 import { Pressable, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import Qr from 'components/QrGenerator';
 import useFetch from 'hooks/useFetch';
-import input from 'components/input';
 import Button from 'components/Button';
+import type {CursoNuevo} from 'types'
 export default function AlumnosHome() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
@@ -20,13 +19,6 @@ export default function AlumnosHome() {
     carrera: "",
     division: "",
   });
-
-  interface CursoNuevo {
-    año: number;
-    carrera: string;
-    division: string;
-  }
-
   /**
    * trae la info del usuario logeado
    * @returns {message:{datosEstudiantes}}
