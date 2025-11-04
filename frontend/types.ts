@@ -1,3 +1,5 @@
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
+
 // types.ts
 export type RootStackParamList = {
   Home: undefined;
@@ -122,3 +124,33 @@ export interface ButtonProps {
   label: string;
   onPress?: () => void;
 };
+
+export interface Option {
+  label: string;
+  value: string;
+}
+
+export interface Admins {
+  id : number
+  nombre : string
+  apellido : string
+  Rango: "O" | "P"
+  email: `${string}@${string}.${string}`; 
+  contraseña: string
+}
+export interface Estudiantes {
+  id : number 
+  id_curso : number 
+  nombre : string
+  apellido : string
+  imagen: null|string
+  email: `${string}@${string}.${string}`; 
+  contraseña: string
+}
+export interface Profesores {
+  id : number 
+  nombre : string
+  apellido : string
+  email: `${string}@${string}.${string}`; 
+  contraseña: string
+}

@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "react-native-dropdown-picker": "^5.4.6",
-    "react-native-safe-area-context": "^5.6.2"
-  }
-}

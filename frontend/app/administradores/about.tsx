@@ -2,16 +2,22 @@ import Button from "components/Button";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import type { Admins, Estudiantes,Profesores } from "types";
 import DropDownPicker from "react-native-dropdown-picker";
+import dropDown from "components/dropDown";
 
 export default function About() {
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
     const [agregar, setAgregar] = useState<Boolean>(false)
-
-    const [opem, setOpen] = useState<Boolean>(false)
-    const [rank, setRank] = useState<string | null>();
-
+    
+    const [openCrud, setOpenCrud] = useState<boolean>(true)
+    const [openUser, setOpenUser] = useState<boolean>(true)
+    const [rank, setRank] = useState<string | null>(null);
+    const [adminsLista,setAdminsLista] = useState<Admins | null>(null)
+    const [preceptorLista,setPreceptorLista] = useState<Admins | null>(null)
+    const [estudiantesLista,setEstudiantesLista] = useState<Estudiantes | null>(null)
+    const [profesoresLista,setProfesoresLista] = useState<Profesores | null>(null)
     function moverAModificar(): void {
         setModificar(true)
         setBorrar(false)
@@ -38,19 +44,34 @@ export default function About() {
             {
                 agregar &&
                 <DropDownPicker
-                    open={open}
+                    open={openCrud}
+                    setOpen={setOpenCrud}
+                    items={[
+                        { label: "Alumno", value: "Alumno" },
+                        { label: "Administrador", value: "Administrador" },
+                        { label: "Profesor", value: "Profesor" },
+                        { label: "Preceptor", value: "Preceptor" },
+                    ]}
                     value={rank}
-                    items={["Alumno", "Administrador", "Profesor", "Preceptor"]}
-                    setOpen={setOpen}
                     setValue={setRank}
                     placeholder="elegi un cargo"
                 />
             }
             { 
-                agregar && rank == "Alumno" && <p> soy Alumno</p>
-            }
-                        { 
-                agregar && rank == "Administrador" && <p> soy Administrador</p>
+                agregar && rank == "Administrador" && 
+                <DropDownPicker
+                    open={openUser}
+                    setOpen={setOpenUser}
+                    items={[
+                        { label: "Alumno", value: "Alumno" },
+                        { label: "Administrador", value: "Administrador" },
+                        { label: "Profesor", value: "Profesor" },
+                        { label: "Preceptor", value: "Preceptor" },
+                    ]}
+                    value={rank}
+                    setValue={setRank}
+                    placeholder="elegi un cargo"
+                />
             }
                         { 
                 agregar && rank == "Profesor" && <p> soy Profesor</p>
