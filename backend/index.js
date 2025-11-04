@@ -6,6 +6,7 @@ import logger, { compile } from "morgan";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
 import fs from "fs";
+import axios from "axios";
 import session from 'express-session';
 import { Server } from 'socket.io';  
 var app = express();
@@ -94,9 +95,10 @@ io.on("connection", (socket) => {
     io.emit("mensajitoSala", {message: "hola"})
   })
 
-  socket.on('MandarAsistencia', data => {
+  socket.on('MandarAsistencia',async data => {
     console.log("soy la sala de la persona", socket.rooms)
-    
+    await axios.get('/https://nasty-drinks-search.loca.lt/hola')
+    socket.emit("notificacionEstudiante").to(socket.rooms)
   })
 	socket.on('disconnect', () => {
 		console.log("Disconnect");
@@ -107,6 +109,10 @@ app.get("/", function (req, res) {
   res.send("sever running port 4000");
 });
 
+app.get("/hola", async function (req,res) {
+  console.log("soy un console.log con axios")
+  res.send("hola")
+})
 app.get("/getAllAlumnos", async function (req, res) {
   const result = await realizarQuery(`SELECT * FROM Alumnos`);
   res.send(result);

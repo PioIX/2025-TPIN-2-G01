@@ -14,12 +14,15 @@ export default function App() {
 
   function emitirAsistencia(){
     console.log("estoy mandando asistencia")
+
     socket?.emit("MandarAsistencia", { value: scannedData})
   }
 
   useEffect(() => {
   if (!socket) return;
     socket.on("mensajitoSala", (data)=>{
+
+
       emitirAsistencia()
     })
   }, [socket]);

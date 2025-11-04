@@ -67,7 +67,7 @@ export default function HomeScreen() {
   // poner tunnel
   const handleLogin = async (user: formData) => {
     const data = await fetchData({
-      url: `https://smooth-cars-cover.loca.lt/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
+      url: `https://nasty-drinks-search.loca.lt/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
       method: "GET",
     });
 

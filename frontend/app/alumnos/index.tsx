@@ -37,7 +37,7 @@ export default function AlumnosHome() {
 
   async function fetchUser(): Promise<void> {
     const userData = await fetchAlumno({
-      url: 'https://smooth-cars-cover.loca.lt/usuarioLog',
+      url: 'https://nasty-drinks-search.loca.lt/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
