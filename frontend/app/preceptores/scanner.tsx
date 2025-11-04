@@ -8,24 +8,26 @@ export default function App() {
   const [scannedData, setScannedData] = useState<string | null>(null);
   const { socket, isConnected } = useSocket();
   
-  function saludar(){
-    console.log("entro")
-    socket?.emit("saludar", { msg: "Hola desde mi compu" });  
+  function unirme(){
+    socket?.emit("unirme",  { value: scannedData });  
+  }
+
+  function emitirAsistencia(){
+    console.log("estoy mandando asistencia")
+    socket?.emit("MandarAsistencia", { value: scannedData})
   }
 
   useEffect(() => {
   if (!socket) return;
-    socket.on("saludar", (generico)=>{
-      // Alert.alert(generico.message)
-      Alert.alert(generico.message.msg)
+    socket.on("mensajitoSala", (data)=>{
+      emitirAsistencia()
     })
-    
   }, [socket]);
 
   const handleScan = (data: string) => {
     setScannedData(data);
     setScanning(false); 
-    saludar()
+    unirme()
     alert(`QR Escaneado ${data}`);
   };
 

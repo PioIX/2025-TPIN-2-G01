@@ -83,17 +83,21 @@ io.on("connection", (socket) => {
 	socket.on('sendMessage', data => {
 		io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data });
 	});
-  socket.on('saludar', data=> {
-    console.log("hola celu")
-    console.log(data)
-    io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data.msg });
-  })
+  // socket.on('saludar', data=> {
+  //   console.log("hola celu")
+  //   console.log(data)
+  //   io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data.msg });
+  // })
   socket.on('unirme', data => { 
     socket.join(data.value)
     console.log(data)
     io.emit("mensajitoSala", {message: "hola"})
   })
 
+  socket.on('MandarAsistencia', data => {
+    console.log("soy la sala de la persona", socket.rooms)
+    
+  })
 	socket.on('disconnect', () => {
 		console.log("Disconnect");
 	})
@@ -276,6 +280,7 @@ app.post("/lista", async function (req, res) {
 // POST PARA ASISTENCIA PRECEPTORES
 app.post("/asistencia", async function (req, res) {
   try {
+    const estudianteScanneado = await realizarQuery(`Select * from Alumnos where correo_electronico = ${req}`)
     const rawdata = fs.readFileSync("./asistencia.json");
     const { horario_llegada } = JSON.parse(rawdata);
     const horario = new Date(horario_llegada);

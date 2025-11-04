@@ -14,11 +14,6 @@ export default function AlumnosHome() {
   const [email, setEmail] = useState<string>("")
   const { socket, isConnected } = useSocket();
   const {fetchData: fetchAlumno} = useFetch<respuestaAlumno>()
-
-   /**
-   * trae la info del usuario logeado
-   * @returns {message:{datosEstudiantes}}
-   */
   
     function metermeSala(){
       console.log(email)
@@ -42,7 +37,7 @@ export default function AlumnosHome() {
 
   async function fetchUser(): Promise<void> {
     const userData = await fetchAlumno({
-      url: 'http://localhost:4000/usuarioLog',
+      url: 'https://smooth-cars-cover.loca.lt/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
