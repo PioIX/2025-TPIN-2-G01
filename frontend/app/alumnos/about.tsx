@@ -12,7 +12,7 @@ const router = useRouter();
 const { token, logout } = useAuth();
 const [email, setEmail] = useState<string>("")
 const [fecha, setFecha] = useState<Date | null>(null)
-const [falta, setFalta] = useState<Float>(0)
+const [falta, setFalta] = useState<number>(0)
 /**
    * trae la info del usuario logeado
    * @returns {message:{datosEstudiantes}}
@@ -34,23 +34,32 @@ const [falta, setFalta] = useState<Float>(0)
 
   useEffect(()=>{
     fetchUser();
-    fetchAsistencias(fecha,falta);
   },[])
 
-  useEffect(()=>{
-    
-  },[])
+  useEffect(() => {
+      fetchAsistencias(email); 
+  }, [] );
+  
 
-  async function fetchAsistencias(date: Date | null, nonAttendace: GLfloat): Promise<void> {
+  async function fetchAsistencias(correo: string): Promise<void> {
+    try{
     const response = await fetch(
-        `http://localhost:4000/traerAsistencias?0<=${falta}`
+        `http://localhost:4000/traerAsistencias?correo_electronico=toclur@pioix.edu.ar&falta>=0`
       );
       const data = await response.json();
+      console.log("Data crudo ", data)
       console.log("Data::: ", data.message[0]);
 
-      setFecha(data.date)
-      setFalta(data.nonAttendace)
-
+      console.log("fecha antes del set", fecha)
+      console.log("falta antes del set", falta)
+      setFecha(data.fecha)
+      setFalta(data.falta)
+      console.log("fecha despues del set", fecha)
+      console.log("falta despues del set", falta)
+      
+      }catch(error){
+        console.error("Error al traer las asistencias:", error);
+      }
 
   }
 
