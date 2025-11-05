@@ -6,9 +6,8 @@ import logger, { compile } from "morgan";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
 import fs from "fs";
-import axios from "axios";
 import session from 'express-session';
-import { Server } from 'socket.io';  
+import { Server } from 'socket.io';
 var app = express();
 var port = process.env.PORT || 4000;
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -25,7 +24,7 @@ const sessionMiddleware = session({
   resave: false,
   saveUninitialized: false
 });
-app.use(sessionMiddleware)  ;
+app.use(sessionMiddleware);
 function verificarJWT(req, res, next) {
   let token = req.header(process.env.TOKEN_HEADER_KEY);
   if (!token) {
@@ -47,72 +46,68 @@ function verificarJWT(req, res, next) {
 }
 
 const server = app.listen(port, () => {
-	console.log(`Servidor  corriendo en http://localhost:${port}/`);
+  console.log(`Servidor  corriendo en http://localhost:${port}/`);
 });;
 
 const io = new Server(server, {
-    cors: {
-        origin: "*", 
-        methods: ["GET", "POST", "PUT", "DELETE"],  	
-        credentials: true                           	
-    }
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  }
 });
 
 
 
 io.use((socket, next) => {
-	sessionMiddleware(socket.request, {}, next);
+  sessionMiddleware(socket.request, {}, next);
 });
 io.on("connection", (socket) => {
-	const req = socket.request;
+  const req = socket.request;
 
-	socket.on('joinRoom', data => {
-		console.log("🚀 ~ io.on ~ req.session.room:", req.session.room)
-		if (req.session.room != undefined && req.session.room.length > 0)
-			socket.leave(req.session.room);
-		req.session.room = data.room;
-		socket.join(req.session.room);
+  socket.on('joinRoom', data => {
+    console.log("🚀 ~ io.on ~ req.session.room:", req.session.room)
+    if (req.session.room != undefined && req.session.room.length > 0)
+      socket.leave(req.session.room);
+    req.session.room = data.room;
+    socket.join(req.session.room);
 
-		io.to(req.session.room).emit('chat-messages', { user: req.session.user, room: req.session.room });
-	});
+    io.to(req.session.room).emit('chat-messages', { user: req.session.user, room: req.session.room });
+  });
 
-	socket.on('pingAll', data => {
-		console.log("PING ALL: ", data);
-		io.emit('pingAll', { event: "Ping to all", message: data });
-	});
+  socket.on('pingAll', data => {
+    console.log("PING ALL: ", data);
+    io.emit('pingAll', { event: "Ping to all", message: data });
+  });
 
-	socket.on('sendMessage', data => {
-		io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data });
-	});
+  socket.on('sendMessage', data => {
+    io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data });
+  });
   // socket.on('saludar', data=> {
   //   console.log("hola celu")
   //   console.log(data)
   //   io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data.msg });
   // })
-  socket.on('unirme', data => { 
+  socket.on('unirme', data => {
     socket.join(data.value)
     console.log(data)
-    io.emit("mensajitoSala", {message: "hola"})
+    io.emit("mensajitoSala", { message: "hola" })
   })
 
-  socket.on('MandarAsistencia',async data => {
+  socket.on('MandarAsistencia', async data => {
     console.log("soy la sala de la persona", socket.rooms)
-    await axios.get('/https://nasty-drinks-search.loca.lt/hola')
     socket.emit("notificacionEstudiante").to(socket.rooms)
   })
-	socket.on('disconnect', () => {
-		console.log("Disconnect");
-	})
+  socket.on('disconnect', () => {
+    console.log("Disconnect");
+  })
 });
 
 app.get("/", function (req, res) {
   res.send("sever running port 4000");
 });
 
-app.get("/hola", async function (req,res) {
-  console.log("soy un console.log con axios")
-  res.send("hola")
-})
+
 app.get("/getAllAlumnos", async function (req, res) {
   const result = await realizarQuery(`SELECT * FROM Alumnos`);
   res.send(result);
@@ -242,7 +237,7 @@ app.post("/lista", async function (req, res) {
     for (let x = 0; x < req.body.length; x++) {
       const alumno = req.body[x];
       if (alumno.ausente) {
-        const [nombre, apellido] = [alumno.nombre,alumno.apellido]
+        const [nombre, apellido] = [alumno.nombre, alumno.apellido]
         console.log(nombre, apellido);
 
         const falta_estudiante = await realizarQuery(`
@@ -286,55 +281,65 @@ app.post("/lista", async function (req, res) {
 // POST PARA ASISTENCIA PRECEPTORES
 app.post("/asistencia", async function (req, res) {
   try {
-    const estudianteScanneado = await realizarQuery(`Select * from Alumnos where correo_electronico = ${req}`)
+    if (req.header("justificacion")==true){
+      const justificativo = true
+    } else {
+      const justificativo = false
+
+    }
+    const estudianteScanneado = await realizarQuery(`Select * from Alumnos where correo_electronico = ${req.body.email}`)
+    const curso = await realizarQuery(` Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
     const rawdata = fs.readFileSync("./asistencia.json");
-    const { horario_llegada } = JSON.parse(rawdata);
-    const horario = new Date(horario_llegada);
-    const ahora = new Date();
-    const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
-    const horas = ahora.getHours();
-    const minutos = ahora.getMinutes();
-    req.body.map(async (elemento) => {
-      console.log(elemento);
-      if (elemento.ausente) {
-        console.log({ alumnos: `estoy ausente ${elemento.nombre}` });
-        const falta = await realizarQuery(
-          `SELECT * FROM Asistencias WHERE id_alumno = ${elemento.id} && horario_de_entrada = "${fecha}"`
-        );
-        if (!falta) {
-          if (horas > horario.getHours()) {
-            await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
-          } else {
-            if (horas == horario.getHours() && minutos > horario.getMinutes()) {
-              const cantidad_minutos = minutos - horario.getMinutes();
-              if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
-                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 0.25, FALSE)`);
-              }
-              if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
-                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 0.50, FALSE)`);
-              }
-              if (cantidad_minutos >= 45) {
-                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
-              }
+    const { horarios_cursos } = JSON.parse(rawdata);
+    for (let x = 0; x < horarios_cursos.length; x++) {
+      if (curso.año && curso.carrera && curso.division &&
+        curso.año == horarios_cursos[x].año &&
+        curso.carrera == horarios_cursos[x].carrera &&
+        curso.division == horarios_cursos[x].division) {
+        const horario_de_entrada = horarios_cursos[x].horario_de_entrada
+        const horario = new Date(horario_de_entrada);
+        const ahora = new Date();
+        const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
+        const horas = ahora.getHours();
+        const minutos = ahora.getMinutes();
+
+        //-----------------------------------------------------------//
+        if (horas > horario.getHours()) {
+          await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+        VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
+        } else {
+          if (horas == horario.getHours() && minutos > horario.getMinutes()) {
+            const cantidad_minutos = minutos - horario.getMinutes();
+            if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
+              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 0.25, ${justificativo})`);
+            }
+            if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
+              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 0.50, ${justificativo})`);
+            }
+            if (cantidad_minutos >= 45) {
+              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
+            }
+            if (ahora <= horario_de_entrada) {
+              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
+            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 0, FALSE)`);
             }
           }
         }
       }
-    });
-    res.send({ message: "asistencia recibida con exito" });
+    }
+    res.send({ message: "asistencia registrada con exito" });
   } catch (error) {
     res.send({ message: `tuviste un error ${error}` });
   }
 });
 
-app.post("/getUsuarios",verificarJWT, async (req,res)=>{
-  try{
+app.post("/getUsuarios", verificarJWT, async (req, res) => {
+  try {
     res.send(await realizarQuery("select * from Alumnos"))
-  }catch{
+  } catch {
 
   }
 })

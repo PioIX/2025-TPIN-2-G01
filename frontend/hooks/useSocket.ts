@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 
 const useSocket = (
   options = { withCredentials: false },
-  serverUrl = "wss://nasty-drinks-search.loca.lt/"
+  serverUrl = "wss://three-sides-relax.loca.lt/"
 ) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);

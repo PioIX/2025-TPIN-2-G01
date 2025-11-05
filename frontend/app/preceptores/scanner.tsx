@@ -3,18 +3,30 @@ import { Text, View, TouchableOpacity, Alert } from "react-native";
 import Scanner from "components/camera";
 import { useSocket } from "hooks/useSocket";
 import { useEffect } from "react";
+import useFetch from "hooks/useFetch";
 export default function App() {
+  const [justificado,setJustificado] = useState<boolean>(false)
   const [scanning, setScanning] = useState(false);
   const [scannedData, setScannedData] = useState<string | null>(null);
   const { socket, isConnected } = useSocket();
-  
+  const {fetchData: registrarAsistencia} = useFetch()
   function unirme(){
     socket?.emit("unirme",  { value: scannedData });  
   }
 
-  function emitirAsistencia(){
+  async function emitirAsistencia(){
     console.log("estoy mandando asistencia")
-
+    async function marcarAsistencia() {
+      await registrarAsistencia({
+        url: 'https://three-sides-relax.loca.lt/asistencia',
+        method: 'POST',
+        body: scannedData,
+        headers: {
+          justificacion: `${justificado}`
+        },
+    });
+    }
+    marcarAsistencia()
     socket?.emit("MandarAsistencia", { value: scannedData})
   }
 
@@ -42,12 +54,6 @@ export default function App() {
   const handleCancel = () => {
     setScanning(false);
     setScannedData(null);
-  };
-
-  const handleActionX = () => {
-    if (scannedData) {
-      Alert.alert("Función X ejecutada con:", scannedData);
-    }
   };
 
   return (
@@ -83,7 +89,7 @@ export default function App() {
 
           <TouchableOpacity
             className="bg-green-600 px-4 py-3 rounded-lg"
-            onPress={handleActionX}
+            onPress={()=>setJustificado(!justificado)}
           >
             <Text className="text-white font-semibold">Justificar Falta</Text>
           </TouchableOpacity>
