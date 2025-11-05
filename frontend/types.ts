@@ -1,4 +1,6 @@
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import { SetStateAction,Dispatch } from "react";
+
 
 // types.ts
 export type RootStackParamList = {
@@ -153,4 +155,18 @@ export interface Profesores {
   apellido : string
   email: `${string}@${string}.${string}`; 
   contraseña: string
+}
+
+export interface selectProps {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  initialValue: string | number | null;
+  setValue: Dispatch<SetStateAction< string | number | null>> ;
+  items: Array<{ label: string; value: string | number }>;
+  setItems: Dispatch<SetStateAction<Array<{ label: string; value: string | number }>>>;
+  max?: number;
+  min?: number;
+  isDisabled?: boolean;
+  isSearchable?: boolean;
+  maxHeigth?: number;
 }

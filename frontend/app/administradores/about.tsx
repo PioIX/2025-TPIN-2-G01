@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type {  Admins, Profesores, Estudiantes } from "types";
 import DropDownPicker from "react-native-dropdown-picker";
 import dropDown from "components/dropDown";
+import Input from "components/input";
 
 export default function About() {
     const [modificar, setModificar] = useState<Boolean>(true)
@@ -14,10 +15,18 @@ export default function About() {
     const [openCrud, setOpenCrud] = useState<boolean>(true)
     const [openUser, setOpenUser] = useState<boolean>(true)
     const [rank, setRank] = useState<string | null>(null);
-    const [adminsLista,setAdminsLista] = useState<Admins[] | null>(null)
+    const [adminsLista,setAdminsLista] = useState<Admins[]>({ 
+        id: 0, nombre: "Admin1", apellido: "Perez", Rango: "O", email: "admin1@escuela.com", contraseña: "1234" })
     const [preceptorLista,setPreceptorLista] = useState<Admins[] | null>(null)
     const [estudiantesLista,setEstudiantesLista] = useState<Estudiantes[] | null>(null)
     const [profesoresLista,setProfesoresLista] = useState<Profesores[] | null>(null)
+    useEffect(()=>{
+        console.log("soy ",openCrud)
+    },[openCrud])
+    useEffect(()=>{
+        console.log("soy ",profesoresLista)
+    },[profesoresLista])
+    
     useEffect(()=>{
        setAdminsLista([
       { id: 1, nombre: "Admin1", apellido: "Perez", Rango: "O", email: "admin1@escuela.com", contraseña: "1234" },
@@ -26,7 +35,6 @@ export default function About() {
       { id: 4, nombre: "Admin4", apellido: "Sosa", Rango: "O", email: "admin4@escuela.com", contraseña: "1234" },
       { id: 5, nombre: "Admin5", apellido: "Martinez", Rango: "O", email: "admin5@escuela.com", contraseña: "1234" },
     ]);
-    console.log(adminsLista?.keys)
 
     // Preceptores (Rango "P")
     setPreceptorLista([
@@ -54,7 +62,7 @@ export default function About() {
       { id: 4, nombre: "Profesor4", apellido: "Sanchez", email: "profesor4@escuela.com", contraseña: "prof4" },
       { id: 5, nombre: "Profesor5", apellido: "Ortiz", email: "profesor5@escuela.com", contraseña: "prof5" },
     ]);
-    })
+    },[])
     function moverAModificar(): void {
         setModificar(true)
         setBorrar(false)
@@ -73,7 +81,6 @@ export default function About() {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View>
-
                 <Button label="Modificar" onPress={moverAModificar}></Button>
                 <Button label="Borrar" onPress={moverABorrar}></Button>
                 <Button label="Agregar" onPress={moverAAgregar}></Button>
@@ -96,21 +103,18 @@ export default function About() {
             }
             { 
                 agregar && rank == "Administrador" && 
-                <DropDownPicker
-                    open={openUser}
-                    setOpen={setOpenUser}
-                    items={[
-                        { label: "Alumno", value: "Alumno" },
-                        { label: "Administrador", value: "Administrador" },
-                        { label: "Profesor", value: "Profesor" },
-                        { label: "Preceptor", value: "Preceptor" },
-                    ]}
+                <View>
+                    <DropDownPicker
+                    
+                    items={adminsLista}
                     value={rank}
                     setValue={setRank}
                     placeholder="elegi un cargo"
                 />
+                    <Input placeholder="Escribe tu nombre" onChangeText={()=>{}}  ></Input>
+                </View>
             }
-                        { 
+            { 
                 agregar && rank == "Profesor" && <p> soy Profesor</p>
             }
                         { 
