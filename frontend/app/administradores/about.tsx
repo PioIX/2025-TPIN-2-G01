@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type {  Admins, Profesores, Estudiantes } from "types";
-import DropDownPicker from "react-native-dropdown-picker";
+import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
 import dropDown from "components/dropDown";
 import Input from "components/input";
 
@@ -11,15 +11,16 @@ export default function About() {
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
     const [agregar, setAgregar] = useState<Boolean>(false)
-    
-    const [openCrud, setOpenCrud] = useState<boolean>(true)
+
+    const [openCrud, setOpenCrud] = useState<"Alumno"|"Administrador"|"Preceptor"|"Profesor"|null >(null)
     const [openUser, setOpenUser] = useState<boolean>(true)
+
     const [rank, setRank] = useState<string | null>(null);
-    const [adminsLista,setAdminsLista] = useState<Admins[]>({ 
-        id: 0, nombre: "Admin1", apellido: "Perez", Rango: "O", email: "admin1@escuela.com", contraseña: "1234" })
-    const [preceptorLista,setPreceptorLista] = useState<Admins[] | null>(null)
+    const [adminsLista,setAdminsLista] = useState<Admins[] | null>(null)
     const [estudiantesLista,setEstudiantesLista] = useState<Estudiantes[] | null>(null)
     const [profesoresLista,setProfesoresLista] = useState<Profesores[] | null>(null)
+    const [preceptorLista,setPreceptorLista] = useState<Admins[] | null>(null)
+    const [items,setItems] = useState("")
     useEffect(()=>{
         console.log("soy ",openCrud)
     },[openCrud])
@@ -63,6 +64,13 @@ export default function About() {
       { id: 5, nombre: "Profesor5", apellido: "Ortiz", email: "profesor5@escuela.com", contraseña: "prof5" },
     ]);
     },[])
+
+    useEffect(()=>{
+        switch(rank){
+            case "Administrador":
+        }
+    },[rank])
+    
     function moverAModificar(): void {
         setModificar(true)
         setBorrar(false)
@@ -89,7 +97,7 @@ export default function About() {
                 agregar &&
                 <DropDownPicker
                     open={openCrud}
-                    setOpen={setOpenCrud}
+                    setOpen={setOpenCrud("Preceptor")}
                     items={[
                         { label: "Alumno", value: "Alumno" },
                         { label: "Administrador", value: "Administrador" },
@@ -105,7 +113,6 @@ export default function About() {
                 agregar && rank == "Administrador" && 
                 <View>
                     <DropDownPicker
-                    
                     items={adminsLista}
                     value={rank}
                     setValue={setRank}
@@ -117,7 +124,7 @@ export default function About() {
             { 
                 agregar && rank == "Profesor" && <p> soy Profesor</p>
             }
-                        { 
+            { 
                 agregar && rank == "Preceptor" && <p> soy Preceptor</p>
             }            
             

@@ -1,7 +1,7 @@
 import DropDownPicker from "react-native-dropdown-picker";
 import { selectProps } from "types";
 
-export default function select({open,setOpen,initialValue,setValue,items,setItems,max,min,isDisabled,isSearchable,maxHeigth}:selectProps){
+export default function DropDown({open,setOpen,initialValue,setValue,items,setItems,max,min,isDisabled,isSearchable,maxHeigth}:selectProps){
     return(
         <DropDownPicker
             open={open}
