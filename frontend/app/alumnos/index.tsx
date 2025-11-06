@@ -37,7 +37,7 @@ export default function AlumnosHome() {
 
   async function fetchUser(): Promise<void> {
     const userData = await fetchAlumno({
-      url: 'https://three-sides-relax.loca.lt/usuarioLog',
+      url: 'https://fast-mangos-chew.loca.lt/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

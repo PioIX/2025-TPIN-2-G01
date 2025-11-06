@@ -16,20 +16,20 @@ export default function App() {
 
   async function emitirAsistencia(){
     console.log("estoy mandando asistencia")
-    async function marcarAsistencia() {
-      await registrarAsistencia({
-        url: 'https://three-sides-relax.loca.lt/asistencia',
-        method: 'POST',
-        body: scannedData,
-        headers: {
-          justificacion: `${justificado}`
-        },
-    });
-    }
     marcarAsistencia()
     socket?.emit("MandarAsistencia", { value: scannedData})
   }
-
+  async function marcarAsistencia() {
+    await registrarAsistencia({
+      url: 'https://fast-mangos-chew.loca.lt/asistencia',
+      method: 'POST',
+      body: {email: scannedData},
+      headers: {
+        justificacion: `${justificado}`
+      },
+  });
+  }
+  
   useEffect(() => {
   if (!socket) return;
     socket.on("mensajitoSala", (data)=>{

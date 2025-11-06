@@ -96,7 +96,20 @@ io.on("connection", (socket) => {
 
   socket.on('MandarAsistencia', async data => {
     console.log("soy la sala de la persona", socket.rooms)
-    socket.emit("notificacionEstudiante").to(socket.rooms)
+    const fecha = new Date()
+    fecha = fecha.toISOString().slice(0, 10)
+    const falta = await realizarQuery(`Select date(horario_de_entrada) FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
+    switch (falta) {
+      case 0:
+        socket.to(socket.rooms).emit("NotificacionAlumno", {message: "llegaste bien"} )
+        break;
+      case 0:
+        socket.to(socket.rooms).emit("NotificacionAlumno", {message: "llegaste bien"} )
+        break;
+    
+      default:
+        break;
+    }
   })
   socket.on('disconnect', () => {
     console.log("Disconnect");
@@ -306,25 +319,25 @@ app.post("/asistencia", async function (req, res) {
         //-----------------------------------------------------------//
         if (horas > horario.getHours()) {
           await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-        VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
+        VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
         } else {
           if (horas == horario.getHours() && minutos > horario.getMinutes()) {
             const cantidad_minutos = minutos - horario.getMinutes();
             if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
               await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 0.25, ${justificativo})`);
+            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0.25, ${justificativo})`);
             }
             if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
               await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 0.50, ${justificativo})`);
+            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0.50, ${justificativo})`);
             }
             if (cantidad_minutos >= 45) {
               await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
+            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
             }
             if (ahora <= horario_de_entrada) {
               await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES (${fecha}, ${estudianteScanneado.id_alumno}, 0, FALSE)`);
+            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0, FALSE)`);
             }
           }
         }

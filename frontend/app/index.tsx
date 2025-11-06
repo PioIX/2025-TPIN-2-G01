@@ -45,7 +45,6 @@ export default function HomeScreen() {
     setUser((prev) => ({ ...prev, [field]: value }));
     if (field === "Email") setMsgError(null);
   };
-
   const validarEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -67,7 +66,7 @@ export default function HomeScreen() {
   // poner tunnel
   const handleLogin = async (user: formData) => {
     const data = await fetchData({
-      url: `https://three-sides-relax.loca.lt/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
+      url: `https://fast-mangos-chew.loca.lt/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
       method: "GET",
     });
 
