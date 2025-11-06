@@ -10,10 +10,7 @@ export default function AlumnosAsistencia() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
-  const [palabra, setPalabra] = useState<string>("")
   const [email, setEmail] = useState<string>("")
-  const [fecha, setFecha] = useState<string | null>(null)
-  const [falta, setFalta] = useState<number>(0)
   const [arrayFaltas, setArrayFaltas] = useState<Array<string | number>>([])
   /**
      * trae la info del usuario logeado
@@ -29,10 +26,16 @@ export default function AlumnosAsistencia() {
       },
     });
     console.log(token);
+    console.log("userData ", userData)
     setEmail(userData.message.correo_electronico)
     console.log(typeof (userData.message.correo_electronico))
     console.log("email", email)
   };
+    const handleLogout = async () => {
+    await logout();
+    router.replace('/');
+  };
+
 
   useEffect(() => {
     fetchUser();
@@ -40,14 +43,17 @@ export default function AlumnosAsistencia() {
 
   useEffect(() => {
     fetchAsistencias(email);
-    console.log("array de faltas", arrayFaltas)
   }, [email]);
+
+  useEffect(() => {
+    console.log("array de faltas", arrayFaltas)
+  }, [arrayFaltas]);
 
 
   async function fetchAsistencias(correo: string): Promise<void> {
     try {
       const response = await fetch(
-        `http://localhost:4000/traerAsistencias?correo_electronico=toclur@pioix.edu.ar&falta>=0`
+        `http://localhost:4000/traerAsistencias?correo_electronico=${correo}&falta>=0`
       );
       const data = await response.json();
       console.log("correo ", correo)
@@ -59,10 +65,7 @@ export default function AlumnosAsistencia() {
           .toISOString()
           .split('T')[0]; // → "2025-10-22"
         const faltaActual = data.message[i].falta;
-        setFecha(fechaSoloDia)
-        setFalta(faltaActual)
         setArrayFaltas(prev => [...prev, fechaSoloDia, faltaActual]);
-        //setArrayFaltas((prevArray) => [...prevArray, data.message[i].horario_de_entrada, data.message[i].falta])
       }
       
     } catch (error) {
@@ -71,16 +74,6 @@ export default function AlumnosAsistencia() {
 
   }
 
-  function testeo() {
-    setPalabra("palabra de testeo")
-    console.log("email desde testeo", email)
-    console.log("esto es el testeo")
-  }
-
-  const handleLogout = async () => {
-    await logout();
-    router.replace('/');
-  };
 
 
 
@@ -88,9 +81,6 @@ export default function AlumnosAsistencia() {
     <View>
       <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
-      </Pressable>
-      <Pressable onPress={testeo}>
-        <Text>boton de testeo</Text>
       </Pressable>
     </View>
   );

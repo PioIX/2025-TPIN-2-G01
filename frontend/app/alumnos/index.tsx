@@ -33,6 +33,7 @@ export default function AlumnosHome() {
       },
     });
     console.log(token);
+    console.log("userData ", userData)
     setEmail(userData.message.correo_electronico)
     console.log(typeof (userData.message.correo_electronico))
     console.log("email", email)
