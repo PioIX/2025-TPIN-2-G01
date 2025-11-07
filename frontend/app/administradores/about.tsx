@@ -4,7 +4,7 @@ export default function About(){
     return (
         <>
             <View>
-                <Text>Pito</Text>
+                <Text>Cosas</Text>
             </View>
         </>
     )
