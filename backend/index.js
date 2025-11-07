@@ -90,13 +90,15 @@ io.on("connection", (socket) => {
   // })
   socket.on('unirme', data => {
     socket.join(data.value)
+    console.log("me estoy uniendo a la sala")
     console.log(data)
     io.emit("mensajitoSala", { message: "hola" })
   })
 
   socket.on('MandarAsistencia', async data => {
-    console.log("soy la sala de la persona", socket.rooms)
-    const fecha = new Date()
+    console.log("estoy mandando asistencia")
+    console.log("soy la sala de la persona", socket.room)
+    let fecha = new Date()
     fecha = fecha.toISOString().slice(0, 10)
     const falta = await realizarQuery(`Select date(horario_de_entrada) FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
     switch (falta) {

@@ -21,7 +21,7 @@ export default function App() {
   }
   async function marcarAsistencia() {
     await registrarAsistencia({
-      url: 'https://fast-mangos-chew.loca.lt/asistencia',
+      url: 'https://silly-snakes-walk.loca.lt/asistencia',
       method: 'POST',
       body: {email: scannedData},
       headers: {
