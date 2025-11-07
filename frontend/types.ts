@@ -159,14 +159,14 @@ export interface Profesores {
 
 export interface selectProps {
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean | string>>;
-  initialValue: string | number | null;
-  setValue: Dispatch<SetStateAction< string | number | null>> ;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  value: string | number | null;
+  setValue: Dispatch<SetStateAction< string | null>> | Dispatch<SetStateAction< string | null>> ;
   items: Array<{ label: string; value: string | number }>;
-  setItems: Dispatch<SetStateAction<Array<{ label: string; value: string | number }>>> ;
- // setItems: Dispatch<SetStateAction<Array<{ label: string; value: string | number }>>>;
+  setItems?: Dispatch<SetStateAction<Array<{ label: string; value: string | number }>>> ;
   max?: number;
   min?: number;
+  placeholder?:string
   isDisabled?: boolean;
   isSearchable?: boolean;
   maxHeigth?: number;
