@@ -134,7 +134,7 @@ app.get("/login", async function (req, res) {
     console.log(req.query.contraseña);
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
     let usuario = await realizarQuery(
-      `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
+      `SELECT * FROM Alumnos WHERE correo_electronico = '${email}' AND contraseña = '${req.query.contraseña}' `
     );
     if (usuario.length != 0) {
       const token = crearToken(usuario[0]);
@@ -351,11 +351,108 @@ app.post("/asistencia", async function (req, res) {
   }
 });
 
-app.post("/getUsuarios", verificarJWT, async (req, res) => {
+app.post("/agregarUsuarios", async function (req, res) {
   try {
-    res.send(await realizarQuery("select * from Alumnos"))
-  } catch {
-
+    switch (req.body.rango) {
+      case "Alumno":
+        await realizarQuery(`INSERT into Alumnos (id_curso, nombre, apellido, img_alumno, correo_electronico, contraseña)
+        VALUES (${req.body.id_curso}, '${req.body.nombre}', '${req.body.apellido}', '${req.body.img_alumno}', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
+        res.send({ message: "Alumno agregado" })
+        break
+      case "Profesor":
+        await realizarQuery(`INSERT into Profesores (nombre, apellido, correo_electronico, contraseña)
+        VALUES ('${req.body.nombre}', '${req.body.apellido}', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
+        res.send({ message: "Profesor agregado" })
+        break
+      case "Preceptor":
+        await realizarQuery(`INSERT into Administradores (nombre, apellido, rango, correo_electronico, contraseña)
+        VALUES ('${req.body.nombre}', '${req.body.apellido}', 'P', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
+        res.send({ message: "Preceptor agregado" })
+        break
+      case "Owner":
+        await realizarQuery(`INSERT into Administradores (nombre, apellido, rango, correo_electronico, contraseña)
+        VALUES ('${req.body.nombre}', '${req.body.apellido}', 'O', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
+        res.send({ message: "Owner agregado" })
+        break
+      default:
+        res.send({ message: "Rango no encontrado" })
+        break
+    }
+  } catch (error) {
+    res.send(error)
+    console.log("error al agregar usuario")
   }
+})
+
+app.post("/actualizarUsuarios", async function (req, res) {
+  try {
+    switch (req.body.rango) {
+      case "Alumno":
+        await realizarQuery(`UPDATE Alumnos SET(id_curso='${req.body.id_curso}', nombre='${req.body.nombre}', apellido='${req.body.apellido}', img_alumno='${req.body.img_alumno}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_alumno = ${req.body.id})`)
+        res.send({ message: "Alumno actualizado" })
+        break
+      case "Profesor":
+        await realizarQuery(`UPDATE Profesores SET(nombre='${req.body.nombre}', apellido='${req.body.apellido}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_profesor = ${req.body.id})`)
+        res.send({ message: "Profesor actualizado" })
+        break
+      case ("Preceptor" || "Owner"):
+        await realizarQuery(`UPDATE Administradores SET(nombre='${req.body.nombre}', apellido='${req.body.apellido}' rango='${req.body.rango}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_adminstrador = ${req.body.id})`)
+        res.send({ message: "Administrador actualizado" })
+        break
+      default:
+        res.send({ message: "Usuario no encontrado" })
+        break
+    }
+  } catch (error) {
+    res.send(error)
+    console.log("error al actualizar usuario")
+  }
+})
+
+app.delete("/borrarUsuarios", async function (req, res) {
+  try {
+    switch (req.body.rango) {
+      case "Alumno":
+        await realizarQuery(`DELETE from Alumnos where (id_alumno = ${req.body.id})`)
+        res.send({ message: "Alumno borrado" })
+        break
+      case "Profesor":
+        await realizarQuery(`DELETE from Profesores where (id_profesor = ${req.body.id})`)
+        res.send({ message: "Profesor borrado" })
+        break
+      case ("Preceptor" || "Owner"):
+        await realizarQuery(`DELETE from Administradores where (id_adminsitrador = ${req.body.id})`)
+        res.send({ message: "Administrador borrado" })
+        break
+      default:
+        res.send({ message: "Usuario no encontrado" })
+        break
+    }
+  } catch (error) {
+    res.send(error)
+    console.log("error al borrar usuario")
+  }
+
+})
+
+app.get("/traerAsistencias", async function (req, res) {
+  try{
+    const result = await realizarQuery('SELECT date(horario_de_entrada), falta from Asistencias where falta>0')
+    res.send({message: result})
+  }catch (error){
+    res.send(error)
+    console.log("Error al conseguir las faltas")
+  }
+})
+
+app.get("/getAlumnos", async function (req, res) {
+  try{
+    const result = await realizarQuery('SELECT * from Alumnos')
+    res.send({message: result})
+  }catch(error){
+    res.send(error)
+    console.log("Error al traer alumnos")
+  }
+  
 })
 

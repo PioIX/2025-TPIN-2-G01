@@ -2,13 +2,13 @@ import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import type { NavBarProps } from "types";
 
-export default function NavBar({ props}: NavBarProps) {
+export default function NavBar({props,styleText,stylePresable,styleView}: NavBarProps) {
   
   const router = useRouter();
 
   return (
     <View
-      style={{
+      style={ styleView || {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
@@ -20,7 +20,7 @@ export default function NavBar({ props}: NavBarProps) {
         <Pressable
           key={index}
           onPress={() => router.push(`/${item.toLowerCase()}`)}
-          style={{
+          style={ stylePresable || {
             backgroundColor: "white",
             paddingHorizontal: 16,
             paddingVertical: 8,
@@ -28,7 +28,7 @@ export default function NavBar({ props}: NavBarProps) {
             marginHorizontal: 4,
           }}
         >
-          <Text style={{ color: "#2563eb", fontWeight: "bold" }}>
+          <Text style={styleText || { color: "#2563eb", fontWeight: "bold" }}>
             {item}
           </Text>
         </Pressable>
