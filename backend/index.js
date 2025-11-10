@@ -96,21 +96,32 @@ io.on("connection", (socket) => {
   })
 
   socket.on('MandarAsistencia', async data => {
+    console.log(data.value)
     console.log("estoy mandando asistencia")
     console.log("soy la sala de la persona", socket.room)
     let fecha = new Date()
     fecha = fecha.toISOString().slice(0, 10)
-    const falta = await realizarQuery(`Select date(horario_de_entrada) FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
-    switch (falta) {
-      case 0:
-        socket.to(socket.rooms).emit("NotificacionAlumno", {message: "llegaste bien"} )
-        break;
-      case 0:
-        socket.to(socket.rooms).emit("NotificacionAlumno", {message: "llegaste bien"} )
-        break;
     
-      default:
-        break;
+    const falta = await realizarQuery(`Select falta FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
+    const just = await realizarQuery(`Select esta_justificado FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
+    if (!just) {
+      console.log("entre")
+      switch (falta) {
+        case 0:
+          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "llegaste bien" })
+          break;
+        case 1:
+          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "tenes una falta entera" })
+          break;
+        case 0.50:
+          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "llegaste bien" })
+          break;
+        case 0.25:
+          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "llegaste bien" })
+          break;
+        default:
+          break;
+      }
     }
   })
   socket.on('disconnect', () => {
@@ -134,7 +145,7 @@ app.get("/login", async function (req, res) {
     console.log(req.query.contraseña);
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
     let usuario = await realizarQuery(
-      `SELECT * FROM Alumnos WHERE correo_electronico = '${email}' AND contraseña = '${req.query.contraseña}' `
+      `SELECT * FROM Alumnos WHERE correo_electronico = '${req.query.correo_electronico}' AND contraseña = '${req.query.contraseña}' `
     );
     if (usuario.length != 0) {
       const token = crearToken(usuario[0]);
@@ -296,7 +307,7 @@ app.post("/lista", async function (req, res) {
 // POST PARA ASISTENCIA PRECEPTORES
 app.post("/asistencia", async function (req, res) {
   try {
-    if (req.header("justificacion")==true){
+    if (req.header("justificacion") == true) {
       const justificativo = true
     } else {
       const justificativo = false
@@ -436,23 +447,23 @@ app.delete("/borrarUsuarios", async function (req, res) {
 })
 
 app.get("/traerAsistencias", async function (req, res) {
-  try{
+  try {
     const result = await realizarQuery('SELECT date(horario_de_entrada), falta from Asistencias where falta>0')
-    res.send({message: result})
-  }catch (error){
+    res.send({ message: result })
+  } catch (error) {
     res.send(error)
     console.log("Error al conseguir las faltas")
   }
 })
 
 app.get("/getAlumnos", async function (req, res) {
-  try{
+  try {
     const result = await realizarQuery('SELECT * from Alumnos')
-    res.send({message: result})
-  }catch(error){
+    res.send({ message: result })
+  } catch (error) {
     res.send(error)
     console.log("Error al traer alumnos")
   }
-  
+
 })
 
