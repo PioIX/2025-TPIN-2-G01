@@ -2,33 +2,34 @@ import Button from "components/Button";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import type { Admins, Profesores, Estudiantes } from "types";
-import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
-import DropDown from "components/DropDown";
+import type { Admins, Profesores, Estudiantes, items } from "types";
 import Input from "components/input";
+import DropDown from "components/dropDown";
 import { values } from "eslint.config";
-
 export default function About() {
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
     const [agregar, setAgregar] = useState<Boolean>(false)
 
-    const [openCreate, setOpenCreate] = useState<boolean>(false)
+    const [openRank, setOpenRank] = useState<boolean>(false)
     const [openDelete, setOpenDelete] = useState<boolean>(false)
     const [openUpdate, setOpenUpdate] = useState<boolean>(false)
     const [openList, setOpenList] = useState<boolean>(false)
-    
-    const [rank, setRank] = useState<string | null>(null);
-    const [user, setUser] = useState<string | null>(null)
 
-    const [adminsLista, setAdminsLista] = useState<Admins[] | null>(null)
-    const [estudiantesLista, setEstudiantesLista] = useState<Estudiantes[] | null>(null)
-    const [profesoresLista, setProfesoresLista] = useState<Profesores[] | null>(null)
-    const [preceptorLista, setPreceptorLista] = useState<Admins[] | null>(null)
-    const [items, setItems] = useState("")
+    const [rank, setRank] = useState<string>("");
+    const [user, setUser] = useState<items>()
+
+    const [adminsLista, setAdminsLista] = useState<Admins[]>([])
+    const [alumnoLista, setAlumnoLista] = useState<Estudiantes[]>([])
+    const [profesoresLista, setProfesoresLista] = useState<Profesores[]>([])
+    const [preceptorLista, setPreceptorLista] = useState<Admins[]>([])
+    const [items, setItems] = useState<items[]>([])
+    useEffect(()=>{
+        console.log("hola ",user)
+    },[,user])
     useEffect(() => {
-        console.log("soy ", openCreate)
-    }, [openCreate])
+        console.log("soy ", openRank)
+    }, [openRank])
     useEffect(() => {
         console.log("soy ", profesoresLista)
     }, [profesoresLista])
@@ -52,7 +53,7 @@ export default function About() {
         ]);
 
         // Estudiantes
-        setEstudiantesLista([
+        setAlumnoLista([
             { id: 1, id_curso: 101, nombre: "Estudiante1", apellido: "Fernandez", imagen: null, email: "estudiante1@escuela.com", contraseña: "pass" },
             { id: 2, id_curso: 101, nombre: "Estudiante2", apellido: "Garcia", imagen: null, email: "estudiante2@escuela.com", contraseña: "pass" },
             { id: 3, id_curso: 102, nombre: "Estudiante3", apellido: "Perez", imagen: null, email: "estudiante3@escuela.com", contraseña: "pass" },
@@ -70,10 +71,42 @@ export default function About() {
         ]);
     }, [])
 
-    useEffect(() => {
+    function limpiarSelectUsuarios():void {
+        setItems([])
+        setUser(undefined)
+    }
+    function cambiarRango():void {
         switch (rank) {
             case "Administrador":
+                setItems(adminsLista.map((admin) => ({
+                    label: `${admin.nombre} ${admin.apellido}`,
+                    value: admin.id,
+                })))
+                break
+            case "Preceptor":
+                setItems(preceptorLista.map((preceptor) => ({
+                    label: `${preceptor.nombre} ${preceptor.apellido}`,
+                    value: preceptor.id,
+                })))
+                break
+            case "Alumno":
+                setItems(alumnoLista.map((alumno) => ({
+                    label: `${alumno.nombre} ${alumno.apellido}`,
+                    value: alumno.id,
+                })))
+                break
+            case "Profesor":
+                setItems(profesoresLista.map((profesor) => ({
+                    label: `${profesor.nombre} ${profesor.apellido}`,
+                    value: profesor.id,
+                })))
+                break
         }
+    }
+
+    useEffect(() => {
+        limpiarSelectUsuarios()
+        cambiarRango()
     }, [rank])
 
     function moverAModificar(): void {
@@ -100,10 +133,10 @@ export default function About() {
                 <Button label="Agregar" onPress={moverAAgregar}></Button>
             </View>
             {
-                agregar &&
+                modificar &&
                 <DropDown
-                    open={openCreate}
-                    setOpen={setOpenCreate}
+                    open={openRank}
+                    setOpen={setOpenRank}
                     items={[
                         { label: "Alumno", value: "Alumno" },
                         { label: "Administrador", value: "Administrador" },
@@ -116,25 +149,27 @@ export default function About() {
                 />
             }
             {
-                agregar && rank &&
-                
+                modificar && rank &&
+
                 <View>
                     <DropDown
                         setOpen={setOpenList}
                         open={openList}
-                        items={}
+                        items={items}
+                        setItems={setItems}
                         value={user}
                         setValue={setUser}
-                        placeholder="elegi un cargo"
+                        placeholder={`seleccione un ${rank.toLowerCase}`}
+                        isSearchable
                     />
-                    <Input placeholder="Escribe tu nombre" onChangeText={() => { }}  ></Input>
+                    {
+                        rank == "Administradores" &&
+                        <View>
+                            <Input placeholder="" value={user.value}/>
+                        </View>
+                    }
+                    <Input placeholder="Escribe tu nombre" onChangeText={() => {}} ></Input>
                 </View>
-            }
-            {
-                agregar && rank == "Profesor" && <p> soy Profesor</p>
-            }
-            {
-                agregar && rank == "Preceptor" && <p> soy Preceptor</p>
             }
 
         </SafeAreaView>

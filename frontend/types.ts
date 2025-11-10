@@ -1,5 +1,6 @@
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import { SetStateAction,Dispatch } from "react";
+import { SitemapType } from "expo-router";
 
 
 // types.ts
@@ -160,10 +161,10 @@ export interface Profesores {
 export interface selectProps {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  value: string | number | null;
-  setValue: Dispatch<SetStateAction< string | null>> | Dispatch<SetStateAction< string | null>> ;
-  items: Array<{ label: string; value: string | number }>;
-  setItems?: Dispatch<SetStateAction<Array<{ label: string; value: string | number }>>> ;
+  value: items
+  setValue: Dispatch<SetStateAction<items>>;
+  items: Array<items>;
+  setItems?: Dispatch<SetStateAction<Array<items>>> ;
   max?: number;
   min?: number;
   placeholder?:string
@@ -172,5 +173,6 @@ export interface selectProps {
   maxHeigth?: number;
 }
 export interface items{
-  
+  label:string;
+  value: null | string | number
 }
