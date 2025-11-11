@@ -116,6 +116,13 @@ export interface User {
   img_alumno?: string;
   nombre?: string;
 }
+
+export interface CursoNuevo {
+    año: number;
+    carrera: string;
+    division: string;
+  }
+
 export interface respuestaAlumno {
     message: {
     apellido?: string;
