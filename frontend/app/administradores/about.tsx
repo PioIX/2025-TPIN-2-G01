@@ -17,7 +17,8 @@ export default function About() {
     const [openList, setOpenList] = useState<boolean>(false)
 
     const [rank, setRank] = useState<string>("");
-    const [user, setUser] = useState<items>()
+    const [user, setUser] = useState<Admins | Estudiantes | Profesores | Admins>()
+    const [userId, setUserId] = useState<Admins | Estudiantes | Profesores | Admins>()
 
     const [adminsLista, setAdminsLista] = useState<Admins[]>([])
     const [alumnoLista, setAlumnoLista] = useState<Estudiantes[]>([])
@@ -73,7 +74,7 @@ export default function About() {
 
     function limpiarSelectUsuarios():void {
         setItems([])
-        setUser(undefined)
+        setUser(0)
     }
     function cambiarRango():void {
         switch (rank) {
@@ -157,15 +158,19 @@ export default function About() {
                         open={openList}
                         items={items}
                         setItems={setItems}
-                        value={user}
-                        setValue={setUser}
+                        value={userId}
+                        setValue={setUserId}
                         placeholder={`seleccione un ${rank.toLowerCase}`}
                         isSearchable
                     />
                     {
                         rank == "Administradores" &&
                         <View>
-                            <Input placeholder="" value={user.value}/>
+                            <Input
+                                value={"a"}
+                                placeholder="useless placeholder"
+                                keyboardType="text"
+                            />
                         </View>
                     }
                     <Input placeholder="Escribe tu nombre" onChangeText={() => {}} ></Input>

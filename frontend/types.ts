@@ -161,8 +161,8 @@ export interface Profesores {
 export interface selectProps {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  value: items
-  setValue: Dispatch<SetStateAction<items>>;
+  value: string | number | null
+  setValue: Dispatch<SetStateAction<string | number | null >>;
   items: Array<items>;
   setItems?: Dispatch<SetStateAction<Array<items>>> ;
   max?: number;
