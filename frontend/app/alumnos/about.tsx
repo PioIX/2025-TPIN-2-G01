@@ -53,8 +53,8 @@ export default function AlumnosAsistencia() {
   }, [email]);
 
   useEffect(() => {
-    console.log(faltasTotales);
-  }, [faltasTotales]);
+    console.log(faltasNoJustificadas);
+  }, [faltasNoJustificadas]);
 
   useEffect(() => {
     // console.log("array de faltas", arrayFaltas)
@@ -69,9 +69,12 @@ export default function AlumnosAsistencia() {
         `http://localhost:4000/traerAsistencias?correo_electronico=${correo}&falta>=0`
       );
       const data = await response.json();
-      console.log("correo ", correo)
+      // console.log("correo ", correo)
       console.log("Data crudo ", data)
-      console.log("Data::: ", data.message[0]);
+      // console.log("Data::: ", data.message[0]);
+
+      let faltaJus = 0
+      let faltaNoJus = 0
 
       for (let i = 0; i < data.message.length; i++) {
         const fechaSoloDia = new Date(data.message[i].horario_de_entrada)
@@ -84,13 +87,19 @@ export default function AlumnosAsistencia() {
         setArrayFaltas(prev => [...prev, fechaSoloDia, faltaActual]);
 
         if (data.message[i].esta_justificada === 0) {
-          setFaltasNoJustificadas(faltasNoJustificadas+falta[i])
+          faltaNoJus=faltaNoJus+faltaActual
         } else {
-          setFaltasJustificadas(faltasJustificadas+falta[i])
+          faltaJus=faltaJus+faltaActual
         }
         
       }
-      setFaltasTotales(faltasJustificadas+faltasNoJustificadas)
+      setFaltasJustificadas(faltaJus)
+      setFaltasNoJustificadas(faltaNoJus)
+      setFaltasTotales(faltaJus+faltaNoJus)
+      console.log("faltas justificadas",faltasJustificadas)
+      console.log("faltas no justificadas",faltasNoJustificadas)
+      console.log("faltas totales",faltasTotales)
+      //setFaltasTotales(faltasJustificadas+faltasNoJustificadas)
       // console.log(faltasTotales)
     } catch (error) {
       console.error("Error al traer las asistencias:", error);
@@ -111,8 +120,10 @@ export default function AlumnosAsistencia() {
       </Pressable>
     
       <InAttendanceTable fechas={fecha} faltas={falta}></InAttendanceTable>
-      <Text>Faltas justificadas</Text>
-      <Text>{faltasNoJustificadas}</Text>
+      
+      <Text>Faltas Totales: {faltasTotales}</Text>
+      <Text>Faltas No Justificadas: {faltasNoJustificadas}</Text>
+      <Text>Faltas Justificadas: {faltasJustificadas}</Text>
     
     </View>
   );
