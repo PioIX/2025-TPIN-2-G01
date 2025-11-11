@@ -2,10 +2,11 @@ import Button from "components/Button";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import type { Admins, Profesores, Estudiantes, items } from "types";
+import type { Admins, Profesores, Estudiantes, items, Usuario, Alumno } from "types";
 import Input from "components/input";
-import DropDown from "components/dropDown";
+
 import { values } from "eslint.config";
+import DropDown from "components/DropDown";
 export default function About() {
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
@@ -17,40 +18,50 @@ export default function About() {
     const [openList, setOpenList] = useState<boolean>(false)
 
     const [rank, setRank] = useState<string>("");
-    const [user, setUser] = useState<Admins | Estudiantes | Profesores | Admins>()
-    const [userId, setUserId] = useState<Admins | Estudiantes | Profesores | Admins>()
+    const [user, setUser] = useState<Usuario | null>(null)
+    const [userId, setUserId] = useState<number | null>(null)
 
-    const [adminsLista, setAdminsLista] = useState<Admins[]>([])
+    const [ownerLista, setOwnerLista] = useState<Admins[]>([])
     const [alumnoLista, setAlumnoLista] = useState<Estudiantes[]>([])
     const [profesoresLista, setProfesoresLista] = useState<Profesores[]>([])
     const [preceptorLista, setPreceptorLista] = useState<Admins[]>([])
     const [items, setItems] = useState<items[]>([])
-    useEffect(()=>{
-        console.log("hola ",user)
-    },[,user])
     useEffect(() => {
-        console.log("soy ", openRank)
+        console.log("user: ", user)
+    }, [, user])
+    useEffect(() => {
+        console.log("rank: ", openRank)
     }, [openRank])
     useEffect(() => {
-        console.log("soy ", profesoresLista)
+        console.log("profesores[] ", profesoresLista)
     }, [profesoresLista])
+    useEffect(() => {
+        console.log("Owner[] ", ownerLista)
+    }, [ownerLista])
+    useEffect(() => {
+        console.log("alumnos[] ", alumnoLista)
+    }, [alumnoLista])
+    useEffect(() => {
+        console.log("Preceptorres[] ", preceptorLista)
+    }, [preceptorLista])
 
     useEffect(() => {
-        setAdminsLista([
-            { id: 1, nombre: "Admin1", apellido: "Perez", Rango: "O", email: "admin1@escuela.com", contraseña: "1234" },
-            { id: 2, nombre: "Admin2", apellido: "Lopez", Rango: "O", email: "admin2@escuela.com", contraseña: "1234" },
-            { id: 3, nombre: "Admin3", apellido: "Diaz", Rango: "O", email: "admin3@escuela.com", contraseña: "1234" },
-            { id: 4, nombre: "Admin4", apellido: "Sosa", Rango: "O", email: "admin4@escuela.com", contraseña: "1234" },
-            { id: 5, nombre: "Admin5", apellido: "Martinez", Rango: "O", email: "admin5@escuela.com", contraseña: "1234" },
+        //owner (rango "O")
+        setOwnerLista([
+            { id: 1, nombre: "Admin1", apellido: "Perez", rango: "O", email: "admin1@escuela.com", contraseña: "1234" },
+            { id: 2, nombre: "Admin2", apellido: "Lopez", rango: "O", email: "admin2@escuela.com", contraseña: "1234" },
+            { id: 3, nombre: "Admin3", apellido: "Diaz", rango: "O", email: "admin3@escuela.com", contraseña: "1234" },
+            { id: 4, nombre: "Admin4", apellido: "Sosa", rango: "O", email: "admin4@escuela.com", contraseña: "1234" },
+            { id: 5, nombre: "Admin5", apellido: "Martinez", rango: "O", email: "admin5@escuela.com", contraseña: "1234" },
         ]);
 
-        // Preceptores (Rango "P")
+        // Preceptores (rango "P")
         setPreceptorLista([
-            { id: 1, nombre: "Preceptor1", apellido: "Gomez", Rango: "P", email: "preceptor1@escuela.com", contraseña: "abcd" },
-            { id: 2, nombre: "Preceptor2", apellido: "Mendez", Rango: "P", email: "preceptor2@escuela.com", contraseña: "abcd" },
-            { id: 3, nombre: "Preceptor3", apellido: "Ramos", Rango: "P", email: "preceptor3@escuela.com", contraseña: "abcd" },
-            { id: 4, nombre: "Preceptor4", apellido: "Nuñez", Rango: "P", email: "preceptor4@escuela.com", contraseña: "abcd" },
-            { id: 5, nombre: "Preceptor5", apellido: "Suarez", Rango: "P", email: "preceptor5@escuela.com", contraseña: "abcd" },
+            { id: 1, nombre: "Preceptor1", apellido: "Gomez", rango: "P", email: "preceptor1@escuela.com", contraseña: "abcd" },
+            { id: 2, nombre: "Preceptor2", apellido: "Mendez", rango: "P", email: "preceptor2@escuela.com", contraseña: "abcd" },
+            { id: 3, nombre: "Preceptor3", apellido: "Ramos", rango: "P", email: "preceptor3@escuela.com", contraseña: "abcd" },
+            { id: 4, nombre: "Preceptor4", apellido: "Nuñez", rango: "P", email: "preceptor4@escuela.com", contraseña: "abcd" },
+            { id: 5, nombre: "Preceptor5", apellido: "Suarez", rango: "P", email: "preceptor5@escuela.com", contraseña: "abcd" },
         ]);
 
         // Estudiantes
@@ -72,44 +83,55 @@ export default function About() {
         ]);
     }, [])
 
-    function limpiarSelectUsuarios():void {
+    function limpiarSelectUsuarios(): void {
         setItems([])
-        setUser(0)
+        setUserId(null)
+        setUser(null)
     }
-    function cambiarRango():void {
+    function isAdmin(user: Usuario): user is Admins {
+        return  ((user as Admins).rango.length>0 )
+    }
+    function isEstudiante(user: Usuario): user is Estudiantes {
+        return ((user as Estudiantes) in alumnoLista as Array)
+    }
+    function isProfesor(user: Usuario): user is Profesores {
+        return ((user as Estudiantes).id_curso>0)
+
+    }
+    function cambiarRango(): void {
         switch (rank) {
-            case "Administrador":
-                setItems(adminsLista.map((admin) => ({
+            case "Owner":
+                setItems(ownerLista.map((admin) => ({
                     label: `${admin.nombre} ${admin.apellido}`,
                     value: admin.id,
                 })))
-                break
+            break
             case "Preceptor":
                 setItems(preceptorLista.map((preceptor) => ({
                     label: `${preceptor.nombre} ${preceptor.apellido}`,
                     value: preceptor.id,
                 })))
-                break
+            break
             case "Alumno":
                 setItems(alumnoLista.map((alumno) => ({
                     label: `${alumno.nombre} ${alumno.apellido}`,
                     value: alumno.id,
                 })))
-                break
+            break
             case "Profesor":
                 setItems(profesoresLista.map((profesor) => ({
                     label: `${profesor.nombre} ${profesor.apellido}`,
                     value: profesor.id,
                 })))
-                break
+            break
         }
     }
 
     useEffect(() => {
         limpiarSelectUsuarios()
         cambiarRango()
+        console.log(rank)
     }, [rank])
-
     function moverAModificar(): void {
         setModificar(true)
         setBorrar(false)
@@ -140,7 +162,7 @@ export default function About() {
                     setOpen={setOpenRank}
                     items={[
                         { label: "Alumno", value: "Alumno" },
-                        { label: "Administrador", value: "Administrador" },
+                        { label: "Owner", value: "Owner" },
                         { label: "Profesor", value: "Profesor" },
                         { label: "Preceptor", value: "Preceptor" },
                     ]}
@@ -164,16 +186,43 @@ export default function About() {
                         isSearchable
                     />
                     {
-                        rank == "Administradores" &&
+                        userId &&
                         <View>
                             <Input
-                                value={"a"}
-                                placeholder="useless placeholder"
-                                keyboardType="text"
+                                editable={false}
+                                value={user?.id.toString()}
                             />
+                            <Input
+                                value={user?.nombre}
+                            />
+                            <Input
+                                value={user?.apellido}
+                            />
+                            <Input
+                                value={user?.email}
+                                placeholder="useless placeholder"
+                                keyboardType="default"
+                            />
+                            <Input
+                                value={user?.contraseña}
+                            />
+                            {
+                                isAdmin(user as Usuario) &&
+                                <Input
+                                    value={(user as Admins).rango}
+                                />
+
+                            }
+                            {
+                                isEstudiante(user as Usuario) &&
+                                <Input
+                                    value={(user as Estudiantes).id_curso.toString()}
+                                />
+                            }
                         </View>
+
                     }
-                    <Input placeholder="Escribe tu nombre" onChangeText={() => {}} ></Input>
+                    <Input placeholder="Escribe tu nombre" onChangeText={() => { }} ></Input>
                 </View>
             }
 

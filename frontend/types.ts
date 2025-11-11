@@ -137,7 +137,7 @@ export interface Admins {
   id : number
   nombre : string
   apellido : string
-  Rango: "O" | "P"
+  rango: "O" | "P"
   email: `${string}@${string}.${string}`; 
   contraseña: string
 }
@@ -158,11 +158,13 @@ export interface Profesores {
   contraseña: string
 }
 
+export type Usuario = Admins | Estudiantes | Profesores;
+
 export interface selectProps {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   value: string | number | null
-  setValue: Dispatch<SetStateAction<string | number | null >>;
+  setValue: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<number | null >>;
   items: Array<items>;
   setItems?: Dispatch<SetStateAction<Array<items>>> ;
   max?: number;
