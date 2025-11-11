@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Octicons from '@expo/vector-icons/Octicons';
 
 export default function Layout() {
   return (
@@ -29,11 +30,7 @@ export default function Layout() {
         options={{
           title: '',
           tabBarIcon: ({ focused }) => (
-            <FontAwesome
-              name="home"
-              size={24}
-              color={focused ? 'tomato' : 'gray'}  
-            />
+            <Octicons name="checklist" size={24} color={focused ? 'tomato' : 'gray'}/>
           ),
         }}
       />

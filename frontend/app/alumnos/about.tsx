@@ -6,11 +6,15 @@ import { useEffect, useState } from 'react';
 import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
+import AttendanceTable from 'components/Tabla';
+import InAttendanceTable from 'components/TablaInasistencia';
 export default function AlumnosAsistencia() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
+  const [fecha, setFecha] = useState<Array<string|null>>([])
+  const [falta, setFalta] = useState<Array<number>>([])
   const [arrayFaltas, setArrayFaltas] = useState<Array<string | number>>([])
   /**
      * trae la info del usuario logeado
@@ -37,16 +41,18 @@ export default function AlumnosAsistencia() {
   };
 
 
-  useEffect(() => {
-    fetchUser();
-  }, [])
+  // useEffect(() => {
+  //   fetchUser();
+  // }, [])
 
   useEffect(() => {
     fetchAsistencias(email);
   }, [email]);
 
   useEffect(() => {
-    console.log("array de faltas", arrayFaltas)
+    // console.log("array de faltas", arrayFaltas)
+    console.log("array de faltas", falta)
+    console.log("array de fecha", fecha)
   }, [arrayFaltas]);
 
 
@@ -65,6 +71,8 @@ export default function AlumnosAsistencia() {
           .toISOString()
           .split('T')[0]; // → "2025-10-22"
         const faltaActual = data.message[i].falta;
+        setFecha(prev => [...prev, fechaSoloDia])
+        setFalta(prev => [...prev, faltaActual])
         setArrayFaltas(prev => [...prev, fechaSoloDia, faltaActual]);
       }
       
@@ -82,6 +90,13 @@ export default function AlumnosAsistencia() {
       <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
       </Pressable>
+      <Pressable onPress={fetchUser}>
+        <Text>Mostrar Tabla de Inasistencias</Text>
+      </Pressable>
+    
+      <InAttendanceTable fechas={fecha} faltas={falta}></InAttendanceTable>
+
+    
     </View>
   );
 }
