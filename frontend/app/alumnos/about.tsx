@@ -52,15 +52,12 @@ export default function AlumnosAsistencia() {
     fetchAsistencias(email);
   }, [email]);
 
-  useEffect(() => {
-    console.log(faltasNoJustificadas);
-  }, [faltasNoJustificadas]);
 
-  useEffect(() => {
+  // useEffect(() => {
     // console.log("array de faltas", arrayFaltas)
-    console.log("array de faltas", falta)
-    console.log("array de fecha", fecha)
-  }, [arrayFaltas]);
+    // console.log("array de faltas", falta)
+    // console.log("array de fecha", fecha)
+  // }, [arrayFaltas]);
 
 
   async function fetchAsistencias(correo: string): Promise<void> {
@@ -69,10 +66,7 @@ export default function AlumnosAsistencia() {
         `http://localhost:4000/traerAsistencias?correo_electronico=${correo}&falta>=0`
       );
       const data = await response.json();
-      // console.log("correo ", correo)
       console.log("Data crudo ", data)
-      // console.log("Data::: ", data.message[0]);
-
       let faltaJus = 0
       let faltaNoJus = 0
 
@@ -96,11 +90,6 @@ export default function AlumnosAsistencia() {
       setFaltasJustificadas(faltaJus)
       setFaltasNoJustificadas(faltaNoJus)
       setFaltasTotales(faltaJus+faltaNoJus)
-      console.log("faltas justificadas",faltasJustificadas)
-      console.log("faltas no justificadas",faltasNoJustificadas)
-      console.log("faltas totales",faltasTotales)
-      //setFaltasTotales(faltasJustificadas+faltasNoJustificadas)
-      // console.log(faltasTotales)
     } catch (error) {
       console.error("Error al traer las asistencias:", error);
     }
