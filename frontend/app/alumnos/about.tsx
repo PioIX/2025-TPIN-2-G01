@@ -16,6 +16,9 @@ export default function AlumnosAsistencia() {
   const [fecha, setFecha] = useState<Array<string|null>>([])
   const [falta, setFalta] = useState<Array<number>>([])
   const [arrayFaltas, setArrayFaltas] = useState<Array<string | number>>([])
+  const [faltasJustificadas, setFaltasJustificadas] = useState<number>(0)
+  const [faltasNoJustificadas, setFaltasNoJustificadas] = useState<number>(0)
+  const [faltasTotales, setFaltasTotales] = useState<number>(0)
   /**
      * trae la info del usuario logeado
      * @returns {message:{datosEstudiantes}}
@@ -50,6 +53,10 @@ export default function AlumnosAsistencia() {
   }, [email]);
 
   useEffect(() => {
+    console.log(faltasTotales);
+  }, [faltasTotales]);
+
+  useEffect(() => {
     // console.log("array de faltas", arrayFaltas)
     console.log("array de faltas", falta)
     console.log("array de fecha", fecha)
@@ -73,9 +80,18 @@ export default function AlumnosAsistencia() {
         const faltaActual = data.message[i].falta;
         setFecha(prev => [...prev, fechaSoloDia])
         setFalta(prev => [...prev, faltaActual])
+        
         setArrayFaltas(prev => [...prev, fechaSoloDia, faltaActual]);
+
+        if (data.message[i].esta_justificada === 0) {
+          setFaltasNoJustificadas(faltasNoJustificadas+falta[i])
+        } else {
+          setFaltasJustificadas(faltasJustificadas+falta[i])
+        }
+        
       }
-      
+      setFaltasTotales(faltasJustificadas+faltasNoJustificadas)
+      // console.log(faltasTotales)
     } catch (error) {
       console.error("Error al traer las asistencias:", error);
     }
@@ -95,7 +111,8 @@ export default function AlumnosAsistencia() {
       </Pressable>
     
       <InAttendanceTable fechas={fecha} faltas={falta}></InAttendanceTable>
-
+      <Text>Faltas justificadas</Text>
+      <Text>{faltasNoJustificadas}</Text>
     
     </View>
   );
