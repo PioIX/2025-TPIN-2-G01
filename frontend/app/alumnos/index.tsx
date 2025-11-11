@@ -39,7 +39,7 @@ export default function AlumnosHome() {
 
   async function fetchUser(): Promise<void> {
     const userData = await fetchAlumno({
-      url: 'https://stupid-icons-check.loca.lt/usuarioLog',
+      url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

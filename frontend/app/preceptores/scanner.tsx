@@ -21,7 +21,7 @@ export default function App() {
   }
   async function marcarAsistencia() {
     await registrarAsistencia({
-      url: 'https://stupid-icons-check.loca.lt/asistencia',
+      url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/asistencia',
       method: 'POST',
       body: {email: scannedData},
       headers: {

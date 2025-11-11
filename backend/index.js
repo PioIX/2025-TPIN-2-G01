@@ -307,11 +307,11 @@ app.post("/lista", async function (req, res) {
 // POST PARA ASISTENCIA PRECEPTORES
 app.post("/asistencia", async function (req, res) {
   try {
+    let justificativo
     if (req.header("justificacion") == true) {
-      const justificativo = true
+       justificativo = true
     } else {
-      const justificativo = false
-
+       justificativo = false
     }
     const estudianteScanneado = await realizarQuery(`Select * from Alumnos where correo_electronico = ${req.body.email}`)
     const curso = await realizarQuery(` Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
