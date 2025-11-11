@@ -1,36 +1,42 @@
-import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-import { Pressable, Text } from 'react-native';
-import { useEffect } from 'react';
+import { Pressable, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
 import useFetch from 'hooks/useFetch';
-export default function preceptoresHome() {
-  const { data, error, loading, fetchData } = useFetch();
-  const router = useRouter();
-  const { token, logout } = useAuth();
+import { RolMessage } from 'types';
+export default function ProfesoresHome() {
+  const { data, error, loading, fetchData } = useFetch<RolMessage>();
+  const { token } = useAuth();
+  const [message,setMessage] = useState<string>("")
   useEffect(() => {
     if (!token) return;
+
     const fetchUser = async () => {
       const userData = await fetchData({
         url: 'http://localhost:4000/usuarioLog',
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
-          Persona: 'precptor',
+          Persona: 'preceptor',
         },
       });
+
+      if (userData?.message) {
+        setMessage(`Hola ${userData.message.nombre} como esta tu día `)
+        
+      } 
     };
+
     fetchUser();
   }, [token]);
-  const handleLogout = async () => {
-    await logout();
-    router.replace('/');
-  };
+
+
 
   return (
-    <Pressable onPress={handleLogout}>
-      <Text>Cerrar sesión</Text>
-    </Pressable>
+  <>
+    <View>
+      <Text>{message}</Text>
+    </View>
+  </>
   );
 }
 
-// const { token, rango, logout } = useAuth();

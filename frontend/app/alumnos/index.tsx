@@ -1,17 +1,19 @@
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-
-import { Pressable, Text, View } from 'react-native';
+import { useSocket } from "hooks/useSocket";
+import { Pressable, Text, View, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
 import Qr from 'components/QrGenerator';
 import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
 import type {CursoNuevo} from 'types'
+import { respuestaAlumno } from 'types';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function AlumnosHome() {
-  const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
+
   const [qrValue, setQrValue] = useState<string>("")
   const [horarioEntrada, setHorarioEntrada] = useState<string>("")
   const [cursoNuevo, setCursoNuevo] = useState<CursoNuevo>({
@@ -23,20 +25,48 @@ export default function AlumnosHome() {
    * trae la info del usuario logeado
    * @returns {message:{datosEstudiantes}}
    */
+
+  const { socket, isConnected } = useSocket();
+  const {fetchData: fetchAlumno} = useFetch<respuestaAlumno>()
+  
+    function metermeSala(){
+      console.log(email)
+      socket?.emit("unirme", { value: email });  
+    }
+
+    useEffect(()=>{
+      if (email != "") {
+        metermeSala()
+      }
+    }, [email])
+  
+    useEffect(() => {
+    if (!socket) return;
+      socket.on("mensajitoSala", (generico)=>{
+        // Alert.alert(generico.message)
+        Alert.alert(generico.message)
+      })
+      
+    }, [socket]);
+
+
   async function fetchUser(): Promise<void> {
-    const userData = await fetchData({
-      url: 'http://localhost:4000/usuarioLog',
+    const userData = await fetchAlumno({
+      url: 'https://silly-snakes-walk.loca.lt/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         Persona: 'alumno',
       },
     });
-    console.log(token);
-    console.log("userData ", userData)
-    setEmail(userData.message.correo_electronico)
-    console.log(typeof (userData.message.correo_electronico))
-    console.log("email", email)
+
+    console.log(userData?.message)
+    if (userData?.message?.correo_electronico) {
+      setEmail(userData.message.correo_electronico)
+      console.log(typeof (userData.message.correo_electronico))
+      console.log("email", email)
+    }
+
   };
   const handleLogout = async () => {
     await logout();
@@ -99,9 +129,6 @@ export default function AlumnosHome() {
 
   async function generarQr(): Promise<void> {
     await fetchUser()
-    console.log("pipo", email)
-    setQrValue(email)
-    console.log("pepe", qrValue)
   }
 
   useEffect(()=>{
@@ -111,27 +138,30 @@ export default function AlumnosHome() {
 
 
   return (
-    <View>
+    <SafeAreaProvider className=''>
+
+     <View className="flex-1 items-center justify-center bg-white">
       <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
 
       </Pressable>
       {email && <Qr
-        value={"qrValue"}
+        value={email}
         size={256}
         color="#0f0f0f"
         backgroundColor="#f0f0f0"
-      >
+        >
       </Qr>
       }
 
       <Button label="generar qr" onPress={() => { generarQr() }}></Button>
       <Text className="w-full p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6">Curso: {`${cursoNuevo.año}° ${cursoNuevo.division} ${cursoNuevo.carrera}` || "Cargando..."}</Text>
       <Text className="w-full p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6">Horario de entrada: {horarioEntrada || "Cargando..."} </Text>
-    </View>
+
+     </View>
+    </SafeAreaProvider>
   );
 }
 
 
 
-// const { token, rango, logout } = useAuth();
