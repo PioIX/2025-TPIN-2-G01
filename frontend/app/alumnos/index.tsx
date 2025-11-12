@@ -29,7 +29,7 @@ export default function AlumnosHome() {
     useEffect(() => {
     if (!socket) return;
       socket.on("mensajitoSala", (generico)=>{
-        Alert.alert(generico.message)
+        console.log(generico.message)
       })
       socket.on("NotificacionAlumno", (generico)=>{
         Alert.alert(generico.message)

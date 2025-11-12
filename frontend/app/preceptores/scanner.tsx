@@ -10,8 +10,8 @@ export default function App() {
   const [scannedData, setScannedData] = useState<string | null>(null);
   const { socket, isConnected } = useSocket();
   const {fetchData: registrarAsistencia} = useFetch()
-  function unirme(){
-    socket?.emit("unirme",  { value: scannedData });  
+  function unirme(data:string){
+    socket?.emit("unirme",  { value: data });  
   }
 
   async function emitirAsistencia(){
@@ -33,8 +33,8 @@ export default function App() {
   useEffect(() => {
   if (!socket) return;
     socket.on("mensajitoSala", (data)=>{
-
-
+      console.log(data)
+      console.log("estoy mandando asistencia")
       emitirAsistencia()
     })
   }, [socket]);
@@ -42,7 +42,7 @@ export default function App() {
   const handleScan = (data: string) => {
     setScannedData(data);
     setScanning(false); 
-    unirme()
+    unirme(data)
     alert(`QR Escaneado ${data}`);
   };
 

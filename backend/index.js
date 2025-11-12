@@ -89,41 +89,42 @@ io.on("connection", (socket) => {
   //   io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data.msg });
   // })
   socket.on('unirme', data => {
-    socket.join(data.value)
-    console.log("me estoy uniendo a la sala")
+    const room = data.value;
     console.log(data)
-    io.emit("mensajitoSala", { message: "hola" })
-  })
+    socket.join(room)
+    socket.to(room).emit("mensajitoSala", { message: "Conectado a sala" })
+  });
 
   socket.on('MandarAsistencia', async data => {
-    console.log(data.value)
-    console.log("estoy mandando asistencia")
-    console.log("soy la sala de la persona", socket.room)
-    let fecha = new Date()
-    fecha = fecha.toISOString().slice(0, 10)
+    const email = data.value;
+    console.log("asistencia de", email);
 
-    const falta = await realizarQuery(`Select falta FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
-    const just = await realizarQuery(`Select esta_justificado FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
-    if (!just) {
-      console.log("entre")
-      switch (falta) {
-        case 0:
-          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "llegaste bien" })
-          break;
-        case 1:
-          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "tenes una falta entera" })
-          break;
-        case 0.50:
-          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "llegaste bien" })
-          break;
-        case 0.25:
-          socket.to(socket.rooms).emit("NotificacionAlumno", { message: "llegaste bien" })
-          break;
-        default:
-          break;
+    const room = email;
+    const fecha = new Date().toISOString().slice(0, 10);
+
+    const [asistencia] = await realizarQuery(
+      `SELECT falta, esta_justificado FROM Asistencias 
+     WHERE date(horario_de_entrada) = "${fecha}" 
+     AND id_alumno = (SELECT id_alumno FROM Alumnos WHERE correo_electronico = "${email}")`
+    );
+
+    if (!asistencia) return;
+
+    let mensaje;
+    if (asistencia.esta_justificado) {
+      mensaje = "Tu falta fue justificada";
+    } else {
+      switch (asistencia.falta) {
+        case 0: mensaje = "Llegaste bien"; break;
+        case 0.25: mensaje = "Llegaste con 15 minutos de demora"; break;
+        case 0.5: mensaje = "Llegaste con media falta"; break;
+        case 1: mensaje = "Tenés una falta entera"; break;
+        default: mensaje = "Error al calcular asistencia"; break;
       }
     }
-  })
+
+    io.to(room).emit("NotificacionAlumno", { message: mensaje });
+  });
   socket.on('disconnect', () => {
     console.log("Disconnect");
   })
@@ -313,8 +314,8 @@ app.post("/asistencia", async function (req, res) {
     } else {
       justificativo = false
     }
-    const estudianteScanneado = await realizarQuery(`Select * from Alumnos where correo_electronico = ${req.body.email}`)
-    const curso = await realizarQuery(` Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
+    const estudianteScanneado = await realizarQuery(`SELECT * FROM Alumnos WHERE correo_electronico = "${req.body.email}"`)
+    const curso = await realizarQuery(`Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
     const rawdata = fs.readFileSync("./asistencia.json");
     const { horarios_cursos } = JSON.parse(rawdata);
     for (let x = 0; x < horarios_cursos.length; x++) {
@@ -328,32 +329,17 @@ app.post("/asistencia", async function (req, res) {
         const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
         const horas = ahora.getHours();
         const minutos = ahora.getMinutes();
-
         //-----------------------------------------------------------//
-        if (horas > horario.getHours()) {
-          await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-        VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
-        } else {
-          if (horas == horario.getHours() && minutos > horario.getMinutes()) {
-            const cantidad_minutos = minutos - horario.getMinutes();
-            if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0.25, ${justificativo})`);
-            }
-            if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0.50, ${justificativo})`);
-            }
-            if (cantidad_minutos >= 45) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
-            }
-            if (ahora <= horario_de_entrada) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0, FALSE)`);
-            }
-          }
-        }
+        const diferenciaMin = (ahora - horario) / 60000;
+        let falta = 0;
+        if (diferenciaMin >= 45) falta = 1;
+        else if (diferenciaMin >= 30) falta = 0.5;
+        else if (diferenciaMin >= 15) falta = 0.25;
+
+        await realizarQuery(`
+        INSERT INTO Asistencias (horario_de_entrada, id_alumno, falta, esta_justificada)
+        VALUES ("${fecha}", ${estudianteScanneado[0].id_alumno}, ${falta}, ${justificativo})
+      `);
       }
     }
     res.send({ message: "asistencia registrada con exito" });

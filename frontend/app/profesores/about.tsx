@@ -12,12 +12,14 @@ export default function About() {
   return (
     <>
     <SafeAreaProvider>
-      
+      <View className='flex-1 justify-center'>
+
       <Pressable onPress={handleLogout}>
         <Text>cerrar</Text>
       </Pressable>
       <View>
         <Text>hola</Text>
+      </View>
       </View>
     </SafeAreaProvider>
     </>

@@ -56,10 +56,16 @@ export default function ProfesoresAsistencia() {
         });
 
         console.log(cursosData)
-        if (cursosData && 'message' in cursosData && Array.isArray(cursosData.message)) {
-          console.log("despues del if")
-          setCursos(cursosData.message);
-        } else if (Array.isArray(cursosData)) {
+        // if (cursosData && 'message' in cursosData && Array.isArray(cursosData.message)) {
+        //   console.log("despues del if")
+        //   setCursos(cursosData.message);
+        // } else if (Array.isArray(cursosData)) {
+        //   setCursos(cursosData);
+        // } else {
+        //   setCursos([]);
+        // }
+        console.log(cursosData)
+        if (Array.isArray(cursosData)) {
           setCursos(cursosData);
         } else {
           setCursos([]);
