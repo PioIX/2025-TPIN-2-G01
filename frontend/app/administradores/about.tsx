@@ -1,5 +1,4 @@
 import Button from "components/Button";
-import DropDown from "components/DropDown";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,7 +6,16 @@ import type { Admins, Profesores, Estudiantes, items, Usuario, Alumno } from "ty
 import Input from "components/input";
 
 import { values } from "eslint.config";
+import DropDown from "components/dropDown";
 export default function About() {
+
+    const [name,onChangeName] = useState<string>("");
+    const [surname,onChangeSurname] = useState<string>("");
+    const [email,onChangeEmail] = useState<string>("");
+    const [password,onChangePassword] = useState<string>("");
+    const [curso,onChangeCurso] = useState<string>("");
+    const [owner,onChangeOwner] = useState<boolean>(false);
+
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
     const [agregar, setAgregar] = useState<Boolean>(false)
@@ -95,48 +103,52 @@ export default function About() {
         setUser(null)
     }
     useEffect(() => {
-        userSeter(userId as number)
+        userDataSetter(userId as number)
         console.log("hola", user)
     }, [userId])
-    function isOwner(user: Usuario): boolean {
-        return (user.rango == "Owner")
-    }
     function isAdmin(user: Usuario): boolean {
-        return (user.rango == "Preceptor")
+        return (user?.rango == "Owner" || user?.rango == "Preceptor")
+    }
+    function isOwner(user: Usuario): boolean {
+        return (user?.rango == "Owner")
+    }
+    function isPreceptor(user: Usuario): boolean {
+        return (user?.rango == "Preceptor")
     }
     function isEstudiante(user: Usuario): boolean {
-        return user.rango == "Estudiante"
+        return user?.rango == "Estudiante"
     }
     function isProfesor(user: Usuario): boolean {
-        return user.rango == "Profesor"
+        return user?.rango == "Profesor"
     }
-    function userSeter(userId: number): void {
+    function userDataSetter(userId: number): void {
         let usuario: Usuario
         console.log("hello")
         switch (rank) {
             case "Owner":
-                usuario = (ownerLista.find((owner) => { owner.id == userId;console.log(owner.id==userId) })) as Usuario
-                if (usuario) {
-                    console.log("Owner encontrado:", usuario);
-                } else {
-                    console.log("Owner no encontrado");
-                }
+                usuario = ownerLista.find(owner => owner.id == userId) as Usuario;
                 setUser(usuario)
                 break
             case "Preceptor":
                 console.log("soy Prec")
-                usuario = preceptorLista.find((Preceptor) => { Preceptor.id == userId }) as Usuario
-
+                usuario = preceptorLista.find(Preceptor => Preceptor.id == userId) as Usuario
+                setUser(usuario)
                 break
             case "Alumno":
                 console.log("soy Alumn")
-                usuario = alumnoLista.find((Alumno) => { Alumno.id == userId }) as Usuario
+                usuario = alumnoLista.find(Alumno => Alumno.id == userId) as Usuario
+                setUser(usuario)
                 break
             case "Profesor":
                 console.log("soy Prof")
-                usuario = profesoresLista.find((profesor) => { profesor.id == userId }) as Usuario
-                break
+                usuario = profesoresLista.find(profesor => profesor.id == userId) as Usuario
+                setUser(usuario)
+                break            
         }
+        onChangeName(user?.nombre as string)
+        onChangeSurname(user?.apellido as string)
+        onChangeEmail(user?.email as string)
+        onChangePassword(user?.contraseña as string)
     }
     function cambiarRango(): void {
         switch (rank) {
@@ -222,31 +234,33 @@ export default function About() {
                         setItems={setItems}
                         value={userId}
                         setValue={setUserId}
-                        placeholder={`seleccione un ${rank.toLowerCase}`}
+                        placeholder={`seleccione un ${rank.toLowerCase()}`}
                         isSearchable
                     />
                     {
-                        userId &&
+                        userId && user &&
                         <View>
                             <Input
                                 editable={false}
                                 value={user?.id.toString()}
                             />
                             <Input
-                                value={user?.nombre}
+                                value={name}
+                                onChangeText={onChangeName}
                             />
                             <Input
-                                value={user?.apellido}
+                                value={surname}
+                                onChangeText={onChangeSurname}
                             />
                             <Input
-                                value={user?.email}
-                                placeholder="useless placeholder"
-                                keyboardType="default"
+                                value={email}
+                                onChangeText={onChangeEmail}
                             />
                             <Input
-                                value={user?.contraseña}
+                                value={password}
+                                onChangeText={onChangePassword}
                             />
-                            {/* {
+                            {
                                 isAdmin(user as Usuario) &&
                                 <Input
                                     value={(user as Usuario).rango}
@@ -257,13 +271,9 @@ export default function About() {
                                 <Input
                                     value={(user as Estudiantes).id_curso.toString()}
                                 />
-                            } */}
-                            <Button label="mostrar rango" onPress={() => { console.log(user) }}>
-                            </Button>
+                            }
                         </View>
-
                     }
-                    <Input placeholder="Escribe tu nombre" onChangeText={() => { }} ></Input>
                 </View>
             }
 
