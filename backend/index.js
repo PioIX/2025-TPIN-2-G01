@@ -101,7 +101,7 @@ io.on("connection", (socket) => {
     console.log("soy la sala de la persona", socket.room)
     let fecha = new Date()
     fecha = fecha.toISOString().slice(0, 10)
-    
+
     const falta = await realizarQuery(`Select falta FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
     const just = await realizarQuery(`Select esta_justificado FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
     if (!just) {
@@ -309,9 +309,9 @@ app.post("/asistencia", async function (req, res) {
   try {
     let justificativo
     if (req.header("justificacion") == true) {
-       justificativo = true
+      justificativo = true
     } else {
-       justificativo = false
+      justificativo = false
     }
     const estudianteScanneado = await realizarQuery(`Select * from Alumnos where correo_electronico = ${req.body.email}`)
     const curso = await realizarQuery(` Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)

@@ -25,7 +25,7 @@ export default function ProfesoresAsistencia() {
     const getProfesor = async () => {
       try {
         const profesor = await fetchProfesor({
-          url: 'http://localhost:4000/usuarioLog',
+          url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/usuarioLog',
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -50,12 +50,14 @@ export default function ProfesoresAsistencia() {
       try {
         setLoadingCursos(true);
         const cursosData = await fetchCursos({
-          url: `http://localhost:4000/cursos?id_profesor=${idProfesor}`,
+          url: `https://lithographically-soppiest-lonnie.ngrok-free.dev/cursos?id_profesor=${idProfesor}`,
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        console.log(cursosData)
         if (cursosData && 'message' in cursosData && Array.isArray(cursosData.message)) {
+          console.log("despues del if")
           setCursos(cursosData.message);
         } else if (Array.isArray(cursosData)) {
           setCursos(cursosData);
@@ -78,7 +80,7 @@ export default function ProfesoresAsistencia() {
 
     try {
       const alumnosData = await fetchAlumnos({
-        url: `http://localhost:4000/alumnos?id_curso=${selectedCurso}`,
+        url: `https://lithographically-soppiest-lonnie.ngrok-free.dev/alumnos?id_curso=${selectedCurso}`,
         method: 'GET',
       });
 
