@@ -1,49 +1,70 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, Alert } from "react-native";
 import Scanner from "components/camera";
 import { useSocket } from "hooks/useSocket";
-import { useEffect } from "react";
 import useFetch from "hooks/useFetch";
+
 export default function App() {
-  const [justificado,setJustificado] = useState<boolean>(false)
+  const [justificado, setJustificado] = useState<boolean>(false);
   const [scanning, setScanning] = useState(false);
   const [scannedData, setScannedData] = useState<string | null>(null);
   const { socket, isConnected } = useSocket();
-  const {fetchData: registrarAsistencia} = useFetch()
-  function unirme(data:string){
-    socket?.emit("unirme",  { value: data });  
+  const { fetchData: registrarAsistencia } = useFetch();
+
+  function unirme(data: string) {
+    socket?.emit("unirme", { value: data });
   }
 
-  async function emitirAsistencia(){
-    console.log("estoy mandando asistencia")
-    marcarAsistencia()
-    socket?.emit("MandarAsistencia", { value: scannedData})
-  }
-  async function marcarAsistencia() {
+  const emitirAsistencia = async (data: string) => {
+    console.log("Estoy mandando asistencia con data:", data);
+
+    if (data) {
+      // Llamamos a marcar la asistencia con el QR escaneado (data)
+      await marcarAsistencia(data);
+
+      // Emisión de asistencia al socket
+      socket?.emit("MandarAsistencia", { value: data });
+    }
+  };
+
+  async function marcarAsistencia(data: string) {
     await registrarAsistencia({
       url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/asistencia',
       method: 'POST',
-      body: {email: scannedData},
+      body: { email: data },
       headers: {
         justificacion: `${justificado}`
       },
-  });
+    });
   }
-  
+
   useEffect(() => {
-  if (!socket) return;
-    socket.on("mensajitoSala", (data)=>{
-      console.log(data)
-      console.log("estoy mandando asistencia")
-      emitirAsistencia()
-    })
-  }, [socket]);
+    if (!socket) return;
+
+    socket.on("mensajitoSala", (data) => {
+      console.log(data);
+      console.log("Estoy mandando asistencia");
+      if (scannedData) {
+        emitirAsistencia(scannedData);
+      }
+    });
+
+    return () => {
+      socket.off("mensajitoSala");
+    };
+  }, [socket, scannedData]); // Aquí depende de scannedData también
 
   const handleScan = (data: string) => {
-    setScannedData(data);
-    setScanning(false); 
-    unirme(data)
-    alert(`QR Escaneado ${data}`);
+    setScannedData(data);  // Actualizamos el estado con el QR escaneado
+    setScanning(false);     // Detenemos el escaneo
+    unirme(data);           // El usuario se une a la sala
+
+    alert(`QR Escaneado: ${data}`);
+
+    // Emitimos la asistencia directamente con el valor escaneado (data)
+    if (data) {
+      emitirAsistencia(data);  // Llamamos a la función con el valor escaneado
+    }
   };
 
   const handleToggleScan = () => {
@@ -89,7 +110,7 @@ export default function App() {
 
           <TouchableOpacity
             className="bg-green-600 px-4 py-3 rounded-lg"
-            onPress={()=>setJustificado(!justificado)}
+            onPress={() => setJustificado(!justificado)}
           >
             <Text className="text-white font-semibold">Justificar Falta</Text>
           </TouchableOpacity>

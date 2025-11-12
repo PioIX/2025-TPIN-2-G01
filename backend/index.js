@@ -92,7 +92,7 @@ io.on("connection", (socket) => {
     const room = data.value;
     console.log(data)
     socket.join(room)
-    socket.to(room).emit("mensajitoSala", { message: "Conectado a sala" })
+    io.to(room).emit("mensajitoSala", { message: "Conectado a sala" })
   });
 
   socket.on('MandarAsistencia', async data => {
@@ -103,7 +103,7 @@ io.on("connection", (socket) => {
     const fecha = new Date().toISOString().slice(0, 10);
 
     const [asistencia] = await realizarQuery(
-      `SELECT falta, esta_justificado FROM Asistencias 
+      `SELECT falta, esta_justificada FROM Asistencias 
      WHERE date(horario_de_entrada) = "${fecha}" 
      AND id_alumno = (SELECT id_alumno FROM Alumnos WHERE correo_electronico = "${email}")`
     );
@@ -111,7 +111,7 @@ io.on("connection", (socket) => {
     if (!asistencia) return;
 
     let mensaje;
-    if (asistencia.esta_justificado) {
+    if (asistencia.esta_justificada) {
       mensaje = "Tu falta fue justificada";
     } else {
       switch (asistencia.falta) {
@@ -308,6 +308,7 @@ app.post("/lista", async function (req, res) {
 // POST PARA ASISTENCIA PRECEPTORES
 app.post("/asistencia", async function (req, res) {
   try {
+    console.log("hola soy un endpoint")
     let justificativo
     if (req.header("justificacion") == true) {
       justificativo = true
@@ -318,11 +319,13 @@ app.post("/asistencia", async function (req, res) {
     const curso = await realizarQuery(`Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
     const rawdata = fs.readFileSync("./asistencia.json");
     const { horarios_cursos } = JSON.parse(rawdata);
+    console.log(estudianteScanneado)
     for (let x = 0; x < horarios_cursos.length; x++) {
       if (curso.año && curso.carrera && curso.division &&
         curso.año == horarios_cursos[x].año &&
         curso.carrera == horarios_cursos[x].carrera &&
         curso.division == horarios_cursos[x].division) {
+          console.log("anda por favor")
         const horario_de_entrada = horarios_cursos[x].horario_de_entrada
         const horario = new Date(horario_de_entrada);
         const ahora = new Date();
