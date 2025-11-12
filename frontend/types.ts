@@ -137,7 +137,7 @@ export interface Admins {
   id : number
   nombre : string
   apellido : string
-  rango: "O" | "P"
+  rango: "Owner" | "Preceptor"
   email: `${string}@${string}.${string}`; 
   contraseña: string
 }
@@ -146,6 +146,7 @@ export interface Estudiantes {
   id_curso : number 
   nombre : string
   apellido : string
+  rango: "Estudiante"
   imagen: null|string
   email: `${string}@${string}.${string}`; 
   contraseña: string
@@ -154,6 +155,7 @@ export interface Profesores {
   id : number 
   nombre : string
   apellido : string
+  rango: "Profesor"
   email: `${string}@${string}.${string}`; 
   contraseña: string
 }
@@ -165,7 +167,7 @@ export interface selectProps {
   setOpen: Dispatch<SetStateAction<boolean>>;
   value: string | number | null
   setValue: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<number | null >>;
-  items: Array<items>;
+  items: any;
   setItems?: Dispatch<SetStateAction<Array<items>>> ;
   max?: number;
   min?: number;
