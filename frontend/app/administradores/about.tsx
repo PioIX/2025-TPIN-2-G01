@@ -9,12 +9,12 @@ import { values } from "eslint.config";
 import DropDown from "components/dropDown";
 export default function About() {
 
-    const [name,onChangeName] = useState<string>("");
-    const [surname,onChangeSurname] = useState<string>("");
-    const [email,onChangeEmail] = useState<string>("");
-    const [password,onChangePassword] = useState<string>("");
-    const [curso,onChangeCurso] = useState<string>("");
-    const [owner,onChangeOwner] = useState<boolean>(false);
+    const [name, onChangeName] = useState<string>("");
+    const [surname, onChangeSurname] = useState<string>("");
+    const [email, onChangeEmail] = useState<string>("");
+    const [password, onChangePassword] = useState<string>("");
+    const [curso, onChangeCurso] = useState<string>("");
+    const [owner, onChangeOwner] = useState<boolean>(false);
 
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
@@ -101,6 +101,10 @@ export default function About() {
         setItems([])
         setUserId(null)
         setUser(null)
+        onChangeName("");
+        onChangeSurname("");
+        onChangeEmail("");
+        onChangePassword("");
     }
     useEffect(() => {
         userDataSetter(userId as number)
@@ -122,33 +126,31 @@ export default function About() {
         return user?.rango == "Profesor"
     }
     function userDataSetter(userId: number): void {
-        let usuario: Usuario
-        console.log("hello")
+        let usuario: Usuario | undefined;
         switch (rank) {
             case "Owner":
-                usuario = ownerLista.find(owner => owner.id == userId) as Usuario;
-                setUser(usuario)
-                break
+                usuario = ownerLista.find(owner => owner.id == userId);
+                break;
             case "Preceptor":
-                console.log("soy Prec")
-                usuario = preceptorLista.find(Preceptor => Preceptor.id == userId) as Usuario
-                setUser(usuario)
-                break
+                console.log("soy Prec");
+                usuario = preceptorLista.find(Preceptor => Preceptor.id == userId);
+                break;
             case "Alumno":
-                console.log("soy Alumn")
-                usuario = alumnoLista.find(Alumno => Alumno.id == userId) as Usuario
-                setUser(usuario)
-                break
+                console.log("soy Alumn");
+                usuario = alumnoLista.find(Alumno => Alumno.id == userId);
+                break;
             case "Profesor":
-                console.log("soy Prof")
-                usuario = profesoresLista.find(profesor => profesor.id == userId) as Usuario
-                setUser(usuario)
-                break            
+                console.log("soy Prof");
+                usuario = profesoresLista.find(profesor => profesor.id == userId);
+                break;
         }
-        onChangeName(user?.nombre as string)
-        onChangeSurname(user?.apellido as string)
-        onChangeEmail(user?.email as string)
-        onChangePassword(user?.contraseña as string)
+        if (usuario) {
+            setUser(usuario);
+            onChangeName(usuario.nombre);
+            onChangeSurname(usuario.apellido);
+            onChangeEmail(usuario.email);
+            onChangePassword(usuario.contraseña);
+        }
     }
     function cambiarRango(): void {
         switch (rank) {
@@ -198,6 +200,8 @@ export default function About() {
         setModificar(false)
         setBorrar(false)
         setAgregar(true)
+    }
+    function subirDatos() {
     }
     return (
 
@@ -272,6 +276,7 @@ export default function About() {
                                     value={(user as Estudiantes).id_curso.toString()}
                                 />
                             }
+                            <Button label="subir nuevos datos" onPress={subirDatos()}></Button>
                         </View>
                     }
                 </View>
