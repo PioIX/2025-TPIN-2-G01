@@ -124,6 +124,7 @@ export interface User {
   rango?: string
 }
 
+
 export interface ButtonProps {
   label: string;
   onPress?: () => void;
@@ -192,4 +193,24 @@ export interface UserData{
   email?: email
   contraseña?: string
   id_curso?: number
+}
+
+}
+
+export interface CursoNuevo {
+    año: number;
+    carrera: string;
+    division: string;
+  }
+
+export interface respuestaAlumno {
+    message: {
+    apellido?: string;
+  contraseña?: string;
+  correo_electronico?: string;
+  id_alumno?: number;
+  id_curso?: number;
+  img_alumno?: string;
+  nombre?: string;
+  }
 }

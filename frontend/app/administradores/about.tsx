@@ -337,9 +337,11 @@ export default function About() {
 
         <SafeAreaView style={{ flex: 1 }}>
             <View>
+              
                 <Button label="Modificar" onPress={moverAModificar}></Button>
                 <Button label="Borrar" onPress={moverABorrar}></Button>
                 <Button label="Agregar" onPress={moverAAgregar}></Button>
+
             </View>
             {
                 agregar &&

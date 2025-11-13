@@ -10,7 +10,7 @@ export interface Alumno {
 }
 
 export interface Person extends Alumno {
-  nombre: string;      
+  nombre: string;
   apellido: string;   
   presente: boolean;
   ausente: boolean;
@@ -36,7 +36,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({alumnos, onSubmit }) =
     }));
 
     await fetchAsistencia({
-      url: 'http://localhost:4000/lista',
+      url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/lista',
       method: 'POST',
       body: payload,
     });

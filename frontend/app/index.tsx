@@ -45,7 +45,6 @@ export default function HomeScreen() {
     setUser((prev) => ({ ...prev, [field]: value }));
     if (field === "Email") setMsgError(null);
   };
-
   const validarEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -64,10 +63,10 @@ export default function HomeScreen() {
 
     handleLogin(user);
   };
-
+  // poner tunnel
   const handleLogin = async (user: formData) => {
     const data = await fetchData({
-      url: `http://localhost:4000/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
+      url: `https://lithographically-soppiest-lonnie.ngrok-free.dev/login?correo_electronico=${user.Email}&contraseña=${user.Contraseña}`,
       method: "GET",
     });
 

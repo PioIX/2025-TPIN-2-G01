@@ -2,8 +2,7 @@ import { Tabs } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { AuthProvider } from 'app/context/AuthContext';
-// revisar authProvider
+
 export default function Layout() {
   return (
     <Tabs

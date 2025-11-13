@@ -2,13 +2,12 @@ import express from "express";
 import bodyParser from "body-parser";
 import { realizarQuery } from "./modulos/mysql.js";
 import cors from "cors";
-import logger from "morgan";
-import { Server } from "socket.io";
-import { createServer } from "node:http";
+import logger, { compile } from "morgan";
 import jwt from "jsonwebtoken";
 import crearToken from "./modulos/jwt.js";
 import fs from "fs";
-import { error } from "node:console";
+import session from 'express-session';
+import { Server } from 'socket.io';
 var app = express();
 var port = process.env.PORT || 4000;
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,6 +19,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
+const sessionMiddleware = session({
+  secret: "supersarasa",
+  resave: false,
+  saveUninitialized: false
+});
+app.use(sessionMiddleware);
 function verificarJWT(req, res, next) {
   let token = req.header(process.env.TOKEN_HEADER_KEY);
   if (!token) {
@@ -40,9 +45,95 @@ function verificarJWT(req, res, next) {
   }
 }
 
+const server = app.listen(port, () => {
+  console.log(`Servidor  corriendo en http://localhost:${port}/`);
+});;
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  }
+});
+
+
+
+io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next);
+});
+io.on("connection", (socket) => {
+  const req = socket.request;
+
+  socket.on('joinRoom', data => {
+    console.log("🚀 ~ io.on ~ req.session.room:", req.session.room)
+    if (req.session.room != undefined && req.session.room.length > 0)
+      socket.leave(req.session.room);
+    req.session.room = data.room;
+    socket.join(req.session.room);
+
+    io.to(req.session.room).emit('chat-messages', { user: req.session.user, room: req.session.room });
+  });
+
+  socket.on('pingAll', data => {
+    console.log("PING ALL: ", data);
+    io.emit('pingAll', { event: "Ping to all", message: data });
+  });
+
+  socket.on('sendMessage', data => {
+    io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data });
+  });
+  // socket.on('saludar', data=> {
+  //   console.log("hola celu")
+  //   console.log(data)
+  //   io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data.msg });
+  // })
+  socket.on('unirme', data => {
+    const room = data.value;
+    console.log(data)
+    socket.join(room)
+    io.to(room).emit("mensajitoSala", { message: "Conectado a sala" })
+  });
+
+  socket.on('MandarAsistencia', async data => {
+    const email = data.value;
+    console.log("asistencia de", email);
+
+    const room = email;
+    const fecha = new Date().toISOString().slice(0, 10);
+
+    const [asistencia] = await realizarQuery(
+      `SELECT falta, esta_justificada FROM Asistencias 
+     WHERE date(horario_de_entrada) = "${fecha}" 
+     AND id_alumno = (SELECT id_alumno FROM Alumnos WHERE correo_electronico = "${email}")`
+    );
+
+    if (!asistencia) return;
+
+    let mensaje;
+    if (asistencia.esta_justificada) {
+      mensaje = "Tu falta fue justificada";
+    } else {
+      switch (asistencia.falta) {
+        case 0: mensaje = "Llegaste bien"; break;
+        case 0.25: mensaje = "Llegaste con 15 minutos de demora"; break;
+        case 0.5: mensaje = "Llegaste con media falta"; break;
+        case 1: mensaje = "Tenés una falta entera"; break;
+        default: mensaje = "Error al calcular asistencia"; break;
+      }
+    }
+
+    io.to(room).emit("NotificacionAlumno", { message: mensaje });
+  });
+  socket.on('disconnect', () => {
+    console.log("Disconnect");
+  })
+});
+
 app.get("/", function (req, res) {
   res.send("sever running port 4000");
 });
+
 
 app.get("/getAllAlumnos", async function (req, res) {
   const result = await realizarQuery(`SELECT * FROM Alumnos`);
@@ -217,57 +308,50 @@ app.post("/lista", async function (req, res) {
 // POST PARA ASISTENCIA PRECEPTORES
 app.post("/asistencia", async function (req, res) {
   try {
+    console.log("hola soy un endpoint")
+    let justificativo
+    if (req.header("justificacion") == true) {
+      justificativo = true
+    } else {
+      justificativo = false
+    }
+    const estudianteScanneado = await realizarQuery(`SELECT * FROM Alumnos WHERE correo_electronico = "${req.body.email}"`)
+    const [curso] = await realizarQuery(`Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
     const rawdata = fs.readFileSync("./asistencia.json");
-    const { horario_llegada } = JSON.parse(rawdata);
-    const horario = new Date(horario_llegada);
-    const ahora = new Date();
-    const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
-    const horas = ahora.getHours();
-    const minutos = ahora.getMinutes();
-    req.body.map(async (elemento) => {
-      console.log(elemento);
-      if (elemento.ausente) {
-        console.log({ alumnos: `estoy ausente ${elemento.nombre}` });
-        const falta = await realizarQuery(
-          `SELECT * FROM Asistencias WHERE id_alumno = ${elemento.id} && horario_de_entrada = "${fecha}"`
-        );
-        if (!falta) {
-          if (horas > horario.getHours()) {
-            await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
-          } else {
-            if (horas == horario.getHours() && minutos > horario.getMinutes()) {
-              const cantidad_minutos = minutos - horario.getMinutes();
-              if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
-                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 0.25, FALSE)`);
-              }
-              if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
-                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 0.50, FALSE)`);
-              }
-              if (cantidad_minutos >= 45) {
-                await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-                VALUES (${fecha}, ${elemento.id}, 1, FALSE)`);
-              }
-            }
-          }
-        }
+    const horarios_cursos = JSON.parse(rawdata);
+    console.log(estudianteScanneado)
+    for (let x = 0; x < horarios_cursos.length; x++) {
+      if (curso.año && curso.carrera && curso.division &&
+        curso.año == horarios_cursos[x].año &&
+        curso.carrera == horarios_cursos[x].carrera &&
+        curso.division == horarios_cursos[x].division) {
+          console.log("anda por favor")
+        const horario_de_entrada = horarios_cursos[x].horario_de_entrada
+        const horario = new Date(horario_de_entrada);
+        const ahora = new Date();
+        const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
+        const horas = ahora.getHours();
+        const minutos = ahora.getMinutes();
+        //-----------------------------------------------------------//
+        const diferenciaMin = (ahora - horario) / 60000;
+        let falta = 0;
+        if (diferenciaMin >= 45) falta = 1;
+        else if (diferenciaMin >= 30) falta = 0.5;
+        else if (diferenciaMin >= 15) falta = 0.25;
+
+        await realizarQuery(`
+          INSERT INTO Asistencias (horario_de_entrada, id_alumno, falta, esta_justificada)
+          VALUES ("${fecha}", ${estudianteScanneado[0].id_alumno}, ${falta}, ${justificativo})
+        `);
+        break;
       }
-    });
-    res.send({ message: "asistencia recibida con exito" });
+    }
+    res.send({ message: "asistencia registrada con exito" });
   } catch (error) {
+    console.log("entro al catch", error.message)
     res.send({ message: `tuviste un error ${error}` });
   }
 });
-
-app.post("/getUsuarios", verificarJWT, async (req, res) => {
-  try {
-    res.send(await realizarQuery("select * from Alumnos"))
-  } catch {
-
-  }
-})
 
 app.post("/agregarUsuarios", async function (req, res) {
   try {
@@ -354,25 +438,80 @@ app.delete("/borrarUsuarios", async function (req, res) {
 })
 
 app.get("/traerAsistencias", async function (req, res) {
-  try{
-    const result = await realizarQuery('SELECT date(horario_de_entrada), falta from Asistencias where falta>0')
-    res.send({message: result})
-  }catch (error){
+  try {
+
+    const result = await realizarQuery(`SELECT horario_de_entrada, falta, esta_justificada FROM Asistencias
+    INNER JOIN Alumnos ON Asistencias.id_alumno = Alumnos.id_alumno
+    WHERE Alumnos.correo_electronico = "${req.query.correo_electronico}" and Asistencias.falta >= 0;`)
+
+    res.send({ message: result })
+  } catch (error) {
     res.send(error)
     console.log("Error al conseguir las faltas")
   }
 })
 
 app.get("/getAlumnos", async function (req, res) {
-  try{
+  try {
     const result = await realizarQuery('SELECT * from Alumnos')
-    res.send({message: result})
-  }catch(error){
+    res.send({ message: result })
+  } catch (error) {
     res.send(error)
     console.log("Error al traer alumnos")
   }
-  
+
 })
+
+app.get("/getCursoAlumno", async function (req, res) {
+  try {
+    const result = await realizarQuery(`SELECT año, division, carrera FROM Cursos
+    INNER JOIN Alumnos ON Cursos.id_curso = Alumnos.id_curso
+    WHERE Alumnos.correo_electronico = "${req.query.correo_electronico}";`)
+    res.send({ message: result })
+  } catch (error) {
+    res.send(error)
+    console.log("Error al traer el curso del alumno")
+  }
+})
+
+app.get("/getHorarioEntrada", (req, res) => {
+  const { carrera, año, division } = req.query;
+
+  try {
+    const data = JSON.parse(fs.readFileSync("./asistencia.json", "utf8"));
+    const curso = data.find(
+      (c) => {
+        switch (c.carrera) {
+          case "informatica":
+             c.carrera = "INF"
+            break
+          case "comunicacion":
+            c.carrera = "COM" 
+            break
+          case "renovables":
+            c.carrera = "REN" 
+            break
+          case "industrial":
+             c.carrera = "IND" 
+            break
+        }
+        return c.carrera === carrera &&
+          c.año === Number(año) &&
+          c.division === division
+      }
+    );
+
+
+    if (!curso) {
+      return res.status(404).json({ error: "Curso no encontrado" });
+    }
+
+    res.json({ horario_entrada: curso.horario_de_entrada });
+  } catch (error) {
+    console.error("Error leyendo JSON:", error);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
 
 app.listen(port, function () {
   console.log(`Server running in http://localhost:${port}`);
