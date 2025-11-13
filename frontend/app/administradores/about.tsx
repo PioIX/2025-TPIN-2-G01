@@ -1,19 +1,21 @@
+import cursos from "cursos.json"
+const dataCursos: Array<Cursos> = cursos
+
+import { useEffect, useState, SetStateAction, Dispatch } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import Button from "components/Button";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import type { Admins, Profesores, Estudiantes, items, Usuario, Alumno } from "types";
 import Input from "components/input";
-
-import { values } from "eslint.config";
 import DropDown from "components/dropDown";
-export default function About() {
+import { SafeAreaView } from "react-native-safe-area-context";
 
+import type { Usuario, Owner, Preceptor, Profesor, Alumno, items, Cursos, email, Admin } from "types";
+export default function About() {
     const [name, onChangeName] = useState<string>("");
     const [surname, onChangeSurname] = useState<string>("");
-    const [email, onChangeEmail] = useState<string>("");
+    const [email, onChangeEmail] = useState<email | string>("");
     const [password, onChangePassword] = useState<string>("");
     const [curso, onChangeCurso] = useState<string>("");
+    const [idCurso, onChangeIdCurso] = useState<number | null>(null);
     const [owner, onChangeOwner] = useState<boolean>(false);
 
     const [modificar, setModificar] = useState<Boolean>(true)
@@ -21,19 +23,18 @@ export default function About() {
     const [agregar, setAgregar] = useState<Boolean>(false)
 
     const [openRank, setOpenRank] = useState<boolean>(false)
-    const [openDelete, setOpenDelete] = useState<boolean>(false)
-    const [openUpdate, setOpenUpdate] = useState<boolean>(false)
     const [openList, setOpenList] = useState<boolean>(false)
 
     const [rank, setRank] = useState<string>("");
     const [user, setUser] = useState<Usuario | null>(null)
     const [userId, setUserId] = useState<number | null>(null)
 
-    const [ownerLista, setOwnerLista] = useState<Admins[]>([])
-    const [alumnoLista, setAlumnoLista] = useState<Estudiantes[]>([])
-    const [profesoresLista, setProfesoresLista] = useState<Profesores[]>([])
-    const [preceptorLista, setPreceptorLista] = useState<Admins[]>([])
+    const [ownerLista, setOwnerLista] = useState<Owner[]>([])
+    const [alumnoLista, setAlumnoLista] = useState<Alumno[]>([])
+    const [profesoresLista, setProfesoresLista] = useState<Profesor[]>([])
+    const [preceptorLista, setPreceptorLista] = useState<Preceptor[]>([])
     const [items, setItems] = useState<items[]>([])
+
     useEffect(() => {
         console.log("user: ", user)
     }, [, user])
@@ -62,84 +63,86 @@ export default function About() {
     useEffect(() => {
         //owner (rango "O")
         setOwnerLista([
-            { id: 1, nombre: "Admin1", apellido: "Perez", rango: "Owner", email: "admin1@escuela.com", contraseña: "1234" },
-            { id: 2, nombre: "Admin2", apellido: "Lopez", rango: "Owner", email: "admin2@escuela.com", contraseña: "1234" },
-            { id: 3, nombre: "Admin3", apellido: "Diaz", rango: "Owner", email: "admin3@escuela.com", contraseña: "1234" },
-            { id: 4, nombre: "Admin4", apellido: "Sosa", rango: "Owner", email: "admin4@escuela.com", contraseña: "1234" },
-            { id: 5, nombre: "Admin5", apellido: "Martinez", rango: "Owner", email: "admin5@escuela.com", contraseña: "1234" },
+            { id: 1, nombre: "Admin1", apellido: "Perez", rango: "owner", email: "admin1@escuela.com", contraseña: "1234" },
+            { id: 2, nombre: "Admin2", apellido: "Lopez", rango: "owner", email: "admin2@escuela.com", contraseña: "1234" },
+            { id: 3, nombre: "Admin3", apellido: "Diaz", rango: "owner", email: "admin3@escuela.com", contraseña: "1234" },
+            { id: 4, nombre: "Admin4", apellido: "Sosa", rango: "owner", email: "admin4@escuela.com", contraseña: "1234" },
+            { id: 5, nombre: "Admin5", apellido: "Martinez", rango: "owner", email: "admin5@escuela.com", contraseña: "1234" },
         ]);
 
         // Preceptores (rango "P")
         setPreceptorLista([
-            { id: 1, nombre: "Preceptor1", apellido: "Gomez", rango: "Preceptor", email: "preceptor1@escuela.com", contraseña: "abcd" },
-            { id: 2, nombre: "Preceptor2", apellido: "Mendez", rango: "Preceptor", email: "preceptor2@escuela.com", contraseña: "abcd" },
-            { id: 3, nombre: "Preceptor3", apellido: "Ramos", rango: "Preceptor", email: "preceptor3@escuela.com", contraseña: "abcd" },
-            { id: 4, nombre: "Preceptor4", apellido: "Nuñez", rango: "Preceptor", email: "preceptor4@escuela.com", contraseña: "abcd" },
-            { id: 5, nombre: "Preceptor5", apellido: "Suarez", rango: "Preceptor", email: "preceptor5@escuela.com", contraseña: "abcd" },
+            { id: 1, nombre: "Preceptor1", apellido: "Gomez", rango: "preceptor", email: "preceptor1@escuela.com", contraseña: "abcd" },
+            { id: 2, nombre: "Preceptor2", apellido: "Mendez", rango: "preceptor", email: "preceptor2@escuela.com", contraseña: "abcd" },
+            { id: 3, nombre: "Preceptor3", apellido: "Ramos", rango: "preceptor", email: "preceptor3@escuela.com", contraseña: "abcd" },
+            { id: 4, nombre: "Preceptor4", apellido: "Nuñez", rango: "preceptor", email: "preceptor4@escuela.com", contraseña: "abcd" },
+            { id: 5, nombre: "Preceptor5", apellido: "Suarez", rango: "preceptor", email: "preceptor5@escuela.com", contraseña: "abcd" },
         ]);
 
         // Estudiantes
         setAlumnoLista([
-            { id: 1, id_curso: 101, nombre: "Estudiante1", apellido: "Fernandez", rango: "Estudiante", imagen: null, email: "estudiante1@escuela.com", contraseña: "pass" },
-            { id: 2, id_curso: 101, nombre: "Estudiante2", apellido: "Garcia", rango: "Estudiante", imagen: null, email: "estudiante2@escuela.com", contraseña: "pass" },
-            { id: 3, id_curso: 102, nombre: "Estudiante3", apellido: "Perez", rango: "Estudiante", imagen: null, email: "estudiante3@escuela.com", contraseña: "pass" },
-            { id: 4, id_curso: 103, nombre: "Estudiante4", apellido: "Molina", rango: "Estudiante", imagen: null, email: "estudiante4@escuela.com", contraseña: "pass" },
-            { id: 5, id_curso: 104, nombre: "Estudiante5", apellido: "Juarez", rango: "Estudiante", imagen: null, email: "estudiante5@escuela.com", contraseña: "pass" },
+            { id: 1, id_curso: 17, nombre: "Estudiante1", apellido: "Fernandez", rango: "alumno", imagen: null, email: "estudiante1@escuela.com", contraseña: "pass" },
+            { id: 2, id_curso: 32, nombre: "Estudiante2", apellido: "Garcia", rango: "alumno", imagen: null, email: "estudiante2@escuela.com", contraseña: "pass" },
+            { id: 3, id_curso: 1, nombre: "Estudiante3", apellido: "Perez", rango: "alumno", imagen: null, email: "estudiante3@escuela.com", contraseña: "pass" },
+            { id: 4, id_curso: 27, nombre: "Estudiante4", apellido: "Molina", rango: "alumno", imagen: null, email: "estudiante4@escuela.com", contraseña: "pass" },
+            { id: 5, id_curso: 11, nombre: "Estudiante5", apellido: "Juarez", rango: "alumno", imagen: null, email: "estudiante5@escuela.com", contraseña: "pass" },
         ]);
 
         // Profesores
         setProfesoresLista([
-            { id: 1, nombre: "Profesor1", apellido: "Ruiz", email: "profesor1@escuela.com", contraseña: "prof1", rango: "Profesor" },
-            { id: 2, nombre: "Profesor2", apellido: "Navarro", email: "profesor2@escuela.com", contraseña: "prof2", rango: "Profesor" },
-            { id: 3, nombre: "Profesor3", apellido: "Blanco", email: "profesor3@escuela.com", contraseña: "prof3", rango: "Profesor" },
-            { id: 4, nombre: "Profesor4", apellido: "Sanchez", email: "profesor4@escuela.com", contraseña: "prof4", rango: "Profesor" },
-            { id: 5, nombre: "Profesor5", apellido: "Ortiz", email: "profesor5@escuela.com", contraseña: "prof5", rango: "Profesor" },
+            { id: 1, nombre: "Profesor1", apellido: "Ruiz", email: "profesor1@escuela.com", contraseña: "prof1", rango: "profesor" },
+            { id: 2, nombre: "Profesor2", apellido: "Navarro", email: "profesor2@escuela.com", contraseña: "prof2", rango: "profesor" },
+            { id: 3, nombre: "Profesor3", apellido: "Blanco", email: "profesor3@escuela.com", contraseña: "prof3", rango: "profesor" },
+            { id: 4, nombre: "Profesor4", apellido: "Sanchez", email: "profesor4@escuela.com", contraseña: "prof4", rango: "profesor" },
+            { id: 5, nombre: "Profesor5", apellido: "Ortiz", email: "profesor5@escuela.com", contraseña: "prof5", rango: "profesor" },
         ]);
     }, [])
-
+    function isAdmin(user: Admin): boolean {
+        return (user?.rango == "owner" || user?.rango == "preceptor")
+    }
+    function isOwner(user: Owner): boolean {
+        return (user?.rango == "owner")
+    }
+    function isPreceptor(user: Preceptor): boolean {
+        return (user?.rango == "preceptor")
+    }
+    function isAlumno(user: Alumno): boolean {
+        return user?.rango == "alumno"
+    }
+    function isProfesor(user: Profesor): boolean {
+        return user?.rango == "profesor"
+    }
     function limpiarSelectUsuarios(): void {
         setItems([])
-        setUserId(null)
+        setUserId(0)
         setUser(null)
         onChangeName("");
         onChangeSurname("");
         onChangeEmail("");
         onChangePassword("");
+        onChangeCurso("")
+        onChangeIdCurso(0)
+        onChangeOwner(false)
     }
     useEffect(() => {
         userDataSetter(userId as number)
         console.log("hola", user)
     }, [userId])
-    function isAdmin(user: Usuario): boolean {
-        return (user?.rango == "Owner" || user?.rango == "Preceptor")
-    }
-    function isOwner(user: Usuario): boolean {
-        return (user?.rango == "Owner")
-    }
-    function isPreceptor(user: Usuario): boolean {
-        return (user?.rango == "Preceptor")
-    }
-    function isEstudiante(user: Usuario): boolean {
-        return user?.rango == "Estudiante"
-    }
-    function isProfesor(user: Usuario): boolean {
-        return user?.rango == "Profesor"
-    }
     function userDataSetter(userId: number): void {
         let usuario: Usuario | undefined;
         switch (rank) {
-            case "Owner":
+            case "owner":
                 usuario = ownerLista.find(owner => owner.id == userId);
                 break;
-            case "Preceptor":
+            case "preceptor":
                 console.log("soy Prec");
                 usuario = preceptorLista.find(Preceptor => Preceptor.id == userId);
                 break;
-            case "Alumno":
+            case "alumno":
                 console.log("soy Alumn");
                 usuario = alumnoLista.find(Alumno => Alumno.id == userId);
                 break;
-            case "Profesor":
+            case "profesor":
                 console.log("soy Prof");
                 usuario = profesoresLista.find(profesor => profesor.id == userId);
                 break;
@@ -150,33 +153,45 @@ export default function About() {
             onChangeSurname(usuario.apellido);
             onChangeEmail(usuario.email);
             onChangePassword(usuario.contraseña);
+            if (isAlumno(usuario as Alumno)) {
+                onChangeIdCurso((usuario as Alumno).id_curso)
+                const cursoDeAlmuno = dataCursos.find(curso => curso?.id_curso == (usuario as Alumno)?.id_curso)
+                console.log(cursoDeAlmuno, "aaaaaaaa")
+                onChangeCurso(`${cursoDeAlmuno?.año} ${cursoDeAlmuno?.division} ${cursoDeAlmuno?.carrera}`)
+            }
+            if (isPreceptor(usuario as Preceptor)) {
+                onChangeOwner(false)
+            }
+            if (isOwner(usuario as Owner)) {
+                onChangeOwner(true)
+            }
         }
     }
     function cambiarRango(): void {
         switch (rank) {
-            case "Owner":
+            case "owner":
                 setItems(ownerLista.map((admin) => ({
                     label: `${admin.nombre} ${admin.apellido}`,
                     value: admin.id,
-                })))
+                })) as items[])
                 break
-            case "Preceptor":
+            case "preceptor":
                 setItems(preceptorLista.map((preceptor) => ({
                     label: `${preceptor.nombre} ${preceptor.apellido}`,
                     value: preceptor.id,
-                })))
+                })) as items[])
                 break
-            case "Alumno":
+            case "alumno":
                 setItems(alumnoLista.map((alumno) => ({
                     label: `${alumno.nombre} ${alumno.apellido}`,
                     value: alumno.id,
-                })))
+                })) as items[])
                 break
-            case "Profesor":
+            case "profesor":
                 setItems(profesoresLista.map((profesor) => ({
                     label: `${profesor.nombre} ${profesor.apellido}`,
                     value: profesor.id,
-                })))
+                })) as items[])
                 break
         }
     }
@@ -190,18 +205,35 @@ export default function About() {
         setModificar(true)
         setBorrar(false)
         setAgregar(false)
+        limpiarSelectUsuarios()
     }
     function moverABorrar(): void {
         setModificar(false)
         setBorrar(true)
         setAgregar(false)
+        limpiarSelectUsuarios()
     }
     function moverAAgregar(): void {
         setModificar(false)
         setBorrar(false)
         setAgregar(true)
+        limpiarSelectUsuarios()
     }
-    function subirDatos() {
+    function subirDatos(): void {
+        const UserData: Object = {
+            id: userId,
+            nombre: name,
+            apellido: surname,
+            email: email as email,
+            contraseña: password,
+            rango: rank,
+            id_curso: idCurso
+        }
+        console.log(UserData)
+    }
+    function borrarUsuario():void{
+        const data = {id:userId}
+        console.log(data.id)
     }
     return (
 
@@ -212,15 +244,48 @@ export default function About() {
                 <Button label="Agregar" onPress={moverAAgregar}></Button>
             </View>
             {
+                borrar &&
+                <DropDown
+                    open={openRank}
+                    setOpen={setOpenRank}
+                    items={[
+                        { label: "Alumno", value: "alumno" },
+                        { label: "Owner", value: "owner" },
+                        { label: "Profesor", value: "profesor" },
+                        { label: "Preceptor", value: "preceptor" },
+                    ]}
+                    value={rank}
+                    setValue={setRank}
+                    placeholder="elegi un cargo"
+                />
+
+            }
+            {
+                borrar && rank &&
+                <View>
+                    <DropDown
+                        setOpen={setOpenList}
+                        open={openList}
+                        items={items}
+                        setItems={setItems}
+                        value={userId as number}
+                        setValue={setUserId as Dispatch<SetStateAction<number | null>>}
+                        placeholder={`seleccione un ${rank.toLowerCase()}`}
+                        isSearchable
+                    />
+                    {userId && <Button label="borrar usuario" onPress={borrarUsuario}></Button>}
+                </View>
+            }
+            {
                 modificar &&
                 <DropDown
                     open={openRank}
                     setOpen={setOpenRank}
                     items={[
-                        { label: "Alumno", value: "Alumno" },
-                        { label: "Owner", value: "Owner" },
-                        { label: "Profesor", value: "Profesor" },
-                        { label: "Preceptor", value: "Preceptor" },
+                        { label: "Alumno", value: "alumno" },
+                        { label: "Owner", value: "owner" },
+                        { label: "Profesor", value: "profesor" },
+                        { label: "Preceptor", value: "preceptor" },
                     ]}
                     value={rank}
                     setValue={setRank}
@@ -236,52 +301,35 @@ export default function About() {
                         open={openList}
                         items={items}
                         setItems={setItems}
-                        value={userId}
-                        setValue={setUserId}
+                        value={userId as number}
+                        setValue={setUserId as Dispatch<SetStateAction<number | null>>}
                         placeholder={`seleccione un ${rank.toLowerCase()}`}
                         isSearchable
                     />
                     {
+
                         userId && user &&
                         <View>
-                            <Input
-                                editable={false}
-                                value={user?.id.toString()}
-                            />
-                            <Input
-                                value={name}
-                                onChangeText={onChangeName}
-                            />
-                            <Input
-                                value={surname}
-                                onChangeText={onChangeSurname}
-                            />
-                            <Input
-                                value={email}
-                                onChangeText={onChangeEmail}
-                            />
-                            <Input
-                                value={password}
-                                onChangeText={onChangePassword}
-                            />
+                            <Input editable={false} value={user?.id.toString()} />
+                            <Input value={name} onChangeText={onChangeName} />
+                            <Input value={surname} onChangeText={onChangeSurname} />
+                            <Input value={email} onChangeText={onChangeEmail} />
+                            <Input value={password} onChangeText={onChangePassword} />
                             {
-                                isAdmin(user as Usuario) &&
-                                <Input
-                                    value={(user as Usuario).rango}
-                                />
+                                isAdmin(user as Admin) &&
+                                <TouchableOpacity onPress={() => { onChangeOwner(!owner) }}>
+                                    {owner && <Text> es Owner</Text>}
+                                    {!owner && <Text> es Preceptor</Text>}
+                                </TouchableOpacity>
                             }
                             {
-                                isEstudiante(user as Usuario) &&
-                                <Input
-                                    value={(user as Estudiantes).id_curso.toString()}
-                                />
+                                isAlumno(user as Alumno)
                             }
-                            <Button label="subir nuevos datos" onPress={subirDatos()}></Button>
+                            <Button label="subir nuevos datos" onPress={subirDatos}></Button>
                         </View>
                     }
                 </View>
             }
-
         </SafeAreaView>
 
     )

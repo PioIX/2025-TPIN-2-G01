@@ -121,6 +121,7 @@ export interface User {
   id_curso?: number;
   img_alumno?: string;
   nombre?: string;
+  rango?: string
 }
 
 export interface ButtonProps {
@@ -133,38 +134,38 @@ export interface Option {
   value: string;
 }
 
-export interface Admins {
-  id : number
-  nombre : string
-  apellido : string
-  rango: "Owner" | "Preceptor"
-  email: `${string}@${string}.${string}`; 
-  contraseña: string
-}
-export interface Estudiantes {
-  id : number 
-  id_curso : number 
-  nombre : string
-  apellido : string
-  rango: "Estudiante"
-  imagen: null|string
-  email: `${string}@${string}.${string}`; 
-  contraseña: string
-}
-export interface Profesores {
-  id : number 
-  nombre : string
-  apellido : string
-  rango: "Profesor"
-  email: `${string}@${string}.${string}`; 
+export type Usuario = {
+  id: number 
+  rango: string
+  nombre: string
+  apellido: string
+  email: email
   contraseña: string
 }
 
-export type Usuario = Admins | Estudiantes | Profesores;
+export interface Admin extends Usuario {
+  rango: "preceptor" | "owner"
+}
+export interface Preceptor extends Usuario {
+  rango: "preceptor"
+}
+export interface Owner extends Usuario {
+  rango: "owner"
+}
+export interface Alumno extends Usuario {
+  id_curso : number 
+  rango: "alumno"
+  imagen?: null|string
+}
+export interface Profesor extends Usuario {
+  rango: "profesor"  
+}
+
+export type email = `${string}@${string}.${string}`
 
 export interface selectProps {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
   value: string | number | null
   setValue: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<number | null >>;
   items: any;
