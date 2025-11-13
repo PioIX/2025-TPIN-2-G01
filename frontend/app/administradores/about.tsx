@@ -1,14 +1,10 @@
-import cursos from "cursos.json"
-const dataCursos: Array<Cursos> = cursos
-
 import { useEffect, useState, SetStateAction, Dispatch } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Alert } from "react-native";
 import Button from "components/Button";
 import Input from "components/input";
 import DropDown from "components/dropDown";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import type { Usuario, Owner, Preceptor, Profesor, Alumno, items, Cursos, email, Admin } from "types";
+import type { Usuario, Owner, Preceptor, Profesor, Alumno, items, TipoUsuario, email, Admin } from "types";
 export default function About() {
     //datos del Select
     const [name, onChangeName] = useState<string>("");
@@ -30,7 +26,7 @@ export default function About() {
     const [openCurso, setOpenCurso] = useState<boolean>(false)
 
     //data de usuario seleccionadp
-    const [rank, setRank] = useState<string>("");
+    const [rank, setRank] = useState<"owner" | "preceptor" | "profesor" | "alumno" | "">("");
     const [user, setUser] = useState<Usuario | null>(null)
     const [userId, setUserId] = useState<number | null>(null)
 
@@ -162,6 +158,38 @@ export default function About() {
         console.log(rank)
     }, [rank])
 
+    function construirDatos(): TipoUsuario {
+        const UserData: TipoUsuario = {
+            id: userId as number,
+            nombre: name,
+            apellido: surname,
+            email: email as email,
+            contraseña: password,
+            rango: rank,
+            id_curso: idCurso as number
+        }
+        return UserData
+    }
+    /** 
+    function errorHandler(data:TipoUsuario): boolean{
+        // no cambiaste nada
+        const usuario = encontraUsuarioPorIdYRango()
+        if(
+            data.nombre == usuario.nombre && 
+            data.apellido == usuario.apellido &&
+            data.email == usuario.email && 
+            data.contraseña == usuario.contraseña && 
+            data.rango == usuario.rango && (1==1)){
+            console.log("djjhsohh")
+            Alert.alert("no cambiaste ningun dato")
+            return true
+        }
+        return false
+    }
+    */
+
+
+
     //type guards
     function isAdmin(user: Admin): boolean {
         return (user?.rango == "owner" || user?.rango == "preceptor")
@@ -197,6 +225,25 @@ export default function About() {
 
     // setter de data
     function userDataSetter(userId: number): void {
+        const usuario = encontraUsuarioPorIdYRango()
+        if (usuario) {
+            setUser(usuario);
+            onChangeName(usuario.nombre);
+            onChangeSurname(usuario.apellido);
+            onChangeEmail(usuario.email);
+            onChangePassword(usuario.contraseña);
+            if (isAlumno(usuario as Alumno)) {
+                onChangeIdCurso((usuario as Alumno).id_curso)
+            }
+            if (isPreceptor(usuario as Preceptor)) {
+                onChangeOwner(false)
+            }
+            if (isOwner(usuario as Owner)) {
+                onChangeOwner(true)
+            }
+        }
+    }
+    function encontraUsuarioPorIdYRango(): Usuario {
         let usuario: Usuario | undefined;
         switch (rank) {
             case "owner":
@@ -215,24 +262,10 @@ export default function About() {
                 usuario = profesoresLista.find(profesor => profesor.id == userId);
                 break;
         }
-        if (usuario) {
-            setUser(usuario);
-            onChangeName(usuario.nombre);
-            onChangeSurname(usuario.apellido);
-            onChangeEmail(usuario.email);
-            onChangePassword(usuario.contraseña);
-            if (isAlumno(usuario as Alumno)) {
-                onChangeIdCurso((usuario as Alumno).id_curso)
-            }
-            if (isPreceptor(usuario as Preceptor)) {
-                onChangeOwner(false)
-            }
-            if (isOwner(usuario as Owner)) {
-                onChangeOwner(true)
-            }
-        }
+        return usuario as Usuario
     }
     function cambiarRango(): void {
+        limpiarSelectUsuarios()
         switch (rank) {
             case "owner":
                 setItems(ownerLista.map((admin) => ({
@@ -283,17 +316,18 @@ export default function About() {
         limpiarSelectUsuarios()
         limpiarRango()
     }
+    // Funciones Fetch
     function subirDatos(): void {
-        const UserData: Object = {
-            id: userId,
-            nombre: name,
-            apellido: surname,
-            email: email as email,
-            contraseña: password,
-            rango: rank,
-            id_curso: idCurso
-        }
-        console.log(UserData)
+        const datos = construirDatos()
+        //if (!errorHandler(datos)) {
+           
+        //}
+    }
+    function ActualizarDatos(): void {
+        const datos = construirDatos()
+        //if (!errorHandler(datos)) {
+            Alert.alert("todo biwn")
+        //}
     }
     function borrarUsuario(): void {
         const data = { id: userId }
@@ -430,7 +464,7 @@ export default function About() {
                                 </TouchableOpacity>
                             }
                             {
-                                isAlumno(user as Alumno) &&
+                                user && isAlumno(user as Alumno) &&
                                 <DropDown
                                     value={idCurso}
                                     setValue={onChangeIdCurso}
@@ -439,7 +473,7 @@ export default function About() {
                                     setOpen={setOpenCurso}
                                 />
                             }
-                            <Button label="subir nuevos datos" onPress={subirDatos}></Button>
+                            <Button label="actualizar nuevos datos" onPress={ActualizarDatos}></Button>
                         </View>
                     }
                 </View>

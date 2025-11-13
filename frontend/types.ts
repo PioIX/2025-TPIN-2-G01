@@ -134,6 +134,9 @@ export interface Option {
   value: string;
 }
 
+export type TipoUsuario = Admin | Usuario | Owner | Alumno | Profesor 
+
+
 export type Usuario = {
   id: number 
   rango: string
@@ -163,11 +166,11 @@ export interface Profesor extends Usuario {
 
 export type email = `${string}@${string}.${string}`
 
-export interface selectProps {
+export interface selectProps<T> {
   open?: boolean;
   setOpen?: Dispatch<SetStateAction<boolean>>;
   value: string | number | null
-  setValue: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<number | null >>;
+  setValue: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<T>>;
   items: any;
   setItems?: Dispatch<SetStateAction<Array<items>>> ;
   max?: number;
@@ -180,4 +183,13 @@ export interface selectProps {
 export interface items{
   label:string;
   value: null | string | number
+}
+export interface UserData{
+  id?: number 
+  rango?: string
+  nombre?: string
+  apellido?: string
+  email?: email
+  contraseña?: string
+  id_curso?: number
 }
