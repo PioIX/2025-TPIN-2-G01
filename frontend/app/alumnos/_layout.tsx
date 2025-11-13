@@ -34,6 +34,15 @@ export default function Layout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="logout"
+        options={{
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <Octicons name="checklist" size={24} color={focused ? 'tomato' : 'gray'}/>
+          ),
+        }}
+      />
     </Tabs>
   );
 }

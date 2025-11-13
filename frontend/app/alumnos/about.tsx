@@ -53,7 +53,7 @@ export default function AlumnosAsistencia() {
   
     async function fetchUser(): Promise<void> {
       const userData = await fetchAlumno({
-        url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/usuarioLog',
+        url: 'http://localhost:4000/usuarioLog',
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -80,11 +80,15 @@ export default function AlumnosAsistencia() {
     // console.log("array de fecha", fecha)
   // }, [arrayFaltas]);
 
+  useEffect(() => {
+    fetchAsistencias(email);
+  }, [email]);
+
 
   async function fetchAsistencias(correo: string): Promise<void> {
     try {
       const response = await fetch(
-        `http://localhost:4000/traerAsistencias?correo_electronico=${correo}&falta>=0`
+        `http://localhost:4000/traerAsistencias?correo_electronico=${correo}&falta>0`
       );
       const data = await response.json();
       console.log("Data crudo ", data)
