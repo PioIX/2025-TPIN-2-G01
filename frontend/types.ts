@@ -4,10 +4,10 @@ export type RootStackParamList = {
   Result: { email: string; password: string };
 };
 
-// tipos de datos para el form de login 
+// tipos de datos para el form de login
 export interface formData {
-  Email: string,
-  Contraseña: string
+  Email: string;
+  Contraseña: string;
 }
 
 // tipos de datos para el hook para hacer fetch
@@ -26,9 +26,9 @@ export interface UseFetchResult<T> {
 }
 
 export interface LoginFetchResponse {
-  mensaje: string,
-  key: string,
-  rango: string
+  mensaje: string;
+  key: string;
+  rango: string;
 }
 
 export interface AuthContextType {
@@ -39,11 +39,10 @@ export interface AuthContextType {
 }
 export type NavBarProps = {
   props: string[];
-  styleView?: {}
-  stylePresable?: {}
-  styleText?: {}
+  styleView?: {};
+  stylePresable?: {};
+  styleText?: {};
 };
-
 
 // export type ProfesorData = {
 //   apellido:string
@@ -54,17 +53,17 @@ export type NavBarProps = {
 // }
 
 export interface Cursos {
-  id_curso: number
-  año: number
-  division: string
-  carrera:string
+  id_curso: number;
+  año: number;
+  division: string;
+  carrera: string;
 }
 
-export interface CursosProfe extends Array<Cursos> { }
+export interface CursosProfe extends Array<Cursos> {}
 
 export type Rol = {
-  message: object
-}
+  message: object;
+};
 
 // export interface Alumno {
 //   id_alumno: number;
@@ -84,27 +83,34 @@ export type RolMessage = {
     apellido: string;
     correo_electronico: string;
     contraseña: string;
-  }
-}
+  };
+};
 
 export interface Alumno {
   apellido: string;
   nombre: string;
 }
 
-export interface Asistencia {
-  message: string
+export interface FaltasAlumnos extends Alumno {
+  esta_justificada: boolean;
+  falta: 0 | 0.25 | 0.50 | 1;
 }
 
+export interface faltasCurso {
+  message: FaltasAlumnos[];
+}
+export interface Asistencia {
+  message: string;
+}
 
 export interface QrCodeProps {
-  value: string
-  size: number
-  color: string
-  backgroundColor: string
-  logo?: {uri:string}
-  logoSize?: number
-  logoBackgroundColor?: string
+  value: string;
+  size: number;
+  color: string;
+  backgroundColor: string;
+  logo?: { uri: string };
+  logoSize?: number;
+  logoBackgroundColor?: string;
 }
 
 export interface User {
@@ -118,38 +124,39 @@ export interface User {
 }
 
 export interface CursoNuevo {
-    año: number;
-    carrera: string;
-    division: string;
-  }
+  año: number;
+  carrera: string;
+  division: string;
+}
 
 export interface respuestaAlumno {
-    message: {
+  message: {
     apellido?: string;
-  contraseña?: string;
-  correo_electronico?: string;
-  id_alumno?: number;
-  id_curso?: number;
-  img_alumno?: string;
-  nombre?: string;
-  }
+    contraseña?: string;
+    correo_electronico?: string;
+    id_alumno?: number;
+    id_curso?: number;
+    img_alumno?: string;
+    nombre?: string;
+  };
 }
-export type email = `${string}@${string}.${string}`
+export type email = `${string}@${string}.${string}`;
 
 export type Usuario = {
-  id: number 
-  rango: string
-  nombre: string
-  apellido: string
-  email: email
-  contraseña: string
-}
+  message: {
+    id_administradores: number;
+    rango: string;
+    nombre: string;
+    apellido: string;
+    email: email;
+    contraseña: string;
+  };
+};
 
 export interface Admin extends Usuario {
-  rango: "preceptor" | "owner"
+  rango: 'preceptor' | 'owner';
 }
 
-
 export interface Preceptor extends Usuario {
-  rango: "preceptor"
+  rango: 'preceptor';
 }
