@@ -1,3 +1,8 @@
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import { SetStateAction,Dispatch } from "react";
+import { SitemapType } from "expo-router";
+
+
 // types.ts
 export type RootStackParamList = {
   Home: undefined;
@@ -39,6 +44,7 @@ export interface AuthContextType {
 }
 export type NavBarProps = {
   props: string[];
+  onPress: () => void;
   styleView?: {}
   stylePresable?: {}
   styleText?: {}
@@ -115,6 +121,80 @@ export interface User {
   id_curso?: number;
   img_alumno?: string;
   nombre?: string;
+  rango?: string
+}
+
+
+export interface ButtonProps {
+  label: string;
+  onPress?: () => void;
+};
+
+export interface Option {
+  label: string;
+  value: string;
+}
+
+export type TipoUsuario = Admin | Usuario | Owner | Alumno | Profesor 
+
+
+export type Usuario = {
+  id: number 
+  rango: string
+  nombre: string
+  apellido: string
+  email: email
+  contraseña: string
+}
+
+export interface Admin extends Usuario {
+  rango: "preceptor" | "owner"
+}
+export interface Preceptor extends Usuario {
+  rango: "preceptor"
+}
+export interface Owner extends Usuario {
+  rango: "owner"
+}
+export interface Alumno extends Usuario {
+  id_curso : number 
+  rango: "alumno"
+  imagen?: null|string
+}
+export interface Profesor extends Usuario {
+  rango: "profesor"  
+}
+
+export type email = `${string}@${string}.${string}`
+
+export interface selectProps<T> {
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
+  value: string | number | null
+  setValue: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<T>>;
+  items: any;
+  setItems?: Dispatch<SetStateAction<Array<items>>> ;
+  max?: number;
+  min?: number;
+  placeholder?:string
+  isDisabled?: boolean;
+  isSearchable?: boolean;
+  maxHeigth?: number;
+}
+export interface items{
+  label:string;
+  value: null | string | number
+}
+export interface UserData{
+  id?: number 
+  rango?: string
+  nombre?: string
+  apellido?: string
+  email?: email
+  contraseña?: string
+  id_curso?: number
+}
+
 }
 
 export interface CursoNuevo {

@@ -1,0 +1,306 @@
+[
+    {   
+        "id_curso": 21,
+        "carrera": "industrial",
+        "año": 1,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 22,
+        "carrera": "industrial",
+        "año": 1,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 23,
+        "carrera": "industrial",
+        "año": 1,
+        "division": "C",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 24,
+        "carrera": "industrial",
+        "año": 2,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 25,
+        "carrera": "industrial",
+        "año": 2,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 26,
+        "carrera": "industrial",
+        "año": 2,
+        "division": "C",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 27,
+        "carrera": "industrial",
+        "año": 3,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 28,
+        "carrera": "industrial",
+        "año": 3,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 29,
+        "carrera": "industrial",
+        "año": 4,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 30,
+        "carrera": "industrial",
+        "año": 4,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 31,
+        "carrera": "industrial",
+        "año": 5,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 32,
+        "carrera": "industrial",
+        "año": 5,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 33,
+        "carrera": "industrial",
+        "año": 6,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 34,
+        "carrera": "industrial",
+        "año": 6,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 11,
+        "carrera": "informatica",
+        "año": 1,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 12,
+        "carrera": "informatica",
+        "año": 1,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 13,
+        "carrera": "informatica",
+        "año": 2,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 14,
+        "carrera": "informatica",
+        "año": 2,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 15,
+        "carrera": "informatica",
+        "año": 3,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 16,
+        "carrera": "informatica",
+        "año": 3,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 17,
+        "carrera": "informatica",
+        "año": 4,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 18,
+        "carrera": "informatica",
+        "año": 4,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 19,
+        "carrera": "informatica",
+        "año": 5,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 20,
+        "carrera": "informatica",
+        "año": 5,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 1,
+        "carrera": "comunicacion",
+        "año": 1,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 2,
+        "carrera": "comunicacion",
+        "año": 1,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 3,
+        "carrera": "comunicacion",
+        "año": 2,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 4,
+        "carrera": "comunicacion",
+        "año": 2,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 5,
+        "carrera": "comunicacion",
+        "año": 3,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 6,
+        "carrera": "comunicacion",
+        "año": 3,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 7,
+        "carrera": "comunicacion",
+        "año": 4,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 8,
+        "carrera": "comunicacion",
+        "año": 4,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 9,
+        "carrera": "comunicacion",
+        "año": 5,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 10,
+        "carrera": "comunicacion",
+        "año": 5,
+        "division": "B",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 35,
+        "carrera": "renovables",
+        "año": 3,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 36,
+        "carrera": "renovables",
+        "año": 4,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 37,
+        "carrera": "renovables",
+        "año": 5,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    },
+    {
+        "id_curso": 38,
+        "carrera": "renovables",
+        "año": 6,
+        "division": "A",
+        "horario_de_entrada": "07:00:00",
+        "horario_tarde": "07:25:00"
+    }
+]
