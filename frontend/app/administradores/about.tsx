@@ -10,36 +10,43 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { Usuario, Owner, Preceptor, Profesor, Alumno, items, Cursos, email, Admin } from "types";
 export default function About() {
+    //datos del Select
     const [name, onChangeName] = useState<string>("");
     const [surname, onChangeSurname] = useState<string>("");
     const [email, onChangeEmail] = useState<email | string>("");
     const [password, onChangePassword] = useState<string>("");
-    const [curso, onChangeCurso] = useState<string>("");
+    const [cursos, setCursos] = useState<items[]>([]);
     const [idCurso, onChangeIdCurso] = useState<number | null>(null);
     const [owner, onChangeOwner] = useState<boolean>(false);
 
+    //Rendering del CRUD
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
     const [agregar, setAgregar] = useState<Boolean>(false)
 
+    // states para los select
     const [openRank, setOpenRank] = useState<boolean>(false)
     const [openList, setOpenList] = useState<boolean>(false)
+    const [openCurso, setOpenCurso] = useState<boolean>(false)
 
+    //data de usuario seleccionadp
     const [rank, setRank] = useState<string>("");
     const [user, setUser] = useState<Usuario | null>(null)
     const [userId, setUserId] = useState<number | null>(null)
 
+    // info de la BdD
     const [ownerLista, setOwnerLista] = useState<Owner[]>([])
     const [alumnoLista, setAlumnoLista] = useState<Alumno[]>([])
     const [profesoresLista, setProfesoresLista] = useState<Profesor[]>([])
     const [preceptorLista, setPreceptorLista] = useState<Preceptor[]>([])
     const [items, setItems] = useState<items[]>([])
 
+    //debugging
     useEffect(() => {
         console.log("user: ", user)
     }, [, user])
     useEffect(() => {
-        console.log("rank: ", openRank)
+        console.log("openRank: ", openRank)
     }, [openRank])
     useEffect(() => {
         console.log("profesores[] ", profesoresLista)
@@ -59,6 +66,9 @@ export default function About() {
     useEffect(() => {
         console.log("userId: ", userId)
     }, [userId])
+    useEffect(() => {
+        console.log("idCurso: ", idCurso)
+    }, [idCurso])
 
     useEffect(() => {
         //owner (rango "O")
@@ -96,7 +106,63 @@ export default function About() {
             { id: 4, nombre: "Profesor4", apellido: "Sanchez", email: "profesor4@escuela.com", contraseña: "prof4", rango: "profesor" },
             { id: 5, nombre: "Profesor5", apellido: "Ortiz", email: "profesor5@escuela.com", contraseña: "prof5", rango: "profesor" },
         ]);
+
+        //Cursos
+        setCursos([
+            { value: 21, label: "1 A industrial" },
+            { value: 22, label: "1 B industrial" },
+            { value: 23, label: "1 C industrial" },
+            { value: 24, label: "2 A industrial" },
+            { value: 25, label: "2 B industrial" },
+            { value: 26, label: "2 C industrial" },
+            { value: 27, label: "3 A industrial" },
+            { value: 28, label: "3 B industrial" },
+            { value: 29, label: "4 A industrial" },
+            { value: 30, label: "4 B industrial" },
+            { value: 31, label: "5 A industrial" },
+            { value: 32, label: "5 B industrial" },
+            { value: 33, label: "6 A industrial" },
+            { value: 34, label: "6 B industrial" },
+            { value: 11, label: "1 A informatica" },
+            { value: 12, label: "1 B informatica" },
+            { value: 13, label: "2 A informatica" },
+            { value: 14, label: "2 B informatica" },
+            { value: 15, label: "3 A informatica" },
+            { value: 16, label: "3 B informatica" },
+            { value: 17, label: "4 A informatica" },
+            { value: 18, label: "4 B informatica" },
+            { value: 19, label: "5 A informatica" },
+            { value: 20, label: "5 B informatica" },
+            { value: 1, label: "1 A comunicacion" },
+            { value: 2, label: "1 B comunicacion" },
+            { value: 3, label: "2 A comunicacion" },
+            { value: 4, label: "2 B comunicacion" },
+            { value: 5, label: "3 A comunicacion" },
+            { value: 6, label: "3 B comunicacion" },
+            { value: 7, label: "4 A comunicacion" },
+            { value: 8, label: "4 B comunicacion" },
+            { value: 9, label: "5 A comunicacion" },
+            { value: 10, label: "5 B comunicacion" },
+            { value: 35, label: "3 A renovables" },
+            { value: 36, label: "4 A renovables" },
+            { value: 37, label: "5 A renovables" },
+            { value: 38, label: "6 A renovables" }
+        ])
     }, [])
+    //de debugin para aca borrar
+
+    useEffect(() => {
+        if (modificar) {
+            userDataSetter(userId as number)
+        }
+    }, [userId])
+
+    useEffect(() => {
+        cambiarRango()
+        console.log(rank)
+    }, [rank])
+
+    //type guards
     function isAdmin(user: Admin): boolean {
         return (user?.rango == "owner" || user?.rango == "preceptor")
     }
@@ -112,6 +178,8 @@ export default function About() {
     function isProfesor(user: Profesor): boolean {
         return user?.rango == "profesor"
     }
+
+    // limpiar data
     function limpiarSelectUsuarios(): void {
         setItems([])
         setUserId(0)
@@ -120,14 +188,14 @@ export default function About() {
         onChangeSurname("");
         onChangeEmail("");
         onChangePassword("");
-        onChangeCurso("")
         onChangeIdCurso(0)
         onChangeOwner(false)
     }
-    useEffect(() => {
-        userDataSetter(userId as number)
-        console.log("hola", user)
-    }, [userId])
+    function limpiarRango(): void {
+        setRank("")
+    }
+
+    // setter de data
     function userDataSetter(userId: number): void {
         let usuario: Usuario | undefined;
         switch (rank) {
@@ -155,9 +223,6 @@ export default function About() {
             onChangePassword(usuario.contraseña);
             if (isAlumno(usuario as Alumno)) {
                 onChangeIdCurso((usuario as Alumno).id_curso)
-                const cursoDeAlmuno = dataCursos.find(curso => curso?.id_curso == (usuario as Alumno)?.id_curso)
-                console.log(cursoDeAlmuno, "aaaaaaaa")
-                onChangeCurso(`${cursoDeAlmuno?.año} ${cursoDeAlmuno?.division} ${cursoDeAlmuno?.carrera}`)
             }
             if (isPreceptor(usuario as Preceptor)) {
                 onChangeOwner(false)
@@ -196,28 +261,27 @@ export default function About() {
         }
     }
 
-    useEffect(() => {
-        limpiarSelectUsuarios()
-        cambiarRango()
-        console.log(rank)
-    }, [rank])
+    // rendering del Crud
     function moverAModificar(): void {
         setModificar(true)
         setBorrar(false)
         setAgregar(false)
         limpiarSelectUsuarios()
+        limpiarRango()
     }
     function moverABorrar(): void {
         setModificar(false)
         setBorrar(true)
         setAgregar(false)
         limpiarSelectUsuarios()
+        limpiarRango()
     }
     function moverAAgregar(): void {
         setModificar(false)
         setBorrar(false)
         setAgregar(true)
         limpiarSelectUsuarios()
+        limpiarRango()
     }
     function subirDatos(): void {
         const UserData: Object = {
@@ -231,8 +295,8 @@ export default function About() {
         }
         console.log(UserData)
     }
-    function borrarUsuario():void{
-        const data = {id:userId}
+    function borrarUsuario(): void {
+        const data = { id: userId }
         console.log(data.id)
     }
     return (
@@ -243,6 +307,50 @@ export default function About() {
                 <Button label="Borrar" onPress={moverABorrar}></Button>
                 <Button label="Agregar" onPress={moverAAgregar}></Button>
             </View>
+            {
+                agregar &&
+                <DropDown
+                    open={openRank}
+                    setOpen={setOpenRank}
+                    items={[
+                        { label: "Alumno", value: "alumno" },
+                        { label: "Owner", value: "owner" },
+                        { label: "Profesor", value: "profesor" },
+                        { label: "Preceptor", value: "preceptor" },
+                    ]}
+                    value={rank}
+                    setValue={setRank}
+                    placeholder="elegi un cargo"
+                />
+            }
+            {
+                agregar && rank &&
+                <View>
+                    <Input value={name} onChangeText={onChangeName} placeholder="nombre" />
+                    <Input value={surname} onChangeText={onChangeSurname} placeholder="apellido" />
+                    <Input value={email} onChangeText={onChangeEmail} placeholder="napellido@pioix.edu.ar" />
+                    <Input value={password} onChangeText={onChangePassword} placeholder="contraseña" />
+                    {
+                        isAdmin(user as Admin) &&
+                        <TouchableOpacity onPress={() => { onChangeOwner(!owner) }}>
+                            {owner && <Text> es Owner</Text>}
+                            {!owner && <Text> es Preceptor</Text>}
+                        </TouchableOpacity>
+                    }
+                    {
+                        isAlumno(user as Alumno) &&
+                        <DropDown
+                            value={idCurso}
+                            setValue={onChangeIdCurso}
+                            items={cursos}
+                            open={openCurso}
+                            setOpen={setOpenCurso}
+                        />
+                    }
+                    <Button label="subir nuevos datos" onPress={subirDatos}></Button>
+                </View>
+            }
+
             {
                 borrar &&
                 <DropDown
@@ -307,7 +415,6 @@ export default function About() {
                         isSearchable
                     />
                     {
-
                         userId && user &&
                         <View>
                             <Input editable={false} value={user?.id.toString()} />
@@ -323,7 +430,14 @@ export default function About() {
                                 </TouchableOpacity>
                             }
                             {
-                                isAlumno(user as Alumno)
+                                isAlumno(user as Alumno) &&
+                                <DropDown
+                                    value={idCurso}
+                                    setValue={onChangeIdCurso}
+                                    items={cursos}
+                                    open={openCurso}
+                                    setOpen={setOpenCurso}
+                                />
                             }
                             <Button label="subir nuevos datos" onPress={subirDatos}></Button>
                         </View>
