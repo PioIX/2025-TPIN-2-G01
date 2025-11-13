@@ -42,7 +42,7 @@ export default function Layout() {
       />
 
       <Tabs.Screen
-        name="about"
+        name="logout"
         options={{
           title: '',
           tabBarIcon: ({ focused }) => (

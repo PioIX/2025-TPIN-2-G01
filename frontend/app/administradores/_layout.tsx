@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-
+import Ionicons from "@expo/vector-icons/Ionicons";
 export default function Layout() {
   return (
     <Tabs
@@ -27,6 +27,15 @@ export default function Layout() {
       <Tabs.Screen
         name="about"
         options={{ title: "P2" }}
+      />
+       <Tabs.Screen
+        name="logout"
+        options={{
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name="settings" size={24} color={focused ? 'tomato' : 'gray'} />
+          ),
+        }}
       />
     </Tabs>
   );
