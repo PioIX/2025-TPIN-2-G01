@@ -28,6 +28,7 @@ export default function App() {
   };
 
   async function marcarAsistencia(data: string) {
+    console.log("llama a marcarAsistencia")
     await registrarAsistencia({
       url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/asistencia',
       method: 'POST',
@@ -62,9 +63,10 @@ export default function App() {
     alert(`QR Escaneado: ${data}`);
 
     // Emitimos la asistencia directamente con el valor escaneado (data)
-    if (data) {
-      emitirAsistencia(data);  // Llamamos a la función con el valor escaneado
-    }
+    // if (data) {
+    //   emitirAsistencia(data);  // Llamamos a la función con el valor escaneado
+    // }
+    // Parece que por este if se ejecutaba 2 veces
   };
 
   const handleToggleScan = () => {

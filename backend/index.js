@@ -316,9 +316,9 @@ app.post("/asistencia", async function (req, res) {
       justificativo = false
     }
     const estudianteScanneado = await realizarQuery(`SELECT * FROM Alumnos WHERE correo_electronico = "${req.body.email}"`)
-    const curso = await realizarQuery(`Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
+    const [curso] = await realizarQuery(`Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
     const rawdata = fs.readFileSync("./asistencia.json");
-    const { horarios_cursos } = JSON.parse(rawdata);
+    const horarios_cursos = JSON.parse(rawdata);
     console.log(estudianteScanneado)
     for (let x = 0; x < horarios_cursos.length; x++) {
       if (curso.año && curso.carrera && curso.division &&
@@ -340,13 +340,15 @@ app.post("/asistencia", async function (req, res) {
         else if (diferenciaMin >= 15) falta = 0.25;
 
         await realizarQuery(`
-        INSERT INTO Asistencias (horario_de_entrada, id_alumno, falta, esta_justificada)
-        VALUES ("${fecha}", ${estudianteScanneado[0].id_alumno}, ${falta}, ${justificativo})
-      `);
+          INSERT INTO Asistencias (horario_de_entrada, id_alumno, falta, esta_justificada)
+          VALUES ("${fecha}", ${estudianteScanneado[0].id_alumno}, ${falta}, ${justificativo})
+        `);
+        break;
       }
     }
     res.send({ message: "asistencia registrada con exito" });
   } catch (error) {
+    console.log("entro al catch", error.message)
     res.send({ message: `tuviste un error ${error}` });
   }
 });
