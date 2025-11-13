@@ -10,7 +10,7 @@ export interface Alumno {
 }
 
 export interface Person extends Alumno {
-  nombre: string;      
+  nombre: string;
   apellido: string;   
   presente: boolean;
   ausente: boolean;

@@ -439,7 +439,11 @@ app.delete("/borrarUsuarios", async function (req, res) {
 
 app.get("/traerAsistencias", async function (req, res) {
   try {
-    const result = await realizarQuery('SELECT date(horario_de_entrada), falta from Asistencias where falta>0')
+
+    const result = await realizarQuery(`SELECT horario_de_entrada, falta, esta_justificada FROM Asistencias
+    INNER JOIN Alumnos ON Asistencias.id_alumno = Alumnos.id_alumno
+    WHERE Alumnos.correo_electronico = "${req.query.correo_electronico}" and Asistencias.falta >= 0;`)
+
     res.send({ message: result })
   } catch (error) {
     res.send(error)
@@ -458,3 +462,57 @@ app.get("/getAlumnos", async function (req, res) {
 
 })
 
+app.get("/getCursoAlumno", async function (req, res) {
+  try {
+    const result = await realizarQuery(`SELECT año, division, carrera FROM Cursos
+    INNER JOIN Alumnos ON Cursos.id_curso = Alumnos.id_curso
+    WHERE Alumnos.correo_electronico = "${req.query.correo_electronico}";`)
+    res.send({ message: result })
+  } catch (error) {
+    res.send(error)
+    console.log("Error al traer el curso del alumno")
+  }
+})
+
+app.get("/getHorarioEntrada", (req, res) => {
+  const { carrera, año, division } = req.query;
+
+  try {
+    const data = JSON.parse(fs.readFileSync("./asistencia.json", "utf8"));
+    const curso = data.find(
+      (c) => {
+        switch (c.carrera) {
+          case "informatica":
+             c.carrera = "INF"
+            break
+          case "comunicacion":
+            c.carrera = "COM" 
+            break
+          case "renovables":
+            c.carrera = "REN" 
+            break
+          case "industrial":
+             c.carrera = "IND" 
+            break
+        }
+        return c.carrera === carrera &&
+          c.año === Number(año) &&
+          c.division === division
+      }
+    );
+
+
+    if (!curso) {
+      return res.status(404).json({ error: "Curso no encontrado" });
+    }
+
+    res.json({ horario_entrada: curso.horario_de_entrada });
+  } catch (error) {
+    console.error("Error leyendo JSON:", error);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+app.listen(port, function () {
+  console.log(`Server running in http://localhost:${port}`);
+});
