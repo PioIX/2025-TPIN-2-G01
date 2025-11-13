@@ -513,6 +513,6 @@ app.get("/getHorarioEntrada", (req, res) => {
   }
 });
 
-app.listen(port, function () {
-  console.log(`Server running in http://localhost:${port}`);
-});
+// app.listen(port, function () {
+//   console.log(`Server running in http://localhost:${port}`);
+// });

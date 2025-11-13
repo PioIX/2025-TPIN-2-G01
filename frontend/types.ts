@@ -134,3 +134,22 @@ export interface respuestaAlumno {
   nombre?: string;
   }
 }
+export type email = `${string}@${string}.${string}`
+
+export type Usuario = {
+  id: number 
+  rango: string
+  nombre: string
+  apellido: string
+  email: email
+  contraseña: string
+}
+
+export interface Admin extends Usuario {
+  rango: "preceptor" | "owner"
+}
+
+
+export interface Preceptor extends Usuario {
+  rango: "preceptor"
+}
