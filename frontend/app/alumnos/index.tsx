@@ -43,7 +43,10 @@ export default function AlumnosHome() {
     useEffect(() => {
     if (!socket) return;
       socket.on("mensajitoSala", (generico)=>{
-        // Alert.alert(generico.message)
+        Alert.alert(generico.message)
+        console.log(generico.message)
+      })
+      socket.on("NotificacionAlumno", (generico)=>{
         Alert.alert(generico.message)
       })
       
@@ -52,7 +55,7 @@ export default function AlumnosHome() {
 
   async function fetchUser(): Promise<void> {
     const userData = await fetchAlumno({
-      url: 'https://silly-snakes-walk.loca.lt/usuarioLog',
+      url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/usuarioLog',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

@@ -89,30 +89,42 @@ io.on("connection", (socket) => {
   //   io.to(req.session.room).emit('newMessage', { room: req.session.room, message: data.msg });
   // })
   socket.on('unirme', data => {
-    socket.join(data.value)
-    console.log("me estoy uniendo a la sala")
+    const room = data.value;
     console.log(data)
-    io.emit("mensajitoSala", { message: "hola" })
-  })
+    socket.join(room)
+    io.to(room).emit("mensajitoSala", { message: "Conectado a sala" })
+  });
 
   socket.on('MandarAsistencia', async data => {
-    console.log("estoy mandando asistencia")
-    console.log("soy la sala de la persona", socket.room)
-    let fecha = new Date()
-    fecha = fecha.toISOString().slice(0, 10)
-    const falta = await realizarQuery(`Select date(horario_de_entrada) FROM Asistencias where date(horario_de_entrada) = "${fecha}"`)[0]
-    switch (falta) {
-      case 0:
-        socket.to(socket.rooms).emit("NotificacionAlumno", {message: "llegaste bien"} )
-        break;
-      case 0:
-        socket.to(socket.rooms).emit("NotificacionAlumno", {message: "llegaste bien"} )
-        break;
-    
-      default:
-        break;
+    const email = data.value;
+    console.log("asistencia de", email);
+
+    const room = email;
+    const fecha = new Date().toISOString().slice(0, 10);
+
+    const [asistencia] = await realizarQuery(
+      `SELECT falta, esta_justificada FROM Asistencias 
+     WHERE date(horario_de_entrada) = "${fecha}" 
+     AND id_alumno = (SELECT id_alumno FROM Alumnos WHERE correo_electronico = "${email}")`
+    );
+
+    if (!asistencia) return;
+
+    let mensaje;
+    if (asistencia.esta_justificada) {
+      mensaje = "Tu falta fue justificada";
+    } else {
+      switch (asistencia.falta) {
+        case 0: mensaje = "Llegaste bien"; break;
+        case 0.25: mensaje = "Llegaste con 15 minutos de demora"; break;
+        case 0.5: mensaje = "Llegaste con media falta"; break;
+        case 1: mensaje = "Tenés una falta entera"; break;
+        default: mensaje = "Error al calcular asistencia"; break;
+      }
     }
-  })
+
+    io.to(room).emit("NotificacionAlumno", { message: mensaje });
+  });
   socket.on('disconnect', () => {
     console.log("Disconnect");
   })
@@ -296,57 +308,47 @@ app.post("/lista", async function (req, res) {
 // POST PARA ASISTENCIA PRECEPTORES
 app.post("/asistencia", async function (req, res) {
   try {
-    if (req.header("justificacion")==true){
-      const justificativo = true
+    console.log("hola soy un endpoint")
+    let justificativo
+    if (req.header("justificacion") == true) {
+      justificativo = true
     } else {
-      const justificativo = false
-
+      justificativo = false
     }
-    const estudianteScanneado = await realizarQuery(`Select * from Alumnos where correo_electronico = ${req.body.email}`)
-    const curso = await realizarQuery(` Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
+    const estudianteScanneado = await realizarQuery(`SELECT * FROM Alumnos WHERE correo_electronico = "${req.body.email}"`)
+    const [curso] = await realizarQuery(`Select * FROM Cursos where id_curso = ${estudianteScanneado[0].id_curso}`)
     const rawdata = fs.readFileSync("./asistencia.json");
-    const { horarios_cursos } = JSON.parse(rawdata);
+    const horarios_cursos = JSON.parse(rawdata);
+    console.log(estudianteScanneado)
     for (let x = 0; x < horarios_cursos.length; x++) {
       if (curso.año && curso.carrera && curso.division &&
         curso.año == horarios_cursos[x].año &&
         curso.carrera == horarios_cursos[x].carrera &&
         curso.division == horarios_cursos[x].division) {
+          console.log("anda por favor")
         const horario_de_entrada = horarios_cursos[x].horario_de_entrada
         const horario = new Date(horario_de_entrada);
         const ahora = new Date();
         const fecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
         const horas = ahora.getHours();
         const minutos = ahora.getMinutes();
-
         //-----------------------------------------------------------//
-        if (horas > horario.getHours()) {
-          await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-        VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
-        } else {
-          if (horas == horario.getHours() && minutos > horario.getMinutes()) {
-            const cantidad_minutos = minutos - horario.getMinutes();
-            if (cantidad_minutos >= 15 && cantidad_minutos < 30) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0.25, ${justificativo})`);
-            }
-            if (cantidad_minutos >= 30 && cantidad_minutos < 45) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0.50, ${justificativo})`);
-            }
-            if (cantidad_minutos >= 45) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 1, ${justificativo})`);
-            }
-            if (ahora <= horario_de_entrada) {
-              await realizarQuery(`INSERT into Asistencias horario_de_entrada, id_alumno, falta, esta_justificada
-            VALUES ("${fecha}", ${estudianteScanneado.id_alumno}, 0, FALSE)`);
-            }
-          }
-        }
+        const diferenciaMin = (ahora - horario) / 60000;
+        let falta = 0;
+        if (diferenciaMin >= 45) falta = 1;
+        else if (diferenciaMin >= 30) falta = 0.5;
+        else if (diferenciaMin >= 15) falta = 0.25;
+
+        await realizarQuery(`
+          INSERT INTO Asistencias (horario_de_entrada, id_alumno, falta, esta_justificada)
+          VALUES ("${fecha}", ${estudianteScanneado[0].id_alumno}, ${falta}, ${justificativo})
+        `);
+        break;
       }
     }
     res.send({ message: "asistencia registrada con exito" });
   } catch (error) {
+    console.log("entro al catch", error.message)
     res.send({ message: `tuviste un error ${error}` });
   }
 });
@@ -437,9 +439,11 @@ app.delete("/borrarUsuarios", async function (req, res) {
 
 app.get("/traerAsistencias", async function (req, res) {
   try {
+
     const result = await realizarQuery(`SELECT horario_de_entrada, falta, esta_justificada FROM Asistencias
     INNER JOIN Alumnos ON Asistencias.id_alumno = Alumnos.id_alumno
     WHERE Alumnos.correo_electronico = "${req.query.correo_electronico}" and Asistencias.falta >= 0;`)
+
     res.send({ message: result })
   } catch (error) {
     res.send(error)
