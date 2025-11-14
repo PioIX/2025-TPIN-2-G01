@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { Preceptor, CursosProfe, faltasCurso, FaltasAlumnos } from 'types';
+import { Preceptor, CursosProfe, faltasCurso, FaltasAlumnos, RespuestaPreceptor } from 'types';
 import { useAuth } from 'app/context/AuthContext';
 import useFetch from 'hooks/useFetch';
 import { SelectCursos } from 'components/selectCursos';
 import AttendanceTable, { Alumno as AlumnoTabla } from 'components/Tabla';
 import FaltasTable from 'components/tablaCheckAsistencia';
-
-
-type AlumnoPartial = FaltasAlumnos & AlumnoTabla
 
 export default function App() {
   const { token } = useAuth();
@@ -16,10 +13,10 @@ export default function App() {
   const [idPreceptor, setIdPreceptor] = useState<number>(0);
   const [cursos, setCursos] = useState<CursosProfe>([]);
   const [selectedCurso, setSelectedCurso] = useState<string | number | null>(null);
-  const [alumnos, setAlumnos] = useState<AlumnoPartial[]>([]);
+  const [alumnos, setAlumnos] = useState<FaltasAlumnos[]>([]);
   const [loadingCursos, setLoadingCursos] = useState<boolean>(true);
 
-  const { fetchData: fetchPreceptor } = useFetch<Preceptor>();
+  const { fetchData: fetchPreceptor } = useFetch<RespuestaPreceptor>();
   const { fetchData: fetchCursos } = useFetch<CursosProfe>();
   const { fetchData: fetchAlumnos } = useFetch<faltasCurso>();
 
@@ -87,24 +84,7 @@ export default function App() {
       });
       console.log("alumnosData", alumnosData)
       if (alumnosData && 'message' in alumnosData && Array.isArray(alumnosData.message)) {
-        const alumnosMapped: AlumnoPartial[] = alumnosData.message.map((a: any) => {
-          const nombreCompleto = `${a.nombre ?? ''} ${a.apellido ?? ''}`.trim();
-
-          const apellido = a.apellido;
-          const nombre = a.nombre;
-          
-          return {
-            id: a.id_alumno,
-            nombreCompleto,
-            nombre,
-            apellido,
-            falta: a.falta ?? 0,
-            esta_justificada: a.esta_justificada ?? false,
-          };
-        });
-
-        console.log(alumnosMapped, "soy un console.log de alumnos mapped");
-        setAlumnos(alumnosMapped);
+        setAlumnos(alumnosData.message);
         setChecked(true);
       } else {
         setAlumnos([]);
