@@ -67,6 +67,7 @@ const FaltasTable: React.FC<FaltasTableProps> = ({ data, onSubmit }) => {
             <Checkbox
               status={alumno.falta === 0.25 ? 'checked' : 'unchecked'}
               onPress={() => handleFaltaChange(index, 0.25)}
+              disabled
             />
           </View>
 
@@ -74,6 +75,7 @@ const FaltasTable: React.FC<FaltasTableProps> = ({ data, onSubmit }) => {
             <Checkbox
               status={alumno.falta === 0.5 ? 'checked' : 'unchecked'}
               onPress={() => handleFaltaChange(index, 0.5)}
+              disabled
             />
           </View>
 
@@ -82,6 +84,7 @@ const FaltasTable: React.FC<FaltasTableProps> = ({ data, onSubmit }) => {
             <Checkbox
               status={alumno.falta === 1 ? 'checked' : 'unchecked'}
               onPress={() => handleFaltaChange(index, 1)}
+              disabled
             />
           </View>
 
@@ -94,7 +97,7 @@ const FaltasTable: React.FC<FaltasTableProps> = ({ data, onSubmit }) => {
         </View>
       ))}
 
-      <Button title="Enviar Faltas" onPress={enviar} />
+      {/* <Button title="Enviar Faltas" onPress={enviar} /> */}
     </ScrollView>
   );
 };

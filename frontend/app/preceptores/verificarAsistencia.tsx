@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { Preceptor, CursosProfe, faltasCurso } from 'types';
+import { Preceptor, CursosProfe, faltasCurso, FaltasAlumnos } from 'types';
 import { useAuth } from 'app/context/AuthContext';
 import useFetch from 'hooks/useFetch';
 import { SelectCursos } from 'components/selectCursos';
 import AttendanceTable, { Alumno as AlumnoTabla } from 'components/Tabla';
 import FaltasTable from 'components/tablaCheckAsistencia';
+
+
+type AlumnoPartial = FaltasAlumnos & AlumnoTabla
+
 export default function App() {
   const { token } = useAuth();
   const [checked, setChecked] = useState<boolean>(false);
   const [idPreceptor, setIdPreceptor] = useState<number>(0);
   const [cursos, setCursos] = useState<CursosProfe>([]);
   const [selectedCurso, setSelectedCurso] = useState<string | number | null>(null);
-  const [alumnos, setAlumnos] = useState<AlumnoTabla[]>([]);
+  const [alumnos, setAlumnos] = useState<AlumnoPartial[]>([]);
   const [loadingCursos, setLoadingCursos] = useState<boolean>(true);
 
   const { fetchData: fetchPreceptor } = useFetch<Preceptor>();
@@ -57,10 +61,8 @@ export default function App() {
 
         console.log(cursosData);
 
-        if (Array.isArray(cursosData)) {
-          if (cursosData.length != 0) {
-            setCursos(cursosData);
-          }
+        if (Array.isArray(cursosData) && cursosData.length !== 0) {
+          setCursos(cursosData);
         } else {
           setCursos([]);
         }
@@ -83,14 +85,13 @@ export default function App() {
         url: `http://localhost:4000/faltasAlumnos?id_curso=${selectedCurso}`,
         method: 'GET',
       });
-      
+      console.log("alumnosData", alumnosData)
       if (alumnosData && 'message' in alumnosData && Array.isArray(alumnosData.message)) {
-        const alumnosMapped: AlumnoTabla[] = alumnosData.message.map((a: any) => {
+        const alumnosMapped: AlumnoPartial[] = alumnosData.message.map((a: any) => {
           const nombreCompleto = `${a.nombre ?? ''} ${a.apellido ?? ''}`.trim();
 
-          const partes = nombreCompleto.split(' ');
-          const apellido = partes.pop() || '';
-          const nombre = partes.join(' ');
+          const apellido = a.apellido;
+          const nombre = a.nombre;
           
           return {
             id: a.id_alumno,
@@ -98,7 +99,7 @@ export default function App() {
             nombre,
             apellido,
             falta: a.falta ?? 0,
-            justificada: a.esta_justificada ?? false,
+            esta_justificada: a.esta_justificada ?? false,
           };
         });
 
@@ -141,7 +142,7 @@ export default function App() {
         </View>
       ) : alumnos.length > 0 && checked ? (
         <ScrollView className="mt-6 w-full">
-          <FaltasTable alumnos={alumnos} />
+          <FaltasTable data={{message: alumnos}} />
           <Pressable
             className="rounded-xl bg-blue-600 py-3 shadow-md active:bg-blue-700"
             onPress={() => {

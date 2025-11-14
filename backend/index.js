@@ -266,7 +266,12 @@ app.get("/alumnos", async function (req, res) {
 app.get("/faltasAlumnos", async function (req, res) {
   try {
     console.log(req.query)
-    const alumnos = await realizarQuery(`select Alumnos.id_alumno, Alumnos.nombre, Alumnos.apellido, Asistencias.falta, Asistencias.esta_justificada from Asistencias inner join Alumnos on Asistencias.id_alumno = Alumnos.id_alumno inner join Cursos on Alumnos.id_curso = Cursos.id_curso where Cursos.id_curso = ${req.query.id_curso} and date(horario_de_entrada) = "${new Date().toISOString().slice(0, 10)}";`);
+    const alumnos = await realizarQuery(`
+      select Alumnos.id_alumno, Alumnos.nombre, Alumnos.apellido, Asistencias.falta, Asistencias.esta_justificada
+      from Asistencias
+      inner join Alumnos on Asistencias.id_alumno = Alumnos.id_alumno
+      inner join Cursos on Alumnos.id_curso = Cursos.id_curso
+      where Cursos.id_curso = ${req.query.id_curso} and date(Asistencias.horario_de_entrada) = "${new Date().toISOString().slice(0, 10)}";`);
     console.log(alumnos)
     res.send({ message: alumnos });
   } catch (error) {
