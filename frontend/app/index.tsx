@@ -100,34 +100,30 @@ export default function HomeScreen() {
 
   if (token && rango) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-100">
-        <Text className="text-lg">Cargando...</Text>
+      <View className="flex-1 justify-center items-center bg-gray-100 px-4 sm:px-6 md:px-8">
+        <Text className="text-base sm:text-lg md:text-xl">Cargando...</Text>
       </View>
     );
   }
 
   return (
-      <View className="flex-1 justify-center items-center bg-gray-100 px-6">
-    <View className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-lg">
-      <Text className="text-2xl font-bold text-center text-blue-700 mb-6">
+      <View className="flex-1 justify-center items-center bg-gray-100 px-4 sm:px-6 md:px-8">
+    <View className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg">
+      <Text className="text-lg sm:text-xl md:text-2xl font-bold text-center text-blue-700 mb-4 sm:mb-6">
         Iniciar sesión
       </Text>
 
-      <Text className="text-gray-700 text-base mb-2">Email</Text>
+      <Text className="text-gray-700 text-sm sm:text-base mb-2">Email</Text>
       <Input
-        className={`w-full p-3 rounded-xl border ${
-          MsgError && !validarEmail(user.Email)
-            ? "border-red-500"
-            : "border-gray-400"
-        } bg-gray-50 text-black mb-4`}
+        className={`w-full p-3 sm:p-4 md:p-5 rounded-xl border bg-gray-50 text-black mb-4 ${MsgError && !validarEmail(user.Email) ? "border-red-500" : "border-gray-400"}`}
         placeholder="Ingrese su email"
         value={user.Email}
         onChangeText={(text) => handleChange("Email", text)}
       />
 
-      <Text className="text-gray-700 text-base mb-2">Contraseña</Text>
+      <Text className="text-gray-700 text-sm sm:text-base mb-2">Contraseña</Text>
       <Input
-        className="w-full p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6"
+        className="w-full p-3 sm:p-4 md:p-5 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6 sm:mb-6 md:mb-8"
         placeholder="Ingrese su contraseña"
         secureTextEntry
         value={user.Contraseña}
@@ -135,13 +131,11 @@ export default function HomeScreen() {
       />
 
       <Pressable
-        className={`bg-blue-600 py-3 rounded-xl shadow-md ${
-          loading ? "opacity-70" : "opacity-100"
-        }`}
+        className={`w-full bg-blue-600 py-3 sm:py-3 md:py-4 rounded-xl shadow-md ${loading ? "opacity-70" : "opacity-100"}`}
         onPress={handlePress}
         disabled={loading}
       >
-        <Text className="text-white text-center font-semibold text-base">
+        <Text className="text-white text-center font-semibold text-sm sm:text-base md:text-base">
           {loading ? "Cargando..." : "Iniciar sesión"}
         </Text>
       </Pressable>
