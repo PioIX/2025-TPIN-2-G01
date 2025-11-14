@@ -77,6 +77,7 @@ export default function AlumnosHome() {
 
 
 
+
   async function fetchCursoAlumno(correo: string): Promise<void> {
     try {
       const response = await fetch(
@@ -129,6 +130,7 @@ export default function AlumnosHome() {
 
 
 
+
   async function generarQr(): Promise<void> {
     await fetchUser()
   }
@@ -140,13 +142,12 @@ export default function AlumnosHome() {
 
 
   return (
-    <SafeAreaProvider className=''>
-
-     <View className="flex-1 items-center justify-center bg-white">
-      <Pressable onPress={handleLogout}>
+    <SafeAreaProvider className="flex-1 bg-white">
+     <View className="flex-1 items-center justify-center bg-white px-4 sm:px-6 md:px-8">
+      {/* <Pressable onPress={handleLogout}>
         <Text>Cerrar sesión</Text>
 
-      </Pressable>
+      </Pressable> */}
       {email && <Qr
         value={email}
         size={256}
@@ -156,14 +157,15 @@ export default function AlumnosHome() {
       </Qr>
       }
 
-      <Button label="generar qr" onPress={() => { generarQr() }}></Button>
-      <Text className="w-full p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6">Curso: {`${cursoNuevo.año}° ${cursoNuevo.division} ${cursoNuevo.carrera}` || "Cargando..."}</Text>
-      <Text className="w-full p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6">Horario de entrada: {horarioEntrada || "Cargando..."} </Text>
+      <Button className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-blue-600 py-3 rounded-xl text-white text-center mt-4" label="generar qr" onPress={() => { generarQr() }}></Button>
+      <Text className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-4 text-sm sm:text-base">
+        Curso: {`${cursoNuevo.año}° ${cursoNuevo.division} ${cursoNuevo.carrera}` || "Cargando..."}
+      </Text>
+      <Text className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6 text-sm sm:text-base">
+        Horario de entrada: {horarioEntrada || "Cargando..."} 
+      </Text>
 
      </View>
     </SafeAreaProvider>
   );
 }
-
-
-

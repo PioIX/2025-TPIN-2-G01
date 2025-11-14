@@ -73,18 +73,14 @@ export default function AlumnosAsistencia() {
       await logout();
       router.replace('/');
     };
-
   // useEffect(() => {
     // console.log("array de faltas", arrayFaltas)
     // console.log("array de faltas", falta)
     // console.log("array de fecha", fecha)
   // }, [arrayFaltas]);
-
   useEffect(() => {
     fetchAsistencias(email);
   }, [email]);
-
-
   async function fetchAsistencias(correo: string): Promise<void> {
     try {
       const response = await fetch(
@@ -94,7 +90,6 @@ export default function AlumnosAsistencia() {
       console.log("Data crudo ", data)
       let faltaJus = 0
       let faltaNoJus = 0
-
       for (let i = 0; i < data.message.length; i++) {
         const fechaSoloDia = new Date(data.message[i].horario_de_entrada)
           .toISOString()
@@ -104,13 +99,11 @@ export default function AlumnosAsistencia() {
         setFalta(prev => [...prev, faltaActual])
         
         setArrayFaltas(prev => [...prev, fechaSoloDia, faltaActual]);
-
         if (data.message[i].esta_justificada === 0) {
           faltaNoJus=faltaNoJus+faltaActual
         } else {
           faltaJus=faltaJus+faltaActual
         }
-        
       }
       setFaltasJustificadas(faltaJus)
       setFaltasNoJustificadas(faltaNoJus)
@@ -118,27 +111,24 @@ export default function AlumnosAsistencia() {
     } catch (error) {
       console.error("Error al traer las asistencias:", error);
     }
-
   }
-
-
-
-
   return (
-    <View>
-      <Pressable onPress={handleLogout}>
-        <Text>Cerrar sesión</Text>
-      </Pressable>
-      <Pressable onPress={fetchUser}>
-        <Text>Mostrar Tabla de Inasistencias</Text>
-      </Pressable>
+    <SafeAreaProvider className="flex-1 bg-white">
+      <View className="flex-1 items-center justify-start bg-white px-4 sm:px-6 md:px-8 py-6 pt-10 sm:pt-12 md:pt-16">
+        <Pressable onPress={fetchUser} className="self-center bg-blue-600 px-4 py-2 rounded-md mb-4">
+          <Text className="text-white text-sm sm:text-base md:text-base">Mostrar Tabla de Inasistencias</Text>
+        </Pressable>
     
-      <InAttendanceTable fechas={fecha} faltas={falta}></InAttendanceTable>
-      
-      <Text>Faltas Totales: {faltasTotales}</Text>
-      <Text>Faltas No Justificadas: {faltasNoJustificadas}</Text>
-      <Text>Faltas Justificadas: {faltasJustificadas}</Text>
-    
-    </View>
+        <View className="w-full max-w-3xl mx-auto bg-white rounded-lg overflow-hidden">
+          <InAttendanceTable fechas={fecha} faltas={falta}></InAttendanceTable>
+        </View>
+        
+        <View className="w-full max-w-3xl mx-auto mt-4 p-4 bg-gray-50 rounded-xl space-y-2">
+          <Text className="text-base sm:text-lg md:text-lg text-gray-800">Faltas Totales: {faltasTotales}</Text>
+          <Text className="text-base sm:text-lg md:text-lg text-gray-800">Faltas No Justificadas: {faltasNoJustificadas}</Text>
+          <Text className="text-base sm:text-lg md:text-lg text-gray-800">Faltas Justificadas: {faltasJustificadas}</Text>
+        </View>
+      </View>
+    </SafeAreaProvider>
   );
 }
