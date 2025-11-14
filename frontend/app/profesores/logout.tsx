@@ -13,16 +13,16 @@ export default function LogOut() {
   
   return (
     <SafeAreaProvider className="flex-1 bg-gray-50">
-      <View className="w-full px-4 py-3 md:px-8 md:py-4 bg-gray-50 border-b border-gray-200">
-        <View className="max-w-7xl mx-auto w-full flex-row justify-between items-center">
-          <Text className="text-xl md:text-2xl font-bold text-gray-800">
+      <View className="w-full px-4 sm:px-6 md:px-8 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+        <View className="w-full max-w-3xl mx-auto flex-col md:flex-row justify-between items-center gap-3">
+          <Text className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
             Configuración
           </Text>
           <Pressable 
             onPress={handleLogout}
-            className="px-4 py-2 md:px-6 md:py-2.5 bg-cyan-500 rounded-lg active:bg-red-600"
+            className="px-3 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 bg-cyan-500 rounded-lg active:bg-cyan-600"
           >
-            <Text className="text-white font-semibold text-sm md:text-base">
+            <Text className="text-white font-semibold text-sm sm:text-base md:text-base">
               Cerrar sesión
             </Text>
           </Pressable>
