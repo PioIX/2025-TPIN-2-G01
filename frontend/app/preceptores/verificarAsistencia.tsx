@@ -1,71 +1,67 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { RolMessage, CursosProfe, AlumnosResponse } from 'types';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Preceptor, CursosProfe, faltasCurso, FaltasAlumnos } from 'types';
 import { useAuth } from 'app/context/AuthContext';
 import useFetch from 'hooks/useFetch';
 import { SelectCursos } from 'components/selectCursos';
 import AttendanceTable, { Alumno as AlumnoTabla } from 'components/Tabla';
+import FaltasTable from 'components/tablaCheckAsistencia';
 
-export default function ProfesoresAsistencia() {
+
+type AlumnoPartial = FaltasAlumnos & AlumnoTabla
+
+export default function App() {
   const { token } = useAuth();
-  const [checked,setChecked] = useState<boolean>(false)
-  const [idProfesor, setIdProfesor] = useState<number>(0);
+  const [checked, setChecked] = useState<boolean>(false);
+  const [idPreceptor, setIdPreceptor] = useState<number>(0);
   const [cursos, setCursos] = useState<CursosProfe>([]);
   const [selectedCurso, setSelectedCurso] = useState<string | number | null>(null);
-  const [alumnos, setAlumnos] = useState<AlumnoTabla[]>([]);
+  const [alumnos, setAlumnos] = useState<AlumnoPartial[]>([]);
   const [loadingCursos, setLoadingCursos] = useState<boolean>(true);
 
-  const { fetchData: fetchProfesor } = useFetch<RolMessage>();
+  const { fetchData: fetchPreceptor } = useFetch<Preceptor>();
   const { fetchData: fetchCursos } = useFetch<CursosProfe>();
-  const { fetchData: fetchAlumnos } = useFetch<AlumnosResponse>();
+  const { fetchData: fetchAlumnos } = useFetch<faltasCurso>();
 
   useEffect(() => {
     if (!token) return;
 
-    const getProfesor = async () => {
+    const getPreceptor = async () => {
       try {
-        const profesor = await fetchProfesor({
+        const preceptor = await fetchPreceptor({
           url: 'http://localhost:4000/usuarioLog',
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
-            Persona: 'profesor',
+            Persona: 'preceptor',
           },
         });
 
-        if (profesor?.message?.id_profesor) {
-          setIdProfesor(profesor.message.id_profesor);
+        if (preceptor?.message?.id_administradores) {
+          setIdPreceptor(preceptor.message.id_administradores);
         }
       } catch (error) {
         console.error('Error al obtener profesor:', error);
       }
     };
 
-    getProfesor();
+    getPreceptor();
   }, [token]);
 
   useEffect(() => {
-    if (!token || idProfesor === 0) return;
+    if (!token || idPreceptor === 0) return;
     const getCursos = async () => {
       try {
         setLoadingCursos(true);
         const cursosData = await fetchCursos({
-          url: `http://localhost:4000/cursos?id_profesor=${idProfesor}`,
+          url: `http://localhost:4000/preceptoresCursos?id_administrador=${idPreceptor}`,
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log(cursosData)
-        // if (cursosData && 'message' in cursosData && Array.isArray(cursosData.message)) {
-        //   console.log("despues del if")
-        //   setCursos(cursosData.message);
-        // } else if (Array.isArray(cursosData)) {
-        //   setCursos(cursosData);
-        // } else {
-        //   setCursos([]);
-        // }
-        console.log(cursosData)
-        if (Array.isArray(cursosData)) {
+        console.log(cursosData);
+
+        if (Array.isArray(cursosData) && cursosData.length !== 0) {
           setCursos(cursosData);
         } else {
           setCursos([]);
@@ -79,34 +75,37 @@ export default function ProfesoresAsistencia() {
     };
 
     getCursos();
-  }, [token, idProfesor]);
+  }, [token, idPreceptor]);
 
   const buscarAlumnos = async () => {
     if (!selectedCurso) return;
 
     try {
       const alumnosData = await fetchAlumnos({
-        url: `http://localhost:4000/alumnos?id_curso=${selectedCurso}`,
+        url: `http://localhost:4000/faltasAlumnos?id_curso=${selectedCurso}`,
         method: 'GET',
       });
-
+      console.log("alumnosData", alumnosData)
       if (alumnosData && 'message' in alumnosData && Array.isArray(alumnosData.message)) {
-        const alumnosMapped: AlumnoTabla[] = alumnosData.message.map((a: any, index: number) => {
-          const nombreCompleto = `${a.Nombre ?? ''} ${a.apellido ?? ''}`.trim();
-          const partes = nombreCompleto.split(' ');
-          const apellido = partes.pop() || '';
-          const nombre = partes.join(' ');
+        const alumnosMapped: AlumnoPartial[] = alumnosData.message.map((a: any) => {
+          const nombreCompleto = `${a.nombre ?? ''} ${a.apellido ?? ''}`.trim();
+
+          const apellido = a.apellido;
+          const nombre = a.nombre;
+          
           return {
-            id: index + 1,
+            id: a.id_alumno,
             nombreCompleto,
             nombre,
             apellido,
-            presente: false,
-            ausente: false,
+            falta: a.falta ?? 0,
+            esta_justificada: a.esta_justificada ?? false,
           };
         });
+
+        console.log(alumnosMapped, "soy un console.log de alumnos mapped");
         setAlumnos(alumnosMapped);
-        setChecked(true)
+        setChecked(true);
       } else {
         setAlumnos([]);
       }
@@ -120,7 +119,7 @@ export default function ProfesoresAsistencia() {
     <View className="flex-1 items-center justify-center bg-gray-100 px-6">
       {loadingCursos ? (
         <Text>Cargando cursos...</Text>
-      ) : cursos.length > 0 && alumnos.length === 0  ? (
+      ) : cursos.length > 0 && alumnos.length === 0 ? (
         <View className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
           <Text className="mb-6 text-center text-2xl font-bold text-blue-700">
             Página de asistencia
@@ -143,13 +142,13 @@ export default function ProfesoresAsistencia() {
         </View>
       ) : alumnos.length > 0 && checked ? (
         <ScrollView className="mt-6 w-full">
-          <AttendanceTable alumnos={alumnos} />
+          <FaltasTable data={{message: alumnos}} />
           <Pressable
             className="rounded-xl bg-blue-600 py-3 shadow-md active:bg-blue-700"
-            onPress={()=>{
-              setChecked(!checked)
-              setAlumnos([])
-              }}>
+            onPress={() => {
+              setChecked(!checked);
+              setAlumnos([]);
+            }}>
             <Text className="text-center text-base font-semibold text-white">Cancelar</Text>
           </Pressable>
         </ScrollView>

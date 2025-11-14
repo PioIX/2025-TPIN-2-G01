@@ -32,7 +32,7 @@ export default function Layout() {
         }}
       />
       <Tabs.Screen
-        name="datosAlumno"
+        name="verificarAsistencia"
         options={{
           title: '',
           tabBarIcon: ({ focused }) => (
