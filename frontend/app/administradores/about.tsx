@@ -3,8 +3,11 @@ import { Text, TouchableOpacity, View, Alert } from "react-native";
 import Button from "components/Button";
 import Input from "components/input";
 import DropDown from "components/dropDown";
+import useFetch from 'hooks/useFetch';
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { Usuario, Owner, Preceptor, Profesor, Alumno, items, TipoUsuario, email, Admin } from "types";
+import { useAuth } from "app/context/AuthContext";
+import { RotateOutUpLeft } from "react-native-reanimated";
 export default function About() {
     //datos del Select
     const [name, onChangeName] = useState<string>("");
@@ -19,6 +22,7 @@ export default function About() {
     const [modificar, setModificar] = useState<Boolean>(true)
     const [borrar, setBorrar] = useState<Boolean>(false)
     const [agregar, setAgregar] = useState<Boolean>(false)
+    const { token, logout } = useAuth();
 
     // states para los select
     const [openRank, setOpenRank] = useState<boolean>(false)
@@ -36,6 +40,40 @@ export default function About() {
     const [profesoresLista, setProfesoresLista] = useState<Profesor[]>([])
     const [preceptorLista, setPreceptorLista] = useState<Preceptor[]>([])
     const [items, setItems] = useState<items[]>([])
+
+    const { fetchData: actualizarDatos } = useFetch()
+    const { fetchData: subirUsuario } = useFetch()
+    const { fetchData: borrarDatos } = useFetch()
+    const { fetchData: alumnos } = useFetch<Alumno[]>()
+    const { fetchData: profesores } = useFetch<Profesor[]>()
+    const { fetchData: owners } = useFetch<Owner[]>()
+    const { fetchData: preceptores } = useFetch<Preceptor[]>()
+    const { fetchData: listaCursos } = useFetch<items[]>()
+
+    const ownerFetch = async () => {
+            const lista = await llenarOwner()
+            setOwnerLista(lista);
+        }
+        // Preceptores (rango "P") 
+        const preceptorFetch = async () => {
+            const lista = await llenarAPreceptor()
+            setPreceptorLista(lista);
+        }
+        // Estudiantes
+        const alumnoFetch = async () => {
+            const lista = await llenarAlumnos()
+            setAlumnoLista(lista);
+        }
+        // Profesores
+        const profesorFetch = async () => {
+            const lista = await llenarProfesores()
+            setProfesoresLista(lista);
+        }
+        const cursosFetch = async () => {
+            const lista = await llenarCursos()
+            setCursos(lista)
+        }
+
 
     //debugging
     useEffect(() => {
@@ -67,83 +105,11 @@ export default function About() {
     }, [idCurso])
 
     useEffect(() => {
-        //owner (rango "O")
-        setOwnerLista([
-            { id: 1, nombre: "Admin1", apellido: "Perez", rango: "owner", email: "admin1@escuela.com", contraseña: "1234" },
-            { id: 2, nombre: "Admin2", apellido: "Lopez", rango: "owner", email: "admin2@escuela.com", contraseña: "1234" },
-            { id: 3, nombre: "Admin3", apellido: "Diaz", rango: "owner", email: "admin3@escuela.com", contraseña: "1234" },
-            { id: 4, nombre: "Admin4", apellido: "Sosa", rango: "owner", email: "admin4@escuela.com", contraseña: "1234" },
-            { id: 5, nombre: "Admin5", apellido: "Martinez", rango: "owner", email: "admin5@escuela.com", contraseña: "1234" },
-        ]);
-
-        // Preceptores (rango "P")
-        setPreceptorLista([
-            { id: 1, nombre: "Preceptor1", apellido: "Gomez", rango: "preceptor", email: "preceptor1@escuela.com", contraseña: "abcd" },
-            { id: 2, nombre: "Preceptor2", apellido: "Mendez", rango: "preceptor", email: "preceptor2@escuela.com", contraseña: "abcd" },
-            { id: 3, nombre: "Preceptor3", apellido: "Ramos", rango: "preceptor", email: "preceptor3@escuela.com", contraseña: "abcd" },
-            { id: 4, nombre: "Preceptor4", apellido: "Nuñez", rango: "preceptor", email: "preceptor4@escuela.com", contraseña: "abcd" },
-            { id: 5, nombre: "Preceptor5", apellido: "Suarez", rango: "preceptor", email: "preceptor5@escuela.com", contraseña: "abcd" },
-        ]);
-
-        // Estudiantes
-        setAlumnoLista([
-            { id: 1, id_curso: 17, nombre: "Estudiante1", apellido: "Fernandez", rango: "alumno", imagen: null, email: "estudiante1@escuela.com", contraseña: "pass" },
-            { id: 2, id_curso: 32, nombre: "Estudiante2", apellido: "Garcia", rango: "alumno", imagen: null, email: "estudiante2@escuela.com", contraseña: "pass" },
-            { id: 3, id_curso: 1, nombre: "Estudiante3", apellido: "Perez", rango: "alumno", imagen: null, email: "estudiante3@escuela.com", contraseña: "pass" },
-            { id: 4, id_curso: 27, nombre: "Estudiante4", apellido: "Molina", rango: "alumno", imagen: null, email: "estudiante4@escuela.com", contraseña: "pass" },
-            { id: 5, id_curso: 11, nombre: "Estudiante5", apellido: "Juarez", rango: "alumno", imagen: null, email: "estudiante5@escuela.com", contraseña: "pass" },
-        ]);
-
-        // Profesores
-        setProfesoresLista([
-            { id: 1, nombre: "Profesor1", apellido: "Ruiz", email: "profesor1@escuela.com", contraseña: "prof1", rango: "profesor" },
-            { id: 2, nombre: "Profesor2", apellido: "Navarro", email: "profesor2@escuela.com", contraseña: "prof2", rango: "profesor" },
-            { id: 3, nombre: "Profesor3", apellido: "Blanco", email: "profesor3@escuela.com", contraseña: "prof3", rango: "profesor" },
-            { id: 4, nombre: "Profesor4", apellido: "Sanchez", email: "profesor4@escuela.com", contraseña: "prof4", rango: "profesor" },
-            { id: 5, nombre: "Profesor5", apellido: "Ortiz", email: "profesor5@escuela.com", contraseña: "prof5", rango: "profesor" },
-        ]);
-
-        //Cursos
-        setCursos([
-            { value: 21, label: "1 A industrial" },
-            { value: 22, label: "1 B industrial" },
-            { value: 23, label: "1 C industrial" },
-            { value: 24, label: "2 A industrial" },
-            { value: 25, label: "2 B industrial" },
-            { value: 26, label: "2 C industrial" },
-            { value: 27, label: "3 A industrial" },
-            { value: 28, label: "3 B industrial" },
-            { value: 29, label: "4 A industrial" },
-            { value: 30, label: "4 B industrial" },
-            { value: 31, label: "5 A industrial" },
-            { value: 32, label: "5 B industrial" },
-            { value: 33, label: "6 A industrial" },
-            { value: 34, label: "6 B industrial" },
-            { value: 11, label: "1 A informatica" },
-            { value: 12, label: "1 B informatica" },
-            { value: 13, label: "2 A informatica" },
-            { value: 14, label: "2 B informatica" },
-            { value: 15, label: "3 A informatica" },
-            { value: 16, label: "3 B informatica" },
-            { value: 17, label: "4 A informatica" },
-            { value: 18, label: "4 B informatica" },
-            { value: 19, label: "5 A informatica" },
-            { value: 20, label: "5 B informatica" },
-            { value: 1, label: "1 A comunicacion" },
-            { value: 2, label: "1 B comunicacion" },
-            { value: 3, label: "2 A comunicacion" },
-            { value: 4, label: "2 B comunicacion" },
-            { value: 5, label: "3 A comunicacion" },
-            { value: 6, label: "3 B comunicacion" },
-            { value: 7, label: "4 A comunicacion" },
-            { value: 8, label: "4 B comunicacion" },
-            { value: 9, label: "5 A comunicacion" },
-            { value: 10, label: "5 B comunicacion" },
-            { value: 35, label: "3 A renovables" },
-            { value: 36, label: "4 A renovables" },
-            { value: 37, label: "5 A renovables" },
-            { value: 38, label: "6 A renovables" }
-        ])
+        ownerFetch()
+        preceptorFetch()
+        alumnoFetch()
+        profesorFetch()
+        cursosFetch()
     }, [])
     //de debugin para aca borrar
 
@@ -169,6 +135,61 @@ export default function About() {
             id_curso: idCurso as number
         }
         return UserData
+    }
+    async function llenarAPreceptor(): Promise<Preceptor[]> {
+        const data = await preceptores({
+            url: 'http://localhost:4000/getAllPreceptores',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+            },
+        })
+        return data as Preceptor[]
+    }
+    async function llenarOwner(): Promise<Owner[]> {
+        const data = await owners({
+            url: 'http://localhost:4000/getAllOwner',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+            },
+        })
+        return data as Owner[]
+    }
+    async function llenarProfesores(): Promise<Profesor[]> {
+        const data = await profesores({
+            url: 'http://localhost:4000/getAllProfesores',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+            },
+        })
+        return data as Profesor[]
+    }
+    async function llenarAlumnos(): Promise<Alumno[]> {
+        const data = await alumnos({
+            url: 'http://localhost:4000/getAllAlumnos',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+            },
+        })
+        return data as Alumno[]
+    }
+    async function llenarCursos(): Promise<items[]> {
+        const data = await listaCursos({
+            url: 'http://localhost:4000/getAllCursos',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+            },
+        })
+        return data as items[]
     }
     /** 
     function errorHandler(data:TipoUsuario): boolean{
@@ -317,27 +338,49 @@ export default function About() {
         limpiarRango()
     }
     // Funciones Fetch
-    function subirDatos(): void {
+    async function subirDatos(): Promise<void> {
         const datos = construirDatos()
-        //if (!errorHandler(datos)) {
-           
-        //}
+        //if (!errorHandler(datos)) {}
+        const userData = await subirUsuario({
+            url: 'http://localhost:4000/agregarUsuarios',
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+                body: JSON.stringify(datos)
+            },
+        });
     }
-    function ActualizarDatos(): void {
+    async function ActualizarDatos(): Promise<void> {
         const datos = construirDatos()
-        //if (!errorHandler(datos)) {
-            Alert.alert("todo biwn")
-        //}
+        const userData = await actualizarDatos({
+            url: 'http://localhost:4000/actualizarUsuarios',
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+                body: JSON.stringify(datos)
+            },
+        });
+        //if (!errorHandler(datos)) {}
     }
-    function borrarUsuario(): void {
-        const data = { id: userId }
-        console.log(data.id)
+    async function borrarUsuario(): Promise<void> {
+        const data = construirDatos()
+        const userData = await borrarDatos({
+            url: 'http://localhost:4000/borrarUsuarios',
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Persona: 'owner',
+                body: JSON.stringify(data)
+            },
+        });
     }
     return (
 
         <SafeAreaView style={{ flex: 1 }}>
             <View>
-              
+
                 <Button label="Modificar" onPress={moverAModificar}></Button>
                 <Button label="Borrar" onPress={moverABorrar}></Button>
                 <Button label="Agregar" onPress={moverAAgregar}></Button>

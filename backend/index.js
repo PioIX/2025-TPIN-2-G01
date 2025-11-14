@@ -139,6 +139,22 @@ app.get("/getAllAlumnos", async function (req, res) {
   const result = await realizarQuery(`SELECT * FROM Alumnos`);
   res.send(result);
 });
+app.get("/getAllProfesores", async function (req, res) {
+  const result = await realizarQuery(`SELECT * FROM Alumnos`);
+  res.send(result);
+});
+app.get("/getAllPreceptores", async function (req, res) {
+  const result = await realizarQuery(`SELECT * FROM Alumnos where rango = "P"`);
+  res.send(result);
+});
+app.get("/getAllOwner", async function (req, res) {
+  const result = await realizarQuery(`SELECT * FROM Alumnos where rango = "O"`);
+  res.send(result);
+});
+app.get("/getAllCursos", async function (req, res) {
+  const result = await realizarQuery(`SELECT concat(año, " ", division, " ", carrera) as "label", id_curso as "value" FROM Cursos;`);
+  res.send(result);
+});
 
 app.get("/login", async function (req, res) {
   try {
