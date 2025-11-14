@@ -335,42 +335,45 @@ export default function About() {
     }
     return (
 
-        <SafeAreaView style={{ flex: 1 }}>
-            <View>
+        <SafeAreaView style={{ flex: 1 }} className="flex-1 bg-gray-100 justify-center -translate-y-8">
+            <View className="w-full px-4 sm:px-6 md:px-8 py-4 flex-row justify-center items-center gap-3">
               
-                <Button label="Modificar" onPress={moverAModificar}></Button>
-                <Button label="Borrar" onPress={moverABorrar}></Button>
-                <Button label="Agregar" onPress={moverAAgregar}></Button>
+                <Button className="flex-1 bg-blue-600 py-3 rounded-xl text-white text-center" label="Modificar" onPress={moverAModificar}></Button>
+                <Button className="flex-1 bg-red-600 py-3 rounded-xl text-white text-center" label="Borrar" onPress={moverABorrar}></Button>
+                <Button className="flex-1 bg-green-600 py-3 rounded-xl text-white text-center" label="Agregar" onPress={moverAAgregar}></Button>
 
             </View>
             {
                 agregar &&
-                <DropDown
-                    open={openRank}
-                    setOpen={setOpenRank}
-                    items={[
-                        { label: "Alumno", value: "alumno" },
-                        { label: "Owner", value: "owner" },
-                        { label: "Profesor", value: "profesor" },
-                        { label: "Preceptor", value: "preceptor" },
-                    ]}
-                    value={rank}
-                    setValue={setRank}
-                    placeholder="elegi un cargo"
-                />
+                <View className="w-full px-4 sm:px-6 md:px-8 mt-4">
+                    <DropDown
+                        open={openRank}
+                        setOpen={setOpenRank}
+                        items={[
+                            { label: "Alumno", value: "alumno" },
+                            { label: "Owner", value: "owner" },
+                            { label: "Profesor", value: "profesor" },
+                            { label: "Preceptor", value: "preceptor" },
+                        ]}
+                        value={rank}
+                        setValue={setRank}
+                        placeholder="elegi un cargo"
+                        className="w-full z-50"
+                    />
+                </View>
             }
             {
                 agregar && rank &&
-                <View>
-                    <Input value={name} onChangeText={onChangeName} placeholder="nombre" />
-                    <Input value={surname} onChangeText={onChangeSurname} placeholder="apellido" />
-                    <Input value={email} onChangeText={onChangeEmail} placeholder="napellido@pioix.edu.ar" />
-                    <Input value={password} onChangeText={onChangePassword} placeholder="contraseña" />
+                <View className="w-full px-4 sm:px-6 md:px-8 mt-4 space-y-3">
+                    <Input className="w-full p-3 sm:p-4 md:p-5 rounded-xl border border-gray-400 bg-gray-50 text-black z-0" value={name} onChangeText={onChangeName} placeholder="nombre" />
+                    <Input className="w-full p-3 sm:p-4 md:p-5 rounded-xl border border-gray-400 bg-gray-50 text-black z-0" value={surname} onChangeText={onChangeSurname} placeholder="apellido" />
+                    <Input className="w-full p-3 sm:p-4 md:p-5 rounded-xl border border-gray-400 bg-gray-50 text-black z-0" value={email} onChangeText={onChangeEmail} placeholder="napellido@pioix.edu.ar" />
+                    <Input className="w-full p-3 sm:p-4 md:p-5 rounded-xl border border-gray-400 bg-gray-50 text-black z-0" value={password} onChangeText={onChangePassword} placeholder="contraseña" />
                     {
                         isAdmin(user as Admin) &&
-                        <TouchableOpacity onPress={() => { onChangeOwner(!owner) }}>
-                            {owner && <Text> es Owner</Text>}
-                            {!owner && <Text> es Preceptor</Text>}
+                        <TouchableOpacity className="py-2" onPress={() => { onChangeOwner(!owner) }}>
+                            {owner && <Text className="text-center text-sm"> es Owner</Text>}
+                            {!owner && <Text className="text-center text-sm"> es Preceptor</Text>}
                         </TouchableOpacity>
                     }
                     {
@@ -381,32 +384,36 @@ export default function About() {
                             items={cursos}
                             open={openCurso}
                             setOpen={setOpenCurso}
+                            className="w-full z-50"
                         />
                     }
-                    <Button label="subir nuevos datos" onPress={subirDatos}></Button>
+                    <Button className="w-full bg-blue-600 py-3 rounded-xl text-white text-center" label="subir nuevos datos" onPress={subirDatos}></Button>
                 </View>
             }
 
             {
                 borrar &&
-                <DropDown
-                    open={openRank}
-                    setOpen={setOpenRank}
-                    items={[
-                        { label: "Alumno", value: "alumno" },
-                        { label: "Owner", value: "owner" },
-                        { label: "Profesor", value: "profesor" },
-                        { label: "Preceptor", value: "preceptor" },
-                    ]}
-                    value={rank}
-                    setValue={setRank}
-                    placeholder="elegi un cargo"
-                />
+                <View className="w-full px-4 sm:px-6 md:px-8 mt-4">
+                    <DropDown
+                        open={openRank}
+                        setOpen={setOpenRank}
+                        items={[
+                            { label: "Alumno", value: "alumno" },
+                            { label: "Owner", value: "owner" },
+                            { label: "Profesor", value: "profesor" },
+                            { label: "Preceptor", value: "preceptor" },
+                        ]}
+                        value={rank}
+                        setValue={setRank}
+                        placeholder="elegi un cargo"
+                        className="w-full z-50"
+                    />
+                </View>
 
             }
             {
                 borrar && rank &&
-                <View>
+                <View className="w-full px-4 sm:px-6 md:px-8 mt-4 space-y-3">
                     <DropDown
                         setOpen={setOpenList}
                         open={openList}
@@ -416,30 +423,34 @@ export default function About() {
                         setValue={setUserId as Dispatch<SetStateAction<number | null>>}
                         placeholder={`seleccione un ${rank.toLowerCase()}`}
                         isSearchable
+                        className="w-full z-50"
                     />
-                    {userId && <Button label="borrar usuario" onPress={borrarUsuario}></Button>}
+                    {userId && <Button className="w-full bg-red-600 py-3 rounded-xl text-white text-center" label="borrar usuario" onPress={borrarUsuario}></Button>}
                 </View>
             }
             {
                 modificar &&
-                <DropDown
-                    open={openRank}
-                    setOpen={setOpenRank}
-                    items={[
-                        { label: "Alumno", value: "alumno" },
-                        { label: "Owner", value: "owner" },
-                        { label: "Profesor", value: "profesor" },
-                        { label: "Preceptor", value: "preceptor" },
-                    ]}
-                    value={rank}
-                    setValue={setRank}
-                    placeholder="elegi un cargo"
-                />
+                <View className="w-full px-4 sm:px-6 md:px-8 mt-4">
+                    <DropDown
+                        open={openRank}
+                        setOpen={setOpenRank}
+                        items={[
+                            { label: "Alumno", value: "alumno" },
+                            { label: "Owner", value: "owner" },
+                            { label: "Profesor", value: "profesor" },
+                            { label: "Preceptor", value: "preceptor" },
+                        ]}
+                        value={rank}
+                        setValue={setRank}
+                        placeholder="elegi un cargo"
+                        className="w-full z-50"
+                    />
+                </View>
             }
             {
                 modificar && rank &&
 
-                <View>
+                <View className="w-full px-4 sm:px-6 md:px-8 mt-4 space-y-3">
                     <DropDown
                         setOpen={setOpenList}
                         open={openList}
@@ -449,20 +460,21 @@ export default function About() {
                         setValue={setUserId as Dispatch<SetStateAction<number | null>>}
                         placeholder={`seleccione un ${rank.toLowerCase()}`}
                         isSearchable
+                        className="w-full z-50"
                     />
                     {
                         userId && user &&
-                        <View>
-                            <Input editable={false} value={user?.id.toString()} />
-                            <Input value={name} onChangeText={onChangeName} />
-                            <Input value={surname} onChangeText={onChangeSurname} />
-                            <Input value={email} onChangeText={onChangeEmail} />
-                            <Input value={password} onChangeText={onChangePassword} />
+                        <View className="w-full space-y-3">
+                            <Input className="w-full p-3 rounded-xl border border-gray-300 bg-gray-50 z-0" editable={false} value={user?.id.toString()} />
+                            <Input className="w-full p-3 rounded-xl border border-gray-300 bg-gray-50 z-0" value={name} onChangeText={onChangeName} />
+                            <Input className="w-full p-3 rounded-xl border border-gray-300 bg-gray-50 z-0" value={surname} onChangeText={onChangeSurname} />
+                            <Input className="w-full p-3 rounded-xl border border-gray-300 bg-gray-50 z-0" value={email} onChangeText={onChangeEmail} />
+                            <Input className="w-full p-3 rounded-xl border border-gray-300 bg-gray-50 z-0" value={password} onChangeText={onChangePassword} />
                             {
                                 isAdmin(user as Admin) &&
-                                <TouchableOpacity onPress={() => { onChangeOwner(!owner) }}>
-                                    {owner && <Text> es Owner</Text>}
-                                    {!owner && <Text> es Preceptor</Text>}
+                                <TouchableOpacity className="py-2" onPress={() => { onChangeOwner(!owner) }}>
+                                    {owner && <Text className="text-center text-sm"> es Owner</Text>}
+                                    {!owner && <Text className="text-center text-sm"> es Preceptor</Text>}
                                 </TouchableOpacity>
                             }
                             {
@@ -473,9 +485,10 @@ export default function About() {
                                     items={cursos}
                                     open={openCurso}
                                     setOpen={setOpenCurso}
+                                    className="w-full z-50"
                                 />
                             }
-                            <Button label="actualizar nuevos datos" onPress={ActualizarDatos}></Button>
+                            <Button className="w-full bg-blue-600 py-3 rounded-xl text-white text-center" label="actualizar nuevos datos" onPress={ActualizarDatos}></Button>
                         </View>
                     }
                 </View>
