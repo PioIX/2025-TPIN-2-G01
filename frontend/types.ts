@@ -92,14 +92,12 @@ export type RolMessage = {
   };
 };
 
-export interface Alumno {
-  apellido: string;
+export interface FaltasAlumnos {
+  id_alumno: number;
   nombre: string;
-}
-
-export interface FaltasAlumnos extends Alumno {
-  esta_justificada: boolean;
+  apellido: string;
   falta: 0 | 0.25 | 0.50 | 1;
+  esta_justificada: boolean;
 }
 
 export interface faltasCurso {
@@ -171,8 +169,6 @@ export interface Profesor extends Usuario {
   rango: "profesor"  
 }
 
-export type email = `${string}@${string}.${string}`
-
 export interface selectProps<T> {
   open?: boolean;
   setOpen?: Dispatch<SetStateAction<boolean>>;
@@ -201,8 +197,6 @@ export interface UserData{
   id_curso?: number
 }
 
-}
-
 export interface CursoNuevo {
   año: number;
   carrera: string;
@@ -220,9 +214,10 @@ export interface respuestaAlumno {
     nombre?: string;
   };
 }
+
 export type email = `${string}@${string}.${string}`;
 
-export type Usuario = {
+export type RespuestaPreceptor = {
   message: {
     id_administradores: number;
     rango: string;

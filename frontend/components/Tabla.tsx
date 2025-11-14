@@ -36,7 +36,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({alumnos, onSubmit }) =
     }));
 
     await fetchAsistencia({
-      url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/lista',
+      url: 'http://localhost:4000/lista',
       method: 'POST',
       body: payload,
     });

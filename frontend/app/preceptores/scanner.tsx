@@ -30,7 +30,7 @@ export default function App() {
   async function marcarAsistencia(data: string) {
     console.log("llama a marcarAsistencia")
     await registrarAsistencia({
-      url: 'https://lithographically-soppiest-lonnie.ngrok-free.dev/asistencia',
+      url: 'http://localhost:4000/asistencia',
       method: 'POST',
       body: { email: data },
       headers: {
