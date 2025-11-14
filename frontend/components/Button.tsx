@@ -1,10 +1,5 @@
 import { Text, TouchableOpacity } from "react-native";
 
-type ButtonProps = {
-  label: string;
-  onPress?: () => void;
-};
-
 export default function Button({ label, onPress }: ButtonProps) {
   return (
     <TouchableOpacity

@@ -1,13 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-
-import { Pressable, Text, View } from 'react-native';
+import { useSocket } from "hooks/useSocket";
+import { Pressable, Text, View, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
+import { respuestaAlumno } from 'types';
 import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
-import AttendanceTable from 'components/Tabla';
 import InAttendanceTable from 'components/TablaInasistencia';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function AlumnosAsistencia() {
   const { data, error, loading, fetchData } = useFetch();
   const router = useRouter();
@@ -23,35 +24,55 @@ export default function AlumnosAsistencia() {
      * trae la info del usuario logeado
      * @returns {message:{datosEstudiantes}}
      */
-  async function fetchUser(): Promise<void> {
-    const userData = await fetchData({
-      url: 'http://localhost:4000/usuarioLog',
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Persona: 'alumno',
-      },
-    });
-    console.log(token);
-    console.log("userData ", userData)
-    setEmail(userData.message.correo_electronico)
-    console.log(typeof (userData.message.correo_electronico))
-    console.log("email", email)
-  };
+  const { socket, isConnected } = useSocket();
+  const {fetchData: fetchAlumno} = useFetch<respuestaAlumno>()
+    
+      function metermeSala(){
+        console.log(email)
+        socket?.emit("unirme", { value: email });  
+      }
+  
+      useEffect(()=>{
+        if (email != "") {
+          metermeSala()
+        }
+      }, [email])
+    
+      useEffect(() => {
+      if (!socket) return;
+        socket.on("mensajitoSala", (generico)=>{
+          Alert.alert(generico.message)
+          console.log(generico.message)
+        })
+        socket.on("NotificacionAlumno", (generico)=>{
+          Alert.alert(generico.message)
+        })
+        
+      }, [socket]);
+  
+  
+    async function fetchUser(): Promise<void> {
+      const userData = await fetchAlumno({
+        url: 'http://localhost:4000/usuarioLog',
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Persona: 'alumno',
+        },
+      });
+  
+      console.log(userData?.message)
+      if (userData?.message?.correo_electronico) {
+        setEmail(userData.message.correo_electronico)
+        console.log(typeof (userData.message.correo_electronico))
+        console.log("email", email)
+      }
+  
+    };
     const handleLogout = async () => {
-    await logout();
-    router.replace('/');
-  };
-
-
-  // useEffect(() => {
-  //   fetchUser();
-  // }, [])
-
-  useEffect(() => {
-    fetchAsistencias(email);
-  }, [email]);
-
+      await logout();
+      router.replace('/');
+    };
 
   // useEffect(() => {
     // console.log("array de faltas", arrayFaltas)
@@ -59,11 +80,15 @@ export default function AlumnosAsistencia() {
     // console.log("array de fecha", fecha)
   // }, [arrayFaltas]);
 
+  useEffect(() => {
+    fetchAsistencias(email);
+  }, [email]);
+
 
   async function fetchAsistencias(correo: string): Promise<void> {
     try {
       const response = await fetch(
-        `http://localhost:4000/traerAsistencias?correo_electronico=${correo}&falta>=0`
+        `http://localhost:4000/traerAsistencias?correo_electronico=${correo}&falta>0`
       );
       const data = await response.json();
       console.log("Data crudo ", data)

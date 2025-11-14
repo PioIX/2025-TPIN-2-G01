@@ -36,7 +36,7 @@ export default function Layout() {
       />
 
       <Tabs.Screen
-        name="about"
+        name="logout"
         options={{
           title: '',
           tabBarIcon: ({ focused }) => (
@@ -44,17 +44,6 @@ export default function Layout() {
           ),
         }}
       />
-
-      {/* <Tabs.Screen
-        name="sign-out"
-        options={{
-          title: "",
-          tabBarIcon: ({ focused }) => (
-            <FontAwesome name="sign-out" size={24}
-            color={ focused ? "tomato" : "gray"} />
-          ),
-        }}
-      /> */}
     </Tabs>
   );
 }

@@ -472,7 +472,7 @@ app.get("/traerAsistencias", async function (req, res) {
 
     const result = await realizarQuery(`SELECT horario_de_entrada, falta, esta_justificada FROM Asistencias
     INNER JOIN Alumnos ON Asistencias.id_alumno = Alumnos.id_alumno
-    WHERE Alumnos.correo_electronico = "${req.query.correo_electronico}" and Asistencias.falta >= 0;`)
+    WHERE Alumnos.correo_electronico = "${req.query.correo_electronico}" and Asistencias.falta > 0;`)
 
     res.send({ message: result })
   } catch (error) {
@@ -546,3 +546,4 @@ app.get("/getHorarioEntrada", (req, res) => {
 // app.listen(port, function () {
 //   console.log(`Server running in http://localhost:${port}`);
 // });
+
