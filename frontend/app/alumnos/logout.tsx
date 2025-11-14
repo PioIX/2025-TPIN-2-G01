@@ -20,7 +20,7 @@ export default function LogOut() {
           </Text>
           <Pressable 
             onPress={handleLogout}
-            className="px-3 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 bg-cyan-500 rounded-lg active:bg-cyan-600"
+            className="px-3 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 bg-blue-700 rounded-lg active:bg-blue-500"
           >
             <Text className="text-white font-semibold text-sm sm:text-base md:text-base">
               Cerrar sesión
