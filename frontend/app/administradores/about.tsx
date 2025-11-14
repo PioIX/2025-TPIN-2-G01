@@ -1,5 +1,5 @@
 import { useEffect, useState, SetStateAction, Dispatch } from "react";
-import { Text, TouchableOpacity, View, Alert } from "react-native";
+import { Text, TouchableOpacity, View, Alert, Pressable } from "react-native";
 import Button from "components/Button";
 import Input from "components/input";
 import DropDown from "components/dropDown";
@@ -338,9 +338,15 @@ export default function About() {
         <SafeAreaView style={{ flex: 1 }} className="flex-1 bg-gray-100 justify-center -translate-y-8">
             <View className="w-full px-4 sm:px-6 md:px-8 py-4 flex-row justify-center items-center gap-3">
               
-                <Button className="flex-1 bg-blue-600 py-3 rounded-xl text-white text-center" label="Modificar" onPress={moverAModificar}></Button>
-                <Button className="flex-1 bg-red-600 py-3 rounded-xl text-white text-center" label="Borrar" onPress={moverABorrar}></Button>
-                <Button className="flex-1 bg-green-600 py-3 rounded-xl text-white text-center" label="Agregar" onPress={moverAAgregar}></Button>
+                <Pressable className="flex-1 bg-blue-600 py-3 rounded-xl text-white text-center" onPress={moverAModificar}>
+                    <Text className="text-white text-center">Modificar</Text>
+                </Pressable>
+                <Pressable className="flex-1 bg-red-600 py-3 rounded-xl text-white text-center" onPress={moverABorrar}>
+                    <Text className="text-white text-center">Borrar</Text>
+                </Pressable>
+                <Pressable className="flex-1 bg-green-600 py-3 rounded-xl text-white text-center" onPress={moverAAgregar}>
+                    <Text className="text-white text-center">Agregar</Text>
+                </Pressable>
 
             </View>
             {
