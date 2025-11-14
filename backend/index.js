@@ -136,24 +136,44 @@ app.get("/", function (req, res) {
 
 
 app.get("/getAllAlumnos", async function (req, res) {
-  const result = await realizarQuery(`SELECT * FROM Alumnos`);
-  res.send(result);
+  try {   
+    const result = await realizarQuery(`SELECT * FROM Alumnos`);
+    res.send(result);
+  } catch (error) {
+    res.send(error)
+  }
 });
 app.get("/getAllProfesores", async function (req, res) {
-  const result = await realizarQuery(`SELECT * FROM Alumnos`);
-  res.send(result);
+  try {
+    const result = await realizarQuery(`SELECT * FROM Profesores`);
+    res.send(result);
+  } catch (error) {
+    res.send(error)
+  }
 });
 app.get("/getAllPreceptores", async function (req, res) {
-  const result = await realizarQuery(`SELECT * FROM Alumnos where rango = "P"`);
-  res.send(result);
+  try {
+    const result = await realizarQuery(`SELECT * FROM Administradores where rango = "P"`);
+    res.send(result);
+  } catch (error) {
+    res.send(error)
+  }
 });
 app.get("/getAllOwner", async function (req, res) {
-  const result = await realizarQuery(`SELECT * FROM Alumnos where rango = "O"`);
-  res.send(result);
+  try {
+    const result = await realizarQuery(`SELECT * FROM Administradores where rango = "O"`);
+    res.send(result);
+  } catch (error) {
+    res.send(error)
+  }
 });
 app.get("/getAllCursos", async function (req, res) {
-  const result = await realizarQuery(`SELECT concat(año, " ", division, " ", carrera) as "label", id_curso as "value" FROM Cursos;`);
-  res.send(result);
+  try {
+    const result = await realizarQuery(`SELECT concat(año, " ", division, " ", carrera) as "label", id_curso as "value" FROM Cursos;`);
+    res.send(result);
+  } catch (error) {
+    res.send(error)
+  }
 });
 
 app.get("/login", async function (req, res) {
@@ -402,22 +422,22 @@ app.post("/asistencia", async function (req, res) {
 app.post("/agregarUsuarios", async function (req, res) {
   try {
     switch (req.body.rango) {
-      case "Alumno":
+      case "alumno":
         await realizarQuery(`INSERT into Alumnos (id_curso, nombre, apellido, img_alumno, correo_electronico, contraseña)
         VALUES (${req.body.id_curso}, '${req.body.nombre}', '${req.body.apellido}', '${req.body.img_alumno}', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
         res.send({ message: "Alumno agregado" })
         break
-      case "Profesor":
+      case "profesor":
         await realizarQuery(`INSERT into Profesores (nombre, apellido, correo_electronico, contraseña)
         VALUES ('${req.body.nombre}', '${req.body.apellido}', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
         res.send({ message: "Profesor agregado" })
         break
-      case "Preceptor":
+      case "preceptor":
         await realizarQuery(`INSERT into Administradores (nombre, apellido, rango, correo_electronico, contraseña)
         VALUES ('${req.body.nombre}', '${req.body.apellido}', 'P', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
         res.send({ message: "Preceptor agregado" })
         break
-      case "Owner":
+      case "owner":
         await realizarQuery(`INSERT into Administradores (nombre, apellido, rango, correo_electronico, contraseña)
         VALUES ('${req.body.nombre}', '${req.body.apellido}', 'O', '${req.body.correo_electronico}', '${req.body.contraseña}')`)
         res.send({ message: "Owner agregado" })
@@ -435,16 +455,21 @@ app.post("/agregarUsuarios", async function (req, res) {
 app.post("/actualizarUsuarios", async function (req, res) {
   try {
     switch (req.body.rango) {
-      case "Alumno":
-        await realizarQuery(`UPDATE Alumnos SET(id_curso='${req.body.id_curso}', nombre='${req.body.nombre}', apellido='${req.body.apellido}', img_alumno='${req.body.img_alumno}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_alumno = ${req.body.id})`)
+      case "alumno":
+        await realizarQuery(`UPDATE Alumnos SET id_curso='${req.body.id_curso}', nombre='${req.body.nombre}', apellido='${req.body.apellido}', img_alumno='${req.body.img_alumno}', correo_electronico='${req.body.email}', contraseña='${req.body.contraseña}' where (id_alumno = ${req.body.id})`)
         res.send({ message: "Alumno actualizado" })
         break
-      case "Profesor":
-        await realizarQuery(`UPDATE Profesores SET(nombre='${req.body.nombre}', apellido='${req.body.apellido}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_profesor = ${req.body.id})`)
+      case "profesor":
+        await realizarQuery(`UPDATE Profesores SET nombre='${req.body.nombre}', apellido='${req.body.apellido}', correo_electronico='${req.body.email}', contraseña='${req.body.contraseña}' where (id_profesor = ${req.body.id})`)
         res.send({ message: "Profesor actualizado" })
         break
-      case ("Preceptor" || "Owner"):
-        await realizarQuery(`UPDATE Administradores SET(nombre='${req.body.nombre}', apellido='${req.body.apellido}' rango='${req.body.rango}', correo_electronico='${req.body.correo_electronico}', contraseña='${req.body.contraseña}') where (id_adminstrador = ${req.body.id})`)
+      case ("preceptor"):
+        await realizarQuery(`UPDATE Administradores SET(nombre='${req.body.nombre}', apellido='${req.body.apellido}', rango='${req.body.rango="owner"?"O":"P"}', correo_electronico='${req.body.email}', contraseña='${req.body.contraseña}' where (id_administradores = ${req.body.id})`)
+        res.send({ message: "Administrador actualizado" })
+        break
+      case ("owner"):
+        console.log(req.body.rango)
+        await realizarQuery(`UPDATE Administradores SET nombre='${req.body.nombre}', apellido='${req.body.apellido}', rango='${req.body.rango="owner"?"O":"P"}', correo_electronico='${req.body.email}', contraseña='${req.body.contraseña}' where id_administradores = ${req.body.id}`)
         res.send({ message: "Administrador actualizado" })
         break
       default:
@@ -459,16 +484,21 @@ app.post("/actualizarUsuarios", async function (req, res) {
 
 app.delete("/borrarUsuarios", async function (req, res) {
   try {
+    console.log(req.body.rango)
     switch (req.body.rango) {
-      case "Alumno":
+      case "alumno":
         await realizarQuery(`DELETE from Alumnos where (id_alumno = ${req.body.id})`)
         res.send({ message: "Alumno borrado" })
         break
-      case "Profesor":
+      case "profesor":
         await realizarQuery(`DELETE from Profesores where (id_profesor = ${req.body.id})`)
         res.send({ message: "Profesor borrado" })
         break
-      case ("Preceptor" || "Owner"):
+      case ("preceptor" || "Owner"):
+        await realizarQuery(`DELETE from Administradores where (id_adminsitrador = ${req.body.id})`)
+        res.send({ message: "Administrador borrado" })
+        break
+      case ("owner"):
         await realizarQuery(`DELETE from Administradores where (id_adminsitrador = ${req.body.id})`)
         res.send({ message: "Administrador borrado" })
         break

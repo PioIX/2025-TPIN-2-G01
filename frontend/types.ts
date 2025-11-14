@@ -141,10 +141,10 @@ export interface Option {
   value: string;
 }
 
-export type TipoUsuario = Admin | Usuario | Owner | Alumno | Profesor 
+export type TipoUsuario = Admin | CrudData | Owner | Alumno | Profesor 
 
 
-export type Usuario = {
+export type CrudData = {
   id: number 
   rango: string
   nombre: string
@@ -153,24 +153,49 @@ export type Usuario = {
   contraseña: string
 }
 
-export interface Admin extends Usuario {
+export interface Admin extends CrudData {
   rango: "preceptor" | "owner"
 }
-export interface Preceptor extends Usuario {
+export interface Preceptor extends CrudData {
   rango: "preceptor"
 }
-export interface Owner extends Usuario {
+export interface Owner extends CrudData {
   rango: "owner"
 }
-export interface Alumno extends Usuario {
+export interface Alumno extends CrudData {
   id_curso : number 
   rango: "alumno"
   imagen?: null|string
 }
-export interface Profesor extends Usuario {
+export interface Profesor extends CrudData {
   rango: "profesor"  
 }
 
+export interface adminFetch{
+  id_administradores: number
+  contraseña: "strirng"
+  correo_electronico: email
+  nombre: string
+  apellido: string
+  rango: "O" | "P"
+}
+export interface alumnoFetch{
+  id_alumno: number
+  id_curso: number
+  correo_electronico: email
+  contraseña: string
+  nombre: string
+  apellido: string
+  img_alumno?: string
+}
+export interface profesorFetch{
+  id_profesor: number
+  correo_electronico: email
+  contraseña: string
+  nombre: string
+  apellido: string
+}
+export type fetchData = profesorFetch | alumnoFetch | adminFetch
 export type email = `${string}@${string}.${string}`
 
 export interface selectProps<T> {
@@ -201,7 +226,6 @@ export interface UserData{
   id_curso?: number
 }
 
-}
 
 export interface CursoNuevo {
   año: number;
@@ -220,7 +244,6 @@ export interface respuestaAlumno {
     nombre?: string;
   };
 }
-export type email = `${string}@${string}.${string}`;
 
 export type Usuario = {
   message: {
