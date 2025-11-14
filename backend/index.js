@@ -271,7 +271,7 @@ app.get("/faltasAlumnos", async function (req, res) {
       from Asistencias
       inner join Alumnos on Asistencias.id_alumno = Alumnos.id_alumno
       inner join Cursos on Alumnos.id_curso = Cursos.id_curso
-      where Cursos.id_curso = ${req.query.id_curso} and date(Asistencias.horario_de_entrada) = "${new Date().toISOString().slice(0, 10)}";`);
+      where Cursos.id_curso = ${req.query.id_curso} and date(Asistencias.horario_de_entrada) = "${new Date().toISOString().slice(0, 10)}" and Asistencias.falta > 0;`);
     console.log(alumnos)
     res.send({ message: alumnos });
   } catch (error) {
