@@ -20,6 +20,7 @@ export default function AlumnosAsistencia() {
   const [faltasJustificadas, setFaltasJustificadas] = useState<number>(0)
   const [faltasNoJustificadas, setFaltasNoJustificadas] = useState<number>(0)
   const [faltasTotales, setFaltasTotales] = useState<number>(0)
+  const [estaFecheado, setEstaFecheado] = useState<Boolean>(false)
   /**
      * trae la info del usuario logeado
      * @returns {message:{datosEstudiantes}}
@@ -67,7 +68,7 @@ export default function AlumnosAsistencia() {
         console.log(typeof (userData.message.correo_electronico))
         console.log("email", email)
       }
-  
+      setEstaFecheado(true)
     };
     const handleLogout = async () => {
       await logout();
@@ -115,19 +116,22 @@ export default function AlumnosAsistencia() {
   return (
     <SafeAreaProvider className="flex-1 bg-white">
       <View className="flex-1 items-center justify-start bg-white px-4 sm:px-6 md:px-8 py-6 pt-10 sm:pt-12 md:pt-16">
-        <Pressable onPress={fetchUser} className="self-center bg-blue-600 px-4 py-2 rounded-md mb-4">
+        {!estaFecheado &&
+          <Pressable onPress={fetchUser} className="self-center bg-blue-600 px-4 py-2 rounded-md mb-4">
           <Text className="text-white text-sm sm:text-base md:text-base">Mostrar Tabla de Inasistencias</Text>
         </Pressable>
-    
+        } 
         <View className="w-full max-w-3xl mx-auto bg-white rounded-lg overflow-hidden">
           <InAttendanceTable fechas={fecha} faltas={falta}></InAttendanceTable>
         </View>
         
+        { estaFecheado &&
         <View className="w-full max-w-3xl mx-auto mt-4 p-4 bg-gray-50 rounded-xl space-y-2">
           <Text className="text-base sm:text-lg md:text-lg text-gray-800">Faltas Totales: {faltasTotales}</Text>
           <Text className="text-base sm:text-lg md:text-lg text-gray-800">Faltas No Justificadas: {faltasNoJustificadas}</Text>
           <Text className="text-base sm:text-lg md:text-lg text-gray-800">Faltas Justificadas: {faltasJustificadas}</Text>
         </View>
+        }
       </View>
     </SafeAreaProvider>
   );
