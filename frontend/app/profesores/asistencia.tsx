@@ -5,10 +5,11 @@ import { useAuth } from 'app/context/AuthContext';
 import useFetch from 'hooks/useFetch';
 import { SelectCursos } from 'components/selectCursos';
 import AttendanceTable, { Alumno as AlumnoTabla } from 'components/Tabla';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function ProfesoresAsistencia() {
   const { token } = useAuth();
-  const [checked,setChecked] = useState<boolean>(false)
+  const [checked, setChecked] = useState<boolean>(false)
   const [idProfesor, setIdProfesor] = useState<number>(0);
   const [cursos, setCursos] = useState<CursosProfe>([]);
   const [selectedCurso, setSelectedCurso] = useState<string | number | null>(null);
@@ -55,16 +56,6 @@ export default function ProfesoresAsistencia() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log(cursosData)
-        // if (cursosData && 'message' in cursosData && Array.isArray(cursosData.message)) {
-        //   console.log("despues del if")
-        //   setCursos(cursosData.message);
-        // } else if (Array.isArray(cursosData)) {
-        //   setCursos(cursosData);
-        // } else {
-        //   setCursos([]);
-        // }
-        console.log(cursosData)
         if (Array.isArray(cursosData)) {
           setCursos(cursosData);
         } else {
@@ -117,45 +108,58 @@ export default function ProfesoresAsistencia() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-gray-100 px-6">
-      {loadingCursos ? (
-        <Text>Cargando cursos...</Text>
-      ) : cursos.length > 0 && alumnos.length === 0  ? (
-        <View className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
-          <Text className="mb-6 text-center text-2xl font-bold text-blue-700">
-            Página de asistencia
-          </Text>
-
-          <View className="mb-6">
-            <Text className="mb-2 text-base text-gray-700">Seleccioná un curso</Text>
-            <SelectCursos
-              props={cursos}
-              value={selectedCurso}
-              onValueChange={(val) => setSelectedCurso(val)}
-            />
+    <SafeAreaProvider className="flex-1 bg-aparcs-bg">
+      <View className="flex-1 bg-aparcs-bg px-6 py-6">
+        {loadingCursos ? (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-aparcs-text-dark text-lg">Cargando cursos...</Text>
           </View>
+        ) : cursos.length > 0 && alumnos.length === 0 ? (
+          <View className="flex-1 items-center justify-center">
+            <View className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-lg">
+              <Text className="text-2xl font-bold italic text-aparcs-text-dark text-center mb-6">
+                Página de asistencia
+              </Text>
 
-          <Pressable
-            className="rounded-xl bg-blue-600 py-3 shadow-md active:bg-blue-700"
-            onPress={buscarAlumnos}>
-            <Text className="text-center text-base font-semibold text-white">Buscar Curso</Text>
-          </Pressable>
-        </View>
-      ) : alumnos.length > 0 && checked ? (
-        <ScrollView className="mt-6 w-full">
-          <AttendanceTable alumnos={alumnos} />
-          <Pressable
-            className="rounded-xl bg-blue-600 py-3 shadow-md active:bg-blue-700"
-            onPress={()=>{
-              setChecked(!checked)
-              setAlumnos([])
-              }}>
-            <Text className="text-center text-base font-semibold text-white">Cancelar</Text>
-          </Pressable>
-        </ScrollView>
-      ) : (
-        <Text>No hay cursos disponibles.</Text>
-      )}
-    </View>
+              <View className="mb-6">
+                <Text className="text-gray-700 mb-2 font-medium">Seleccioná un curso</Text>
+                <SelectCursos
+                  props={cursos}
+                  value={selectedCurso}
+                  onValueChange={(val) => setSelectedCurso(val)}
+                />
+              </View>
+
+              <Pressable
+                className="w-full bg-aparcs-primary py-4 rounded-xl shadow-lg"
+                onPress={buscarAlumnos}
+                style={({ pressed }) => [
+                  { backgroundColor: pressed ? '#0077B6' : '#1E90FF' }
+                ]}
+              >
+                <Text className="text-white text-center font-bold text-lg">Buscar Curso</Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : alumnos.length > 0 && checked ? (
+          <ScrollView className="flex-1">
+            <AttendanceTable alumnos={alumnos} />
+            <Pressable
+              className="w-full bg-aparcs-ausente py-4 rounded-xl mt-4"
+              onPress={() => {
+                setChecked(false)
+                setAlumnos([])
+              }}
+            >
+              <Text className="text-white text-center font-bold">Cancelar</Text>
+            </Pressable>
+          </ScrollView>
+        ) : (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-gray-500">No hay cursos disponibles.</Text>
+          </View>
+        )}
+      </View>
+    </SafeAreaProvider>
   );
 }

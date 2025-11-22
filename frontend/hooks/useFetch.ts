@@ -1,41 +1,49 @@
-import { useState } from "react";
-import type { FetchOptions, UseFetchResult } from "types";
+import { useState } from 'react';
+import type { FetchOptions, UseFetchResult } from 'types';
 
-// revisar la t y cambiarla por una union
-export default function useFetch<T = unknown>(): UseFetchResult<T> {
+function useFetch<T = any>(): UseFetchResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  async function fetchData({ url, method = "GET", body = null, headers = {} }: FetchOptions): Promise<T | void> {
-    if (!url) return;
-
+  const fetchData = async (options: FetchOptions): Promise<T | void> => {
+    const { url, method = 'GET', body, headers } = options;
+    
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(url, {
+      const config: RequestInit = {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...headers,
         },
-        body: body ? JSON.stringify(body) : null,
-      });
+      };
 
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      if (body && method !== 'GET') {
+        config.body = JSON.stringify(body);
       }
 
-      const responseData: T = await response.json();
-      setData(responseData);
-      return responseData;
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setData(result);
+      return result as T;
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      const error = err instanceof Error ? err : new Error('An error occurred');
+      setError(error);
+      console.error('Fetch error:', error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return { data, error, loading, fetchData };
 }
+
+export default useFetch;

@@ -1,10 +1,12 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, Modal } from 'react-native';
 import { useAuth } from 'app/context/AuthContext';
 import { useRouter } from 'expo-router';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useState } from 'react';
+
 export default function LogOut() {
   const { logout } = useAuth();
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
   
   const handleLogout = async () => {
     await logout();
@@ -12,22 +14,69 @@ export default function LogOut() {
   };
   
   return (
-    <SafeAreaProvider className="flex-1 bg-gray-50">
-      <View className="w-full px-4 sm:px-6 md:px-8 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-        <View className="w-full max-w-3xl mx-auto flex-col md:flex-row justify-between items-center gap-3">
-          <Text className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
-            Configuración
+    <View className="flex-1 justify-center items-center bg-aparcs-bg px-6 pb-20">
+      <View className="w-full max-w-sm p-8">
+        
+        <Text className="text-2xl font-bold italic text-aparcs-text-dark text-center mb-8">
+          Configuración
+        </Text>
+
+        <View className="w-full p-4 rounded-full border-2 border-gray-300 bg-white mb-4">
+          <Text className="text-gray-700 text-center">
+            preceptor@pioix.edu.ar
           </Text>
-          <Pressable 
-            onPress={handleLogout}
-            className="px-3 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 bg-blue-700 rounded-lg active:bg-blue-500"
-          >
-            <Text className="text-white font-semibold text-sm sm:text-base md:text-base">
-              Cerrar sesión
-            </Text>
-          </Pressable>
         </View>
+
+        <View className="w-full p-4 rounded-full border-2 border-gray-300 bg-white mb-8">
+          <Text className="text-gray-700 text-center">
+            ••••••••
+          </Text>
+        </View>
+
+        <Pressable
+          onPress={() => setShowModal(true)}
+          className="w-full bg-red-600 py-4 rounded-full shadow-lg"
+        >
+          <Text className="text-white text-center font-semibold text-lg">
+            Cerrar Sesión
+          </Text>
+        </Pressable>
       </View>
-    </SafeAreaProvider>
+
+      <Modal
+        visible={showModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-gray-900 rounded-2xl p-8 mx-6 w-full max-w-sm">
+            <Text className="text-white text-2xl font-bold text-center mb-8">
+              ¿Estás seguro?
+            </Text>
+            
+            <View className="flex-row justify-center">
+              <Pressable
+                onPress={handleLogout}
+                className="flex-1 bg-green-500 py-4 rounded-full mr-2"
+              >
+                <Text className="text-white text-center font-bold text-lg">
+                  Si
+                </Text>
+              </Pressable>
+              
+              <Pressable
+                onPress={() => setShowModal(false)}
+                className="flex-1 bg-red-600 py-4 rounded-full ml-2"
+              >
+                <Text className="text-white text-center font-bold text-lg">
+                  No
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 }

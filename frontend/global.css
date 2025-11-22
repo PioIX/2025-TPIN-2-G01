@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Estilos personalizados para APARCS */
+@layer components {
+  /* Botón primario estilo APARCS */
+  .btn-aparcs {
+    @apply bg-aparcs-primary py-3 px-6 rounded-2xl shadow-aparcs;
+  }
+  
+  .btn-aparcs:active {
+    @apply bg-aparcs-primary-dark;
+  }
+  
+  /* Input estilo APARCS */
+  .input-aparcs {
+    @apply w-full p-4 rounded-full border-2 border-aparcs-border bg-aparcs-input text-gray-800;
+  }
+  
+  /* Card estilo APARCS */
+  .card-aparcs {
+    @apply bg-aparcs-card rounded-3xl p-6 shadow-aparcs-lg;
+  }
+  
+  /* Título estilo APARCS */
+  .title-aparcs {
+    @apply text-2xl font-bold text-aparcs-text-dark text-center;
+  }
+  
+  /* Badge de estado - Presente */
+  .badge-presente {
+    @apply bg-aparcs-presente px-3 py-1 rounded-lg;
+  }
+  
+  /* Badge de estado - Ausente */
+  .badge-ausente {
+    @apply bg-aparcs-ausente px-3 py-1 rounded-lg;
+  }
+  
+  /* Badge de estado - Tarde */
+  .badge-tarde {
+    @apply bg-aparcs-tarde px-3 py-1 rounded-lg;
+  }
+  
+  /* Badge de estado - Pendiente */
+  .badge-pendiente {
+    @apply bg-aparcs-pendiente px-3 py-1 rounded-lg;
+  }
+}

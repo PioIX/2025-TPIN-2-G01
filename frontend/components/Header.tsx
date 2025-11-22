@@ -6,8 +6,10 @@ type HeaderProps = {
 
 export default function Header({ title }: HeaderProps) {
   return (
-    <View className="mb-6">
-      <Text className="text-2xl font-bold text-indigo-700">{title}</Text>
+    <View className="px-6 py-6 bg-aparcs-bg">
+      <Text className="text-2xl font-bold italic text-aparcs-text-dark text-center">
+        {title}
+      </Text>
     </View>
   );
 }

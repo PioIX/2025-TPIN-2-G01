@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { Preceptor, CursosProfe, faltasCurso, FaltasAlumnos, RespuestaPreceptor } from 'types';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { CursosProfe, faltasCurso, FaltasAlumnos, RespuestaPreceptor } from 'types';
 import { useAuth } from 'app/context/AuthContext';
 import useFetch from 'hooks/useFetch';
 import { SelectCursos } from 'components/selectCursos';
-import AttendanceTable, { Alumno as AlumnoTabla } from 'components/Tabla';
 import FaltasTable from 'components/tablaCheckAsistencia';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function App() {
+export default function VerificarAsistencia() {
   const { token } = useAuth();
   const [checked, setChecked] = useState<boolean>(false);
   const [idPreceptor, setIdPreceptor] = useState<number>(0);
@@ -38,7 +38,7 @@ export default function App() {
           setIdPreceptor(preceptor.message.id_administradores);
         }
       } catch (error) {
-        console.error('Error al obtener profesor:', error);
+        console.error('Error al obtener preceptor:', error);
       }
     };
 
@@ -55,8 +55,6 @@ export default function App() {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        console.log(cursosData);
 
         if (Array.isArray(cursosData) && cursosData.length !== 0) {
           setCursos(cursosData);
@@ -82,7 +80,7 @@ export default function App() {
         url: `http://localhost:4000/faltasAlumnos?id_curso=${selectedCurso}`,
         method: 'GET',
       });
-      console.log("alumnosData", alumnosData)
+
       if (alumnosData && 'message' in alumnosData && Array.isArray(alumnosData.message)) {
         setAlumnos(alumnosData.message);
         setChecked(true);
@@ -96,45 +94,60 @@ export default function App() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-gray-100 px-6">
-      {loadingCursos ? (
-        <Text>Cargando cursos...</Text>
-      ) : cursos.length > 0 && alumnos.length === 0 ? (
-        <View className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
-          <Text className="mb-6 text-center text-2xl font-bold text-blue-700">
-            Página de asistencia
-          </Text>
-
-          <View className="mb-6">
-            <Text className="mb-2 text-base text-gray-700">Seleccioná un curso</Text>
-            <SelectCursos
-              props={cursos}
-              value={selectedCurso}
-              onValueChange={(val) => setSelectedCurso(val)}
-            />
+    <SafeAreaProvider className="flex-1 bg-aparcs-bg">
+      <View className="flex-1 bg-aparcs-bg px-6 py-6">
+        {loadingCursos ? (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-aparcs-text-dark text-lg">Cargando cursos...</Text>
           </View>
+        ) : cursos.length > 0 && alumnos.length === 0 ? (
+          <View className="flex-1 items-center justify-center">
+            <View className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-lg">
+              <Text className="text-2xl font-bold italic text-aparcs-text-dark text-center mb-6">
+                Verificar Asistencia
+              </Text>
 
-          <Pressable
-            className="rounded-xl bg-blue-600 py-3 shadow-md active:bg-blue-700"
-            onPress={buscarAlumnos}>
-            <Text className="text-center text-base font-semibold text-white">Buscar Curso</Text>
-          </Pressable>
-        </View>
-      ) : alumnos.length > 0 && checked ? (
-        <ScrollView className="mt-6 w-full">
-          <FaltasTable data={{message: alumnos}} />
-          <Pressable
-            className="rounded-xl bg-blue-600 py-3 shadow-md active:bg-blue-700"
-            onPress={() => {
-              setChecked(!checked);
-              setAlumnos([]);
-            }}>
-            <Text className="text-center text-base font-semibold text-white">Cancelar</Text>
-          </Pressable>
-        </ScrollView>
-      ) : (
-        <Text>No hay cursos disponibles.</Text>
-      )}
-    </View>
+              <View className="mb-6">
+                <Text className="text-gray-700 mb-2 font-medium">Seleccioná un curso</Text>
+                <SelectCursos
+                  props={cursos}
+                  value={selectedCurso}
+                  onValueChange={(val) => setSelectedCurso(val)}
+                />
+              </View>
+
+              <Pressable
+                className="w-full bg-aparcs-primary py-4 rounded-xl shadow-lg"
+                onPress={buscarAlumnos}
+                style={({ pressed }) => [
+                  { backgroundColor: pressed ? '#0077B6' : '#1E90FF' }
+                ]}
+              >
+                <Text className="text-white text-center font-bold text-lg">
+                  Buscar Curso
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : alumnos.length > 0 && checked ? (
+          <ScrollView className="flex-1">
+            <FaltasTable data={{ message: alumnos }} />
+            <Pressable
+              className="w-full bg-aparcs-ausente py-4 rounded-xl mt-4"
+              onPress={() => {
+                setChecked(false);
+                setAlumnos([]);
+              }}
+            >
+              <Text className="text-white text-center font-bold">Cancelar</Text>
+            </Pressable>
+          </ScrollView>
+        ) : (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-gray-500">No hay cursos disponibles.</Text>
+          </View>
+        )}
+      </View>
+    </SafeAreaProvider>
   );
 }

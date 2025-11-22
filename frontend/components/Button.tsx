@@ -1,12 +1,37 @@
-import { Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, TouchableOpacityProps } from "react-native";
 
-export default function Button({ label, onPress }: ButtonProps) {
+interface ButtonProps extends TouchableOpacityProps {
+  label: string;
+  variant?: 'primary' | 'danger' | 'success' | 'warning';
+}
+
+export default function Button({ 
+  label, 
+  onPress, 
+  variant = 'primary',
+  className,
+  ...props 
+}: ButtonProps) {
+  const getVariantStyles = () => {
+    switch (variant) {
+      case 'danger':
+        return 'bg-aparcs-ausente';
+      case 'success':
+        return 'bg-aparcs-presente';
+      case 'warning':
+        return 'bg-aparcs-tarde';
+      default:
+        return 'bg-aparcs-primary';
+    }
+  };
+
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="bg-indigo-500 px-5 py-3 rounded-lg active:bg-indigo-600"
+      className={`${getVariantStyles()} px-6 py-4 rounded-xl shadow-lg active:opacity-80 ${className || ''}`}
+      {...props}
     >
-      <Text className="text-white text-base font-semibold">{label}</Text>
+      <Text className="text-white text-base font-bold text-center">{label}</Text>
     </TouchableOpacity>
   );
 }

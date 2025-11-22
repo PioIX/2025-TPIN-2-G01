@@ -17,18 +17,18 @@ export default function Scanner({
   }, []);
 
   if (!permission) {
-    return <View className="flex-1 bg-gray-100" />;
+    return <View className="flex-1 bg-aparcs-bg" />;
   }
 
   if (!permission.granted) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-center pb-2.5 text-gray-800">
+      <View className="flex-1 justify-center items-center bg-aparcs-bg p-6">
+        <Text className="text-center pb-4 text-aparcs-text-dark text-lg">
           Necesitamos permiso para usar la cámara
         </Text>
         <TouchableOpacity
           onPress={requestPermission}
-          className="bg-blue-600 px-4 py-2 rounded-lg"
+          className="bg-aparcs-primary px-6 py-3 rounded-xl"
         >
           <Text className="text-white font-bold">Dar permiso</Text>
         </TouchableOpacity>

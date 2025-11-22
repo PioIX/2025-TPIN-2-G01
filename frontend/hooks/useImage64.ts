@@ -1,22 +1,32 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-export default function useBase64() {
-  const [base64, setBase64] = useState<string>("");
+export function useImage64() {
+  const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const encodeFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-
-      reader.onload = () => {
-        const result = reader.result as string; 
-        setBase64(result);
-        resolve(result);
-      };
-
-      reader.onerror = (error) => reject(error);
-    });
+  const convertToBase64 = async (uri: string): Promise<string | null> => {
+    setLoading(true);
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result as string;
+          setImage(base64);
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error converting image:', error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return { base64, encodeFileToBase64 };
+  return { image, loading, convertToBase64 };
 }

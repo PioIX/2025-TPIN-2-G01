@@ -6,13 +6,16 @@ import { useEffect, useState } from 'react';
 import Qr from 'components/QrGenerator';
 import useFetch from 'hooks/useFetch';
 import Button from 'components/Button';
-import type {CursoNuevo} from 'types'
+import type { CursoNuevo } from 'types'
 import { respuestaAlumno } from 'types';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 export default function AlumnosHome() {
   const router = useRouter();
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>("")
+  const [timeLeft, setTimeLeft] = useState<number>(60);
+  const [qrGenerated, setQrGenerated] = useState<boolean>(false);
 
   const [qrValue, setQrValue] = useState<string>("")
   const [horarioEntrada, setHorarioEntrada] = useState<string>("")
@@ -21,36 +24,43 @@ export default function AlumnosHome() {
     carrera: "",
     division: "",
   });
-  /**
-   * trae la info del usuario logeado
-   * @returns {message:{datosEstudiantes}}
-   */
 
   const { socket, isConnected } = useSocket();
-  const {fetchData: fetchAlumno} = useFetch<respuestaAlumno>()
-  
-    function metermeSala(){
-      console.log(email)
-      socket?.emit("unirme", { value: email });  
+  const { fetchData: fetchAlumno } = useFetch<respuestaAlumno>()
+
+  // Timer para el QR
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (qrGenerated && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setQrGenerated(false);
+      setTimeLeft(60);
     }
+    return () => clearInterval(timer);
+  }, [qrGenerated, timeLeft]);
 
-    useEffect(()=>{
-      if (email != "") {
-        metermeSala()
-      }
-    }, [email])
-  
-    useEffect(() => {
+  function metermeSala() {
+    socket?.emit("unirme", { value: email });
+  }
+
+  useEffect(() => {
+    if (email != "") {
+      metermeSala()
+    }
+  }, [email])
+
+  useEffect(() => {
     if (!socket) return;
-      socket.on("mensajitoSala", (generico)=>{
-        console.log(generico.message)
-      })
-      socket.on("NotificacionAlumno", (generico)=>{
-        Alert.alert(generico.message)
-      })
-      
-    }, [socket]);
-
+    socket.on("mensajitoSala", (generico) => {
+      console.log(generico.message)
+    })
+    socket.on("NotificacionAlumno", (generico) => {
+      Alert.alert(generico.message)
+    })
+  }, [socket]);
 
   async function fetchUser(): Promise<void> {
     const userData = await fetchAlumno({
@@ -62,21 +72,10 @@ export default function AlumnosHome() {
       },
     });
 
-    console.log(userData?.message)
     if (userData?.message?.correo_electronico) {
       setEmail(userData.message.correo_electronico)
-      console.log(typeof (userData.message.correo_electronico))
-      console.log("email", email)
     }
-
   };
-  const handleLogout = async () => {
-    await logout();
-    router.replace('/');
-  };
-
-
-
 
   async function fetchCursoAlumno(correo: string): Promise<void> {
     try {
@@ -85,8 +84,6 @@ export default function AlumnosHome() {
       );
       const data = await response.json();
 
-      console.log("Data::: ", data.message[0]);
-
       if (data.message && data.message.length > 0) {
         const c = data.message[0];
         setCursoNuevo({
@@ -94,7 +91,7 @@ export default function AlumnosHome() {
           division: c.division,
           carrera: c.carrera
         })
-      } 
+      }
     } catch (error) {
       console.error("Error al traer curso:", error);
     }
@@ -106,66 +103,95 @@ export default function AlumnosHome() {
         `http://localhost:4000/getHorarioEntrada?carrera=${cursoNuevo.carrera}&año=${cursoNuevo.año}&division=${cursoNuevo.division}`
       );
       const data = await response.json();
-      console.log("Respuesta completa del backend:", data);
 
       if (data.horario_entrada) {
         setHorarioEntrada(data.horario_entrada);
-        console.log("Horario de entrada:", data.horario_entrada);
       } else {
-        setHorarioEntrada("No se encontró horario");
-        console.log("No se encontró horario para el curso");
+        setHorarioEntrada("No encontrado");
       }
     } catch (error) {
       console.error("Error al traer horario:", error);
-      setHorarioEntrada("Error al cargar horario");
+      setHorarioEntrada("Error");
     }
   }
 
   useEffect(() => {
     if (email) {
       fetchCursoAlumno(email);
-
     }
   }, [email]);
 
-
-
-
   async function generarQr(): Promise<void> {
     await fetchUser()
+    setQrGenerated(true);
+    setTimeLeft(60);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchHorarioEntrada(cursoNuevo);
-  },[cursoNuevo])
-
-
+  }, [cursoNuevo])
 
   return (
-    <SafeAreaProvider className="flex-1 bg-white">
-     <View className="flex-1 items-center justify-center bg-white px-4 sm:px-6 md:px-8">
-      {/* <Pressable onPress={handleLogout}>
-        <Text>Cerrar sesión</Text>
+    <SafeAreaProvider className="flex-1 bg-aparcs-bg">
+      <View className="flex-1 items-center justify-center bg-aparcs-bg px-6">
+        
+        {/* Timer */}
+        {qrGenerated && (
+          <Text className="text-aparcs-text-dark font-bold text-lg mb-2">
+            {timeLeft} segundos restantes
+          </Text>
+        )}
 
-      </Pressable> */}
-      {email && <Qr
-        value={email}
-        size={256}
-        color="#0f0f0f"
-        backgroundColor="#f0f0f0"
+        {/* QR Code Container */}
+        <View className="bg-white p-4 rounded-2xl shadow-lg mb-6">
+          {email && qrGenerated ? (
+            <Qr
+              value={email}
+              size={220}
+              color="#000000"
+              backgroundColor="#FFFFFF"
+            />
+          ) : (
+            <View className="w-[220px] h-[220px] bg-gray-100 rounded-xl items-center justify-center">
+              <Text className="text-gray-400 text-center">
+                Presiona "Generar QR" para mostrar tu código
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Botón Generar QR */}
+        <Pressable
+          className="w-full max-w-xs bg-aparcs-primary py-4 rounded-xl shadow-lg mb-6"
+          onPress={generarQr}
+          style={({ pressed }) => [
+            { backgroundColor: pressed ? '#0077B6' : '#1E90FF' }
+          ]}
         >
-      </Qr>
-      }
+          <Text className="text-white text-center font-bold text-lg">
+            Generar QR
+          </Text>
+        </Pressable>
 
-      <Button className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-blue-600 py-3 rounded-xl text-white text-center mt-4" label="generar qr" onPress={() => { generarQr() }}></Button>
-      <Text className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-4 text-sm sm:text-base">
-        Curso: {`${cursoNuevo.año}° ${cursoNuevo.division} ${cursoNuevo.carrera}` || "Cargando..."}
-      </Text>
-      <Text className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-3 rounded-xl border border-gray-400 bg-gray-50 text-black mb-6 text-sm sm:text-base">
-        Horario de entrada: {horarioEntrada || "Cargando..."} 
-      </Text>
+        {/* Info Cards */}
+        <View className="w-full max-w-xs space-y-3">
+          {/* Curso */}
+          <View className="bg-white p-4 rounded-full border-2 border-gray-200">
+            <Text className="text-gray-700 text-center">
+              Curso: {cursoNuevo.año > 0 
+                ? `${cursoNuevo.año}° ${cursoNuevo.division} ${cursoNuevo.carrera}` 
+                : "Cargando..."}
+            </Text>
+          </View>
 
-     </View>
+          {/* Horario de entrada */}
+          <View className="bg-white p-4 rounded-full border-2 border-gray-200">
+            <Text className="text-gray-700 text-center">
+              Horario de entrada: {horarioEntrada || "Cargando..."}
+            </Text>
+          </View>
+        </View>
+      </View>
     </SafeAreaProvider>
   );
 }
